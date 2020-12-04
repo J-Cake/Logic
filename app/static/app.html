@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<!--suppress ALL -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Japanese Scrabble</title>
+
+    <link rel="stylesheet" href="master.css"/>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="icon" href="icon.png"/>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
+    </style>
+</head>
+<body>
+
+<script>
+    fetch('./app.js', {
+        method: "HEAD"
+    }).then(function (res) {
+        if (res.ok)
+            document.body.appendChild((function () {
+                const script = document.createElement('script');
+                script.setAttribute('src', './app.js');
+                script.addEventListener('load', function () {
+                    if (window.init)
+                        window.init(); // This is provided by the script once it has successfully loaded.
+                });
+                return script;
+            })());
+        else {
+            alert('The build has not finished yet. Please wait until the build finishes.')
+            window.location.reload();
+        }
+    });
+</script>
+
+</body>
+</html>
