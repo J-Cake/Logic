@@ -1,7 +1,11 @@
-const fs = require('fs');
-const path = require('path');
-const childProcess = require('child_process');
-const browserify = require('browserify');
+import fs from "fs";
+import path from "path";
+import childProcess from "child_process";
+import browserify from "browserify";
+// const fs = require('fs');
+// const path = require('path');
+// const childProcess = require('child_process');
+// const browserify = require('browserify');
 
 const awaitProc = cli => new Promise(function (resolve, reject) {
     const proc = childProcess.exec(cli);

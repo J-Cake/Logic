@@ -1,13 +1,15 @@
 import * as _p5 from 'p5';
 import * as mousetrap from "mousetrap";
 
-import RenderObject from './components/RenderObject';
-import StateManager from "./util/stateManager";
-import DragObject from "./components/DragObject";
-import DropObject from "./components/DropObject";
-import Colour, {getColour, Theme} from "./util/Colour";
-import Board from './components/Board';
-import {Interpolation} from './util/interpolation';
+import RenderObject from './sys/components/RenderObject';
+import StateManager from "./sys/util/stateManager";
+import DragObject from "./sys/components/DragObject";
+import DropObject from "./sys/components/DropObject";
+import Colour, {getColour, Theme} from "./sys/util/Colour";
+import Board from './sys/components/Board';
+import {Interpolation} from './sys/util/interpolation';
+import Cursor from "./UI/cursor";
+import debug, {Debug} from "./Logic/Debug";
 
 declare global {
     interface Array<T> {
@@ -33,10 +35,10 @@ export interface State {
     dropObjects: DropObject[],
     themes: Theme[],
     font: _p5.Font,
-    winCount: number,
-    lossCount: number,
     switchFrame: number, // The frame on which the theme was last switched
-    frame: number
+    frame: number,
+    cursor: Cursor,
+    debugger: StateManager<Debug>
 }
 
 export const manager: StateManager<State> = new StateManager<State>({
@@ -46,6 +48,7 @@ export const manager: StateManager<State> = new StateManager<State>({
     mouse: {x: 0, y: 0},
     dragStart: {x: 0, y: 0},
     themes: [Theme.Dark],
+    debugger: debug
 });
 
 new _p5(function (sketch: import('p5')) {
@@ -55,7 +58,8 @@ new _p5(function (sketch: import('p5')) {
         manager.setState(prev => ({
             board: new Board(),
             font: sketch.loadFont("./font.ttf"),
-            switchFrame: 0
+            switchFrame: 0,
+            cursor: new Cursor()
         }));
 
         sketch.textFont(manager.setState().font);
@@ -120,5 +124,8 @@ new _p5(function (sketch: import('p5')) {
 
         RenderObject.tick(sketch);
         RenderObject.draw(sketch);
+
+        state.cursor.render(sketch);
+        state.cursor.update(sketch);
     }
 });

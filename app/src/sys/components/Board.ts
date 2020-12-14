@@ -3,7 +3,7 @@ import * as p5 from 'p5';
 import RenderObject from './RenderObject';
 import Colour, {getColour} from "../util/Colour";
 import {Interpolation} from "../util/interpolation";
-import {manager} from '../index';
+import {manager} from '../../index';
 
 export default class Board extends RenderObject {
     padding: number;

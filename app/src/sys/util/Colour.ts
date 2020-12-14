@@ -1,21 +1,14 @@
-import {manager} from "../index";
+import {manager} from "../../index";
 import {Interpolation, map, constrain} from "./interpolation";
 import interpolate from "./interpolation";
 
 enum Colour {
+    Cursor,
     Blank,
-    Red,
-    Pink,
-    Yellow,
-    Orange,
-    Green,
-    Blue,
     White,
     Black,
     Panel,
     Background,
-    Win,
-    Lose
 }
 
 export default Colour;
@@ -27,34 +20,20 @@ export enum Theme {
 
 const themes: Record<Theme, () => Record<Colour, [number, number, number]>> = { // Here is a set of predefined colours.
     [Theme.Light]: () => ({
-        [Colour.Red]: [224, 4, 25],
-        [Colour.Blue]: [66, 135, 245],
-        [Colour.Orange]: [255, 106, 0],
-        [Colour.Green]: [0, 210, 35],
-        [Colour.Yellow]: [235, 210, 0],
-        [Colour.Pink]: [245, 56, 201],
+        [Colour.Cursor]: [120, 120, 255],
         [Colour.White]: [255, 255, 255],
         [Colour.Black]: [25, 25, 25],
         [Colour.Panel]: [225, 225, 225],
         [Colour.Background]: [255, 255, 255],
-        [Colour.Blank]: [60, 65, 70],
-        [Colour.Win]: [15, 188, 100],
-        [Colour.Lose]: [188, 15, 101]
+        [Colour.Blank]: [60, 65, 70]
     }),
     [Theme.Dark]: () => ({
-        [Colour.Red]: [224, 4, 25],
-        [Colour.Blue]: [66, 135, 245],
-        [Colour.Orange]: [255, 106, 0],
-        [Colour.Green]: [0, 210, 35],
-        [Colour.Yellow]: [235, 210, 0],
-        [Colour.Pink]: [245, 56, 201],
+        [Colour.Cursor]: [120, 120, 255],
         [Colour.White]: [245, 245, 245],
         [Colour.Black]: [25, 25, 25],
         [Colour.Panel]: [60, 65, 70],
         [Colour.Background]: [25, 30, 35],
-        [Colour.Blank]: [235, 235, 235],
-        [Colour.Win]: [15, 188, 100],
-        [Colour.Lose]: [188, 15, 101]
+        [Colour.Blank]: [235, 235, 235]
     })
 }
 
@@ -98,4 +77,8 @@ export function transparent(colour: Colour, amount: number): rgba {
     const transparented = getColour(colour);
 
     return [transparented[0], transparented[1], transparented[2], amount];
+}
+
+export function hex(colour: Colour): string {
+    return `#${getColour(colour).map(i => i.toString(16)).join('')}`;
 }

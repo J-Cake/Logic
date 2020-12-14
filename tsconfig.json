@@ -5,7 +5,6 @@
             "ES2019",
             "dom"
         ],
-//        "module": "es6",
         "module": "CommonJS",
         "outDir": "./build/app",
         "rootDir": "./app",

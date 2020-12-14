@@ -1,6 +1,6 @@
 import * as p5 from 'p5';
 import RenderObject from "./RenderObject";
-import {manager} from "../index";
+import {manager} from "../../index";
 import DragObject from "./DragObject";
 
 export default abstract class DropObject extends RenderObject {

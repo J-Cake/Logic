@@ -2,7 +2,7 @@
     "name": "nn",
     "version": "1.0.0",
     "description": "",
-    "main": "build/app/server.js",
+    "main": "build/app/server/index.js",
     "scripts": {
         "build": "tsc && node ./bin/build"
     },
@@ -10,30 +10,35 @@
     "author": "",
     "license": "MIT",
     "dependencies": {
+        "bcrypt": "^5.0.0",
+        "body-parser": "^1.19.0",
+        "cookie-parser": "^1.4.5",
+        "feather-icons": "^4.28.0",
         "jquery": "^3.5.0",
         "mousetrap": "^1.6.5",
         "p5": "^1.0.0",
         "seedrandom": "^3.0.5",
         "source-map-support": "^0.5.19",
+        "sqlite3": "^5.0.0",
         "typescript": "^3.9.6"
     },
     "devDependencies": {
+        "@types/bcrypt": "^3.0.0",
+        "@types/cookie-parser": "^1.4.2",
         "@types/express": "^4.17.6",
+        "@types/feather-icons": "^4.7.0",
         "@types/jquery": "^3.3.36",
         "@types/mousetrap": "^1.6.3",
         "@types/node": "^12.12.37",
         "@types/p5": "^0.9.0",
         "@types/seedrandom": "^2.4.28",
         "@types/source-map-support": "^0.5.1",
+        "@types/sqlite3": "^3.1.6",
         "browserify": "^16.5.0",
         "express": "^4.17.1",
-        "gulp": "^4.0.2",
-        "gulp-rename": "^2.0.0",
-        "gulp-sourcemaps": "^2.6.5",
         "terser": "^5.0.0",
         "through2": "^3.0.1",
         "typescript": "latest",
-        "uglify-es": "^3.3.9",
-        "vinyl-source-stream": "^2.0.0"
+        "uglify-es": "^3.3.9"
     }
 }
