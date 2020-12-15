@@ -1,0 +1,22 @@
+extends index
+
+block content
+    script.
+        fetch('./app.js', {
+            method: "HEAD"
+        }).then(function (res) {
+            if (res.ok)
+                document.body.appendChild((function () {
+                    const script = document.createElement('script');
+                    script.setAttribute('src', './app.js');
+                    script.addEventListener('load', function () {
+                        if (window.init)
+                            window.init(); // This is provided by the script once it has successfully loaded.
+                    });
+                    return script;
+                })());
+            else {
+                alert('The build has not finished yet. Please wait until the build finishes.')
+                window.location.reload();
+            }
+        });

@@ -1,32 +1,81 @@
+import * as fs from "fs";
+import * as path from "path";
+
 import * as express from 'express';
-import getFile from "../getFile";
+
+import getFile, {DBUser} from "../getFile";
 import {verifyUser} from "../User";
+import {rootFn} from "../utils";
+import sql from "../sql";
 
 const router = express.Router();
 
-router.get('/circuit/:circuit', async function (req, res) {
+router.use(async function (req, res, next) {
     const userId = req.cookies.userId ?? req.header("userId");
+    req.userId = userId;
 
-    if (!userId)
+    if (!userId || !await verifyUser(userId))
         res.redirect('/user/login');
-    else if (await verifyUser(userId)) {
-        const file = await getFile(userId, req.params.circuit);
+    else next();
+})
 
-        await file?.fetchInfo();
+router.get("/make", async function (req, res) {
+    const userId: string = req.userId || "";
 
-        if (file)
-            res.json(file?.info);
-        else {
-            res.status(403);
-            res.end('The provided user does not have access to this document');
-        }
+    const name = (req.query.name || "").toString() || Math.floor(Math.random() * 11e17).toString(36);
 
-    } else
-        res.redirect('/user/login');
+    const circuitToken: string = Math.floor(Math.random() * 11e17).toString(36);
+    const circuitId: number = 1 + (await sql.sql_get<{ documentId: number }>(`SELECT max(documentId) as documentId
+                                                                              from documents`)).documentId;
+
+    const user: DBUser = await sql.sql_get<DBUser>(`SELECT *
+                                                    from users
+                                                    where userToken == ?`, [userId]);
+
+    const fileName: string = `${user.email.split("@").shift()}${user.identifier.toLowerCase()}_${name}.json`;
+    const filePath = path.join(rootFn(process.cwd()), 'Data', 'documents', fileName);
+    fs.writeFileSync(filePath, JSON.stringify({
+        circuitName: name,
+        ownerEmail: (await sql.sql_get<{email: string}>(`SELECT email from users where userToken == ?`, [userId])).email,
+        components: {
+            and: "std/and",
+            or: "std/or",
+            not: "std/not",
+            nand: "std/nand",
+            nor: "std/nor",
+            xnor: "std/xnor",
+            xor: "std/xor",
+            buff: "std/buff",
+            in: "std/in",
+            out: "std/out",
+        },
+        content: {}
+    }, null, 4));
+
+    await sql.sql_query(`INSERT INTO documents
+                   VALUES ((SELECT userId from users where userToken == ?), ?, ?, ?, false, ?,
+                           date('now'))`, [userId, fileName, circuitId, name, circuitToken]);
+
+    res.redirect(`/edit/${circuitToken}`);
 });
 
-router.put('/circuit/:circuit', async function (req, res) {
+router.get('/circuit/raw/:circuit', async function (req, res) {
+    const userId: string = req.userId || "";
 
+    const file = await getFile(userId, req.params.circuit);
+
+    await file?.fetchInfo();
+
+    if (file)
+        res.json(file?.info);
+    else {
+        res.status(403);
+        res.end('Access to the requested document was denied');
+    }
 });
+
+// router.put('/circuit/save/:circuit', async function (req, res) { // File Save
+//
+// });
 
 export default router;

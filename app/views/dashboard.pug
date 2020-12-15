@@ -1,0 +1,34 @@
+extends index
+
+block content
+
+    a(href="/user/logout")
+        button Log Out
+
+    script.
+        window.addEventListener("load", function() {
+            document.querySelector("#mkDoc").addEventListener("click", function() {
+                const name = prompt("Enter a new Circuit name");
+                if (name && name.trim().length > 0)
+                    window.location.href = `/make?name=${encodeURIComponent(name)}`;
+            });
+        });
+
+    button#mkDoc
+        img(src="/res/icon/plus", alt="New")
+
+    #doclist
+        #own
+            if own.length > 0
+                for doc in own
+                    a(href="/edit/" + doc.documentToken).doc
+                        span.title= doc.documentTitle
+            else
+                span You own no documents.
+        #shared
+            if shared.length > 0
+                for doc in shared
+                    a(href="/circuit/" + doc.documentToken).doc
+                        span.title= doc.documentTitle
+            else
+                span No one has shared any documents with you.

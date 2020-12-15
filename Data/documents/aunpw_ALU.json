@@ -1,0 +1,44 @@
+{
+    "circuitName": "ALU",
+    "ownerEmail": "a@b.c",
+    "components": {
+        "and": "std/and",
+        "or": "std/or",
+        "not": "std/not",
+        "nand": "std/nand",
+        "nor": "std/nor",
+        "xnor": "std/xnor",
+        "xor": "std/xor",
+        "buff": "std/buff",
+        "in": "std/in",
+        "out": "std/out",
+        "half_adder": "user(aunpw)/half_adder",
+        "full_adder": "user(aunpw)/full_adder"
+    },
+    "content": {
+        "0": {
+            "componentType": "and",
+            "position": [1, 1],
+            "inputs": [1, 2],
+            "outputs": [3]
+        },
+        "1": {
+            "componentType": "in",
+            "position": [0, 0],
+            "inputs": [],
+            "outputs": [0]
+        },
+        "2": {
+            "componentType": "in",
+            "position": [0, 1],
+            "inputs": [],
+            "outputs": [0]
+        },
+        "3": {
+            "componentType": "out",
+            "position": [3, 0],
+            "inputs": [0],
+            "outputs": []
+        }
+    }
+}

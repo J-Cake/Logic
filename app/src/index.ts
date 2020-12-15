@@ -47,7 +47,7 @@ export const manager: StateManager<State> = new StateManager<State>({
     dropObjects: [],
     mouse: {x: 0, y: 0},
     dragStart: {x: 0, y: 0},
-    themes: [Theme.Dark],
+    themes: [Theme.Light],
     debugger: debug
 });
 
@@ -55,7 +55,7 @@ new _p5(function (sketch: import('p5')) {
     sketch.setup = function () {
         sketch.createCanvas(window.innerWidth, window.innerHeight);
 
-        manager.setState(prev => ({
+        manager.setState(() => ({
             board: new Board(),
             font: sketch.loadFont("./font.ttf"),
             switchFrame: 0,
@@ -71,7 +71,7 @@ new _p5(function (sketch: import('p5')) {
         window.addEventListener("click", function () {
             const {dragStart, mouse} = manager.setState();
             if (Math.sqrt((dragStart.x - mouse.x) ** 2 + (dragStart.y - mouse.y) ** 2) <= 5) // Only if there are objects that aren't in a dragging state
-                manager.dispatch("click", prev => ({mouse: {x: sketch.mouseX, y: sketch.mouseY}}));
+                manager.dispatch("click", () => ({mouse: {x: sketch.mouseX, y: sketch.mouseY}}));
         })
 
         window.addEventListener("mousedown", function () {

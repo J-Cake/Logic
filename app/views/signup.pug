@@ -1,0 +1,16 @@
+extends index
+
+block content
+    form(action="/user/signup", method="post")
+        if err
+            span#err= err
+
+        input(name="email", type="email", placeholder="Email")
+        input(name="name", type="text", placeholder="Your name")
+
+        input(name="password", type="password", placeholder="Password")
+        input(name="passwordConfirm", type="password", placeholder="Confirm Password")
+
+        a(href="/user/login") Already have an account?
+
+        button(type="submit") Log In

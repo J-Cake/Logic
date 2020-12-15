@@ -1,0 +1,13 @@
+extends index
+
+block content
+    form(action="/user/login", method="post")
+        if err
+            span#err= err
+
+        input(name="email", type="email", placeholder="Email")
+        input(name="password", type="password", placeholder="Password")
+
+        a(href="/user/signup") Need an account?
+
+        button(type="submit") Log In

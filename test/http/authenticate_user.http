@@ -1,0 +1,21 @@
+POST http://localhost:2560/user/login
+Content-Type: application/json
+
+{
+    "email": "a@b.c",
+    "password": "password"
+}
+
+###
+
+POST http://localhost:2560/user/signup
+Content-Type: application/json
+
+{
+    "email": "a@b.c",
+    "name": "a",
+    "password": "password1",
+    "passwordConfirm": "password1"
+}
+
+###

@@ -30,7 +30,8 @@ create table documents
             primary key,
     documentTitle    text,
     public           boolean default false not null,
-    documentToken    text    default '' not null
+    documentToken    text    default '' not null,
+    created          date    default 0 not null
 );
 
 create unique index documents_documentId_uindex
@@ -38,7 +39,6 @@ create unique index documents_documentId_uindex
 
 create unique index documents_documentToken_uindex
     on documents (documentToken);
-
 
 -- auto-generated definition
 create table access
