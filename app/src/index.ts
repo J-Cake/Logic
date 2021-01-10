@@ -12,7 +12,8 @@ import {Interpolation} from './sys/util/interpolation';
 import Cursor from "./UI/cursor";
 import debug, {Debug} from "./Logic/Debug";
 import CircuitManager from "./CircuitManager";
-import {renderComponents} from "./UI/RenderComponent";
+import RenderComponent, {renderComponents} from "./UI/RenderComponent";
+import {GenComponent} from "./ComponentFetcher";
 
 declare global {
     interface Array<T> {
@@ -43,7 +44,14 @@ export interface State {
     cursor: Cursor,
     debugger: StateManager<Debug>,
     circuit: CircuitManager,
-    loading: boolean
+    loading: boolean,
+    keys: {
+        shift: boolean,
+        alt: boolean,
+        ctrl: boolean,
+        meta: boolean
+    },
+    renderedComponents: RenderComponent<GenComponent>[]
 }
 
 export const manager: StateManager<State> = new StateManager<State>({
@@ -58,27 +66,55 @@ export const manager: StateManager<State> = new StateManager<State>({
 });
 
 new _p5(function (sketch: import('p5')) {
-    sketch.setup = function () {
-        sketch.createCanvas(window.innerWidth, window.innerHeight);
+    sketch.setup = async function () {
 
-        renderComponents(manager.setState(() => ({
-            font: sketch.loadFont("/app/font.ttf"),
-            board: new Board(),
-            switchFrame: 0,
-            cursor: new Cursor(),
-            circuit: new CircuitManager($("#circuitToken").text())
-        })).circuit);
+        const container = $('#canvas-container');
+        $("#status-bar")
+            .css('background', `rgb(${getColour(Colour.SecondaryAccent)})`)
+            .css('color', `rgb(${getColour(Colour.Background)})`);
+
+        const canvas = sketch.createCanvas(container.width() ?? window.innerWidth, container.height() ?? window.innerHeight);
+        canvas.parent(container[0]);
+
+        const comps = manager.setState({
+            renderedComponents: await renderComponents(manager.setState(() => ({
+                font: sketch.loadFont("/app/font.ttf"),
+                board: new Board(),
+                switchFrame: 0,
+                cursor: new Cursor(),
+                circuit: new CircuitManager($("#circuitToken").text()),
+                keys: {
+                    shift: false,
+                    alt: false,
+                    ctrl: false,
+                    meta: false
+                }
+            })).circuit)
+        }).renderedComponents;
+
+        $(document).on('keyup keydown', e => manager.setState({
+            keys: {
+                shift: e.shiftKey ?? false,
+                ctrl: e.ctrlKey ?? false,
+                alt: e.altKey ?? false,
+                meta: e.metaKey ?? false
+            }
+        }));
 
         sketch.textFont(manager.setState().font);
 
         window.addEventListener("resize", function () {
-            sketch.resizeCanvas(window.innerWidth, window.innerHeight);
+            sketch.resizeCanvas(container.width() ?? window.innerWidth, container.height() ?? window.innerHeight);
         });
 
         window.addEventListener("click", function () {
-            const {dragStart, mouse} = manager.setState();
-            if (Math.sqrt((dragStart.x - mouse.x) ** 2 + (dragStart.y - mouse.y) ** 2) <= 5) // Only if there are objects that aren't in a dragging state
+            const {dragStart, mouse, keys} = manager.setState();
+
+            if (Math.sqrt((dragStart.x - mouse.x) ** 2 + (dragStart.y - mouse.y) ** 2) < 10) { // Only if there are objects that aren't in a dragging state
+                if (!keys.shift)
+                    comps.forEach(i => i.isSelected = false);
                 manager.dispatch("click", () => ({mouse: {x: sketch.mouseX, y: sketch.mouseY}}));
+            }
         })
 
         window.addEventListener("mousedown", function () {

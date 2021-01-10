@@ -33,11 +33,18 @@ export default abstract class Component {
         return l;
     }
 
+    getConnections(flip: boolean = false): [number, number] {
+        return flip ? [this.outputs.length, this.inputs.length] : [this.inputs.length, this.outputs.length];
+    }
+
     addInput(component: Component): number {
         const l = this.inputs.push(component);
         this.inputIndex.push(l);
-        this.update();
         return l;
+    }
+
+    addOutput(component: Component): number {
+        return component.outputs.push(component);
     }
 
     private getInputs(): boolean[] {

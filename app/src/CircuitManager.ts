@@ -42,8 +42,10 @@ export default class CircuitManager {
             }
 
             for (const [comp, obj] of Object.values(components))
-                for (const output of comp.outputs)
+                for (const output of comp.outputs) {
                     components[output][1].addInput(obj);
+                    components[output][1].addOutput(obj);
+                }
 
             this.state.setState({
                 availableComponents: availSync,

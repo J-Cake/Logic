@@ -19,3 +19,37 @@
 .hidden {
     display: none;
 }
+
+#body {
+    display: grid;
+
+    grid-template-rows: auto 1fr;
+
+    height: 100vh;
+    width: 100vw;
+}
+
+#body #toolbar {
+    grid-row: 1;
+    padding: 8px;
+}
+
+#body #canvas-container {
+    grid-row: 2;
+}
+
+#status-bar {
+    height: 26px;
+    font-size: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#status-bar > * {
+    display: flex;
+}
+
+#status-bar > * > * {
+    margin: 0 4px;
+}

@@ -16,25 +16,29 @@
     "content": {
         "0": {
             "identifier": "std/and",
-            "position": [1, 1],
+            "direction": 0,
+            "position": [1, 0],
             "inputs": [1, 2],
             "outputs": [3]
         },
         "1": {
             "identifier": "std/input",
+            "direction": 0,
             "position": [0, 0],
             "inputs": [],
             "outputs": [0]
         },
         "2": {
             "identifier": "std/input",
+            "direction": 0,
             "position": [0, 1],
             "inputs": [],
             "outputs": [0]
         },
         "3": {
             "identifier": "std/output",
-            "position": [3, 0],
+            "direction": 0,
+            "position": [2, 0],
             "inputs": [0],
             "outputs": []
         }

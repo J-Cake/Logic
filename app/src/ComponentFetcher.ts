@@ -15,6 +15,7 @@ export interface ApiComponent { // This is the shape of the component as receive
 
 export interface GenericComponent { // This is a classless representation of a component in use
     identifier: string,
+    direction: 0 | 1 | 2 | 3
     inputs?: number[],
     outputs: number[],
     position: [number, number]
