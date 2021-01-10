@@ -1,6 +1,9 @@
 import {Router} from 'express';
+
 import {verifyUser} from "../User";
 import sql from "../sql";
+
+import {reloadPort} from "./index";
 
 const router = Router();
 
@@ -37,7 +40,7 @@ router.get('/dashboard', async function (req, res) {
 });
 
 router.get('/edit/:circuit', function (req, res) {
-    res.render("app", {circuit: req.params.circuit});
+    res.render("app", {circuit: req.params.circuit, devMode: reloadPort });
 })
 
 export default router;

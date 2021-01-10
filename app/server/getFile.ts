@@ -1,5 +1,5 @@
 import Circuit from "./Circuit";
-import sql, {Users} from "./sql";
+import sql from "./sql";
 
 export type AccessTable = { documentId: number, userId: number, dateGranted: Date }[];
 export type DBUser = { userId: number, email: string, password: string, joined: Date, identifier: string, userToken: string };

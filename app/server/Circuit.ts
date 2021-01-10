@@ -4,22 +4,12 @@ import * as path from 'path';
 import sql from "./sql";
 import {DBDocument} from "./getFile";
 import {rootFn} from "./utils";
+import {GenericComponent} from "../src/ComponentFetcher";
 
-export type ComponentList = {
-    [name: string]: string
-}
-
-export type Component = {
-    inputs: number[],
-    outputs: number[],
-    position: [number, number],
-    componentType: keyof ComponentList
-}
-
-interface CircuitObj {
+export interface CircuitObj {
     circuitName: string,
-    content: { [id: string]: Component },
-    components: ComponentList,
+    content: { [id: string]: GenericComponent },
+    components: string[],
     ownerEmail: string
 }
 
@@ -30,7 +20,7 @@ export default class Circuit implements CircuitObj {
 
     constructor(documentId: number) {
         this.docId = documentId;
-        this.info = {circuitName: "", components: {}, content: {}, ownerEmail: ""};
+        this.info = {circuitName: "", components: [], content: {}, ownerEmail: ""};
 
         void this.fetchInfo(); // ignore promise
     }

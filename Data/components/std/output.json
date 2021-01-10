@@ -1,0 +1,7 @@
+{
+    "name": "Output",
+    "owner": null,
+    "inputLabels": ["o"],
+    "outputLabels": [],
+    "component": "/component/src/output.js"
+}

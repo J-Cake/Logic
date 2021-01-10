@@ -22,7 +22,8 @@
         "seedrandom": "^3.0.5",
         "source-map-support": "^0.5.19",
         "sqlite3": "^5.0.0",
-        "typescript": "^3.9.6"
+        "typescript": "^3.9.6",
+        "ws": "^7.4.2"
     },
     "devDependencies": {
         "@types/bcrypt": "^3.0.0",
@@ -37,6 +38,8 @@
         "@types/seedrandom": "^2.4.28",
         "@types/source-map-support": "^0.5.1",
         "@types/sqlite3": "^3.1.6",
+        "@types/ws": "^7.4.0",
+        "axios": "^0.21.1",
         "browserify": "^16.5.0",
         "express": "^4.17.1",
         "terser": "^5.0.0",

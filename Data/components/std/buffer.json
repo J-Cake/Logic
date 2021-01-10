@@ -1,0 +1,10 @@
+{
+    "name": "Buffer",
+    "owner": null,
+    "inputLabels": ["x"],
+    "outputLabels": ["x"],
+    "component": [
+        [[false], [false]],
+        [[true], [true]]
+    ]
+}

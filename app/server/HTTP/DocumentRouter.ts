@@ -37,18 +37,18 @@ router.get("/make", async function (req, res) {
     fs.writeFileSync(filePath, JSON.stringify({
         circuitName: name,
         ownerEmail: (await sql.sql_get<{email: string}>(`SELECT email from users where userToken == ?`, [userId])).email,
-        components: {
-            and: "std/and",
-            or: "std/or",
-            not: "std/not",
-            nand: "std/nand",
-            nor: "std/nor",
-            xnor: "std/xnor",
-            xor: "std/xor",
-            buff: "std/buff",
-            in: "std/in",
-            out: "std/out",
-        },
+        components: [
+            "std/and",
+            "std/or",
+            "std/not",
+            "std/nand",
+            "std/nor",
+            "std/xnor",
+            "std/xor",
+            "std/buffer",
+            "std/input",
+            "std/output"
+        ],
         content: {}
     }, null, 4));
 
@@ -58,6 +58,8 @@ router.get("/make", async function (req, res) {
 
     res.redirect(`/edit/${circuitToken}`);
 });
+
+// TODO: When creating circuits URL encode the file name in case user enters '/' and error occurs attempting to write to a directory that doesn't exist.
 
 router.get('/circuit/raw/:circuit', async function (req, res) {
     const userId: string = req.userId || "";

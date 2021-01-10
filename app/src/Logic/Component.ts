@@ -3,6 +3,8 @@ export default abstract class Component {
     private readonly inputNames: string[];
     private readonly outputNames: string[];
 
+    public readonly name: string;
+
     value: boolean[];
 
     private readonly outputs: Component[];
@@ -10,7 +12,7 @@ export default abstract class Component {
 
     private readonly inputIndex: number[];
 
-    protected constructor(inputs: string[], outputs: string[]) {
+    protected constructor(inputs: string[], outputs: string[], name: string) {
         this.inputNames = inputs;
         this.outputNames = outputs;
 
@@ -20,6 +22,7 @@ export default abstract class Component {
         this.inputIndex = [];
 
         this.value = new Array(outputs.length).fill(false);
+        this.name = name;
     }
 
     abstract computeOutputs(inputs: boolean[]): boolean[];

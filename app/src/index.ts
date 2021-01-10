@@ -1,3 +1,4 @@
+import * as $ from 'jquery';
 import * as _p5 from 'p5';
 import * as mousetrap from "mousetrap";
 
@@ -10,6 +11,8 @@ import Board from './sys/components/Board';
 import {Interpolation} from './sys/util/interpolation';
 import Cursor from "./UI/cursor";
 import debug, {Debug} from "./Logic/Debug";
+import CircuitManager from "./CircuitManager";
+import {renderComponents} from "./UI/RenderComponent";
 
 declare global {
     interface Array<T> {
@@ -38,7 +41,9 @@ export interface State {
     switchFrame: number, // The frame on which the theme was last switched
     frame: number,
     cursor: Cursor,
-    debugger: StateManager<Debug>
+    debugger: StateManager<Debug>,
+    circuit: CircuitManager,
+    loading: boolean
 }
 
 export const manager: StateManager<State> = new StateManager<State>({
@@ -48,19 +53,21 @@ export const manager: StateManager<State> = new StateManager<State>({
     mouse: {x: 0, y: 0},
     dragStart: {x: 0, y: 0},
     themes: [Theme.Light],
-    debugger: debug
+    debugger: debug,
+    loading: true
 });
 
 new _p5(function (sketch: import('p5')) {
     sketch.setup = function () {
         sketch.createCanvas(window.innerWidth, window.innerHeight);
 
-        manager.setState(() => ({
+        renderComponents(manager.setState(() => ({
+            font: sketch.loadFont("/app/font.ttf"),
             board: new Board(),
-            font: sketch.loadFont("./font.ttf"),
             switchFrame: 0,
-            cursor: new Cursor()
-        }));
+            cursor: new Cursor(),
+            circuit: new CircuitManager($("#circuitToken").text())
+        })).circuit);
 
         sketch.textFont(manager.setState().font);
 

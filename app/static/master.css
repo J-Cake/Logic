@@ -15,3 +15,7 @@
 :root, body {
     /*background: rgb(25, 30, 35);*/
 }
+
+.hidden {
+    display: none;
+}

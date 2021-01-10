@@ -1,0 +1,4 @@
+HEAD http://localhost:2560/api/reload-local
+Accept: application/json
+
+###

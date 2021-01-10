@@ -1,0 +1,12 @@
+{
+    "name": "Nand",
+    "owner": null,
+    "inputLabels": ["0", "1"],
+    "outputLabels": ["o"],
+    "component": [
+        [[false, false], [true]],
+        [[false, true], [true]],
+        [[true, false], [true]],
+        [[true, true], [false]]
+    ]
+}

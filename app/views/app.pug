@@ -1,6 +1,14 @@
 extends index
 
 block content
+    if circuit
+        span.hidden#circuitToken= circuit
+
+    if devMode
+        script.
+            console.log("Enabling Live-Reload");
+            new WebSocket(`ws://${window.location.hostname}:#{devMode}`).addEventListener('message', _ => location.reload());
+
     script.
         fetch('./app.js', {
             method: "HEAD"
@@ -8,7 +16,7 @@ block content
             if (res.ok)
                 document.body.appendChild((function () {
                     const script = document.createElement('script');
-                    script.setAttribute('src', './app.js');
+                    script.setAttribute('src', '/app/app.js');
                     script.addEventListener('load', function () {
                         if (window.init)
                             window.init(); // This is provided by the script once it has successfully loaded.
