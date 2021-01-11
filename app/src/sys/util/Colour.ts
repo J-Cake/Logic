@@ -3,8 +3,13 @@ import {Interpolation, map, constrain} from "./interpolation";
 import interpolate from "./interpolation";
 
 enum Colour {
+    Primary,
+    Danger,
+    Active,
+    Label,
     Accent,
     SecondaryAccent,
+
     Cursor,
     Blank,
     White,
@@ -22,9 +27,14 @@ export enum Theme {
 
 const themes: Record<Theme, () => Record<Colour, [number, number, number]>> = { // Here is a set of predefined colours.
     [Theme.Light]: () => ({
-        [Colour.Cursor]: [142, 169, 219],
+        [Colour.Primary]: [217, 217, 217],
+        [Colour.Danger]: [248, 203, 173],
+        [Colour.Active]: [255, 230, 153],
+        [Colour.Label]: [198, 224, 180],
         [Colour.Accent]: [142, 169, 219],
         [Colour.SecondaryAccent]: [91, 155, 213],
+
+        [Colour.Cursor]: [142, 169, 219],
         [Colour.White]: [255, 255, 255],
         [Colour.Black]: [25, 25, 25],
         [Colour.Panel]: [217, 217, 217],
@@ -32,9 +42,14 @@ const themes: Record<Theme, () => Record<Colour, [number, number, number]>> = { 
         [Colour.Blank]: [60, 65, 70]
     }),
     [Theme.Dark]: () => ({
-        [Colour.Cursor]: [142, 169, 219],
+        [Colour.Primary]: [217, 217, 217],
+        [Colour.Danger]: [248, 203, 173],
+        [Colour.Active]: [255, 230, 153],
+        [Colour.Label]: [198, 224, 180],
         [Colour.Accent]: [142, 169, 219],
         [Colour.SecondaryAccent]: [91, 155, 213],
+
+        [Colour.Cursor]: [142, 169, 219],
         [Colour.White]: [245, 245, 245],
         [Colour.Black]: [25, 25, 25],
         [Colour.Panel]: [60, 65, 70],

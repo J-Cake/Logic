@@ -27,7 +27,7 @@ export default class Board extends RenderObject {
             h: 0
         };
 
-        this.scl = 25;
+        this.scl = 35;
 
         manager.on("click", async ({mouse}) => {
 

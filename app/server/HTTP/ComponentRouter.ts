@@ -5,6 +5,7 @@ import {Router} from 'express';
 
 import sql from "../sql";
 import {rootFn} from "../utils";
+import ScriptRouter from "./ScriptRouter";
 
 const router = Router();
 
@@ -21,6 +22,8 @@ router.use(async function (req, res, next) {
 
     next();
 })
+
+router.use(ScriptRouter);
 
 router.get("/:componentToken", async function (req, res) {
     const component = await sql.sql_get<DBComponent>(`SELECT *

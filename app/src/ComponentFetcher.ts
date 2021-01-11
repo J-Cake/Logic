@@ -1,8 +1,15 @@
 import Component from "./Logic/Component";
 import {manager} from "./index";
+import RenderComponent from "./UI/RenderComponent";
 
 export type TruthTable = [boolean[], boolean[]][];
 export type Body = TruthTable | { [componentId: number]: GenericComponent } | string;
+
+export interface Plugin {
+    setComputeFn: (inputs: boolean[]) => boolean[],
+    onClick: (renderObj: RenderComponent<GenComponent>) => void,
+
+}
 
 export interface ApiComponent { // This is the shape of the component as received by the API
     token: string,
@@ -29,13 +36,11 @@ const compareArray: <T>(arr1: T[], arr2: T[]) => boolean = function <T>(arr1: T[
 
 export abstract class GenComponent extends Component {
     mapKey: string;
+
     protected constructor(mapKey: string, inputs: string[], outputs: string[], name: string) {
         super(inputs, outputs, name);
         this.mapKey = mapKey;
     }
-    // addInput(component: Component): number {
-    //
-    // }
 }
 
 export default async function fetchComponent(component: string): Promise<new(mapKey: string) => GenComponent> {
@@ -84,7 +89,7 @@ export default async function fetchComponent(component: string): Promise<new(map
                     this.memberComponents = memberComponents;
                 }
 
-                computeOutputs(inputs: boolean[]): boolean[] {
+                computeOutputs(inputs: boolean[]): boolean[] { // TODO: Evaluate stateful components
 
                     console.log(this.inputIds, this.outputIds);
 
@@ -94,8 +99,24 @@ export default async function fetchComponent(component: string): Promise<new(map
             }
         } else { // it's a dynamic component, the value is updated by a script located by the value of the string
             return class extends GenComponent {
+                plugin: Partial<Plugin>;
+
                 constructor(mapKey: string) {
                     super(mapKey, apiComponent.inputLabels, apiComponent.outputLabels, apiComponent.name);
+
+                    let plugin: Partial<Plugin> = {};
+                    const that = this;
+
+                    fetch(apiComponent.component as string).then(function (res) {
+                        return res.text().then(fn => plugin = new Function(fn)()(apiComponent)({ // wtf
+                            onClick: (callback: (renderObj: RenderComponent<GenComponent>) => void) => plugin.onClick = callback,
+                            setComputeFn: (callback: (inputs: boolean[]) => boolean[]) => plugin.setComputeFn = callback,
+                            update: () => that.update(),
+                            component: that
+                        }));
+                    });
+
+                    this.plugin = plugin;
                 }
 
                 computeOutputs(inputs: boolean[]): boolean[] {
@@ -103,6 +124,10 @@ export default async function fetchComponent(component: string): Promise<new(map
                     return [];
                 }
 
+                activate(renderer: RenderComponent<GenComponent>) {
+                    if (this.plugin.onClick)
+                        this.plugin.onClick(renderer);
+                }
             }
         }
     } else // The Component doesn't exist

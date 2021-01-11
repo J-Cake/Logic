@@ -23,7 +23,7 @@ export default class RenderComponent<C extends Component> extends RenderObject {
     size: [number, number];
 
     isSelected: boolean;
-    buff = 4;
+    buff = 6;
 
     constructor(component: C, props: RenderProps) {
         super();
@@ -97,6 +97,7 @@ export default class RenderComponent<C extends Component> extends RenderObject {
 
     onClick() {
         this.isSelected = true;
+        this.component.activate(this);
     }
 }
 
