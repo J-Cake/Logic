@@ -38,14 +38,17 @@ export default abstract class Component {
     }
 
     addInput(component: Component) {
-        component.outputs.push(this);
-        this.inputIndex.push(this.inputs.push(component));
+        this.inputs.push(component);
+        this.inputIndex.push(component.outputs.push(this) - 1);
     }
 
     update() { // THIS FUCKING FUNCTION TOOK ME FOREVER TO WRITE
-        this.out = this.computeOutputs(this.inputs.map((i, a) => i.out[this.inputIndex[a]]));
-        for (const out of this.outputs)
-            out.update();
+        const inputs = this.inputs.map((i, a) => i.out[this.inputIndex[a]]);
+        this.out = this.computeOutputs(inputs);
+
+        console.log(this.name, this.out);
+
+        this.outputs.forEach(i => i.update());
     }
 
     activate(renderer: RenderComponent<Component>) {

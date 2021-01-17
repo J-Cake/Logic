@@ -11,7 +11,7 @@ import UserRouter from "./UserRouter";
 import DocumentRouter from "./DocumentRouter";
 import ComponentRouter from "./ComponentRouter";
 import ApplicationRouter from './ApplicationRouter';
-import Res from './res';
+import ResourceRouter from './ResourceRouter';
 
 import {getTimeString, rootFn} from "../utils";
 import {liveReload} from "./util";
@@ -43,7 +43,7 @@ app.use("/component", ComponentRouter);
 app.use(DocumentRouter);
 app.use(ApplicationRouter);
 
-app.use("/res/", Res);
+app.use(ResourceRouter);
 
 export const port = Number(process.argv[2]) || 3500;
 

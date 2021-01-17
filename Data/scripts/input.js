@@ -1,7 +1,7 @@
 let value = false;
 
 component.onClick(function(renderObj) {
-    value = !value;
+    value = !value
     component.update();
 });
 

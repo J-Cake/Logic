@@ -50,7 +50,7 @@ export default class CircuitManager {
                 components: Object.values(components).map(i => i[1]),
                 componentMap: components,
                 document: loaded
-            });
+            }).components.forEach(i => i.update());
         }
     }
 

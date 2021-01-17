@@ -31,7 +31,37 @@ block content
 
     section#body
         div#toolbar
+            #file-box
+                button#save 
+                button#open 
+                button#new 
             input#document-name(placeholder="Document Name")
+            #tool-box
+                input(type="radio", name="tool", checked)#pointer
+                label(for="pointer") 
+
+                input(type="radio", name="tool")#select
+                label(for="select") 
+
+                input(type="radio", name="tool")#move
+                label(for="move") 
+
+                input(type="radio", name="tool")#wire
+                label(for="wire") 
+
+                input(type="radio", name="tool")#debug
+                label(for="debug") 
+
+                hr
+
+                button#add-component 
+                button#remove-component 
+                button#import-component 
+
+                hr
+
+                input(type="checkbox", name="panel-visibility")#panel-vis
+                label(for="panel-vis") 
 
         div#canvas-container
 

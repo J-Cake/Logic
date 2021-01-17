@@ -11,8 +11,6 @@ export default class Board extends RenderObject {
     pos: { x: number, y: number };
     size: { w: number, h: number };
 
-    scl: number;
-
     constructor() {
         super(true);
 
@@ -27,8 +25,6 @@ export default class Board extends RenderObject {
             h: 0
         };
 
-        this.scl = 35;
-
         manager.on("click", async ({mouse}) => {
 
         });
@@ -37,13 +33,16 @@ export default class Board extends RenderObject {
     private drawRulers(sketch: p5) {
         const rulerSize = 7;
 
+        const offset = this.padding + (manager.setState().sidebarIsLeft ? manager.setState().sidebarWidth : 0);
+        const scl = manager.setState().gridScale;
+
         sketch.fill(getColour(Colour.Panel));
         sketch.noStroke();
         sketch.rect(0, 0, sketch.width, rulerSize);
 
         sketch.strokeWeight(1);
         sketch.stroke(getColour(Colour.Blank));
-        for (let i = this.padding; i < sketch.width; i += this.scl)
+        for (let i = this.pos.x; i < sketch.width; i += scl)
             sketch.line(i + 0.5, 0, i + 0.5, rulerSize);
 
         sketch.fill(getColour(Colour.Panel));
@@ -52,7 +51,7 @@ export default class Board extends RenderObject {
 
         sketch.strokeWeight(1);
         sketch.stroke(getColour(Colour.Blank));
-        for (let j = this.padding; j < sketch.width; j += this.scl)
+        for (let j = this.padding; j < sketch.width; j += scl)
             sketch.line(0, j + 0.5, rulerSize, j + 0.5);
 
         sketch.strokeWeight(1);
@@ -64,27 +63,31 @@ export default class Board extends RenderObject {
         sketch.noStroke();
         sketch.fill(getColour(Colour.Panel, {duration: 30, type: Interpolation.linear}));
 
+        const offset = this.padding + (manager.setState().sidebarIsLeft ? manager.setState().sidebarWidth : 0);
+        const scl = manager.setState().gridScale;
+
         sketch.rect(this.pos.x, this.pos.y, this.size.w, this.size.h);
 
         this.drawRulers(sketch);
 
         sketch.strokeWeight(1);
         sketch.stroke(getColour(Colour.Background));
-        for (let i = this.scl; i < this.size.w; i += this.scl)
-            sketch.line(i + this.padding + 0.5, this.padding, i + this.padding + 0.5, this.size.h + this.padding); // +0.5 makes the lines sharper
+        for (let i = this.pos.x; i < this.size.w + this.pos.x; i += scl)
+            sketch.line(i + 0.5, this.pos.y, i + 0.5, this.pos.y + this.size.h); // +0.5 makes the lines sharper
 
-        for (let j = this.scl; j < this.size.h; j += this.scl)
-            sketch.line(this.padding, j + this.padding + 0.5, this.size.w + this.padding, j + this.padding + 0.5);
+        for (let j = this.pos.y; j < this.size.h + this.pos.y; j += scl)
+            sketch.line(this.pos.x, j + 0.5, this.pos.x + this.size.w, j + 0.5);
     }
 
     update(sketch: p5): void {
-        // const dimen = Math.min(sketch.width, sketch.height) - (2 * this.padding);
+        const state = manager.setState();
+
         this.size = {
-            w: sketch.width - 2 * this.padding,
+            w: sketch.width - 2 * this.padding - state.componentMenu.outlineSize[0],
             h: sketch.height - 2 * this.padding
         }
         this.pos = {
-            x: this.padding,
+            x: this.padding + (state.sidebarIsLeft ? state.componentMenu.outlineSize[0] : 0),
             y: this.padding
         }
     }

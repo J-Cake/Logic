@@ -4,7 +4,7 @@ import RenderObject from "../sys/components/RenderObject";
 import Component from "../Logic/Component";
 import CircuitManager from "../CircuitManager";
 import Colour, {getColour} from "../sys/util/Colour";
-import {manager} from "../index";
+import {manager, State} from "../index";
 import {GenComponent} from "../ComponentFetcher";
 
 export interface RenderProps {
@@ -37,9 +37,17 @@ export default class RenderComponent<C extends Component> extends RenderObject {
         this.isSelected = false;
 
         manager.on('click', prev => {
-            if (prev.mouse.x > this.pos[0] && prev.mouse.x < this.pos[0] + this.size[0] && prev.mouse.y > this.pos[1] && prev.mouse.y < this.pos[1] + this.size[1])
+            if (this.isWithinBounds(prev))
                 this.onClick();
         });
+        manager.on("select", prev => {
+            if (this.isWithinBounds(prev))
+                this.isSelected = true;
+        })
+    }
+
+    isWithinBounds(prev: State): boolean {
+        return prev.mouse.x > this.pos[0] && prev.mouse.x < this.pos[0] + this.size[0] && prev.mouse.y > this.pos[1] && prev.mouse.y < this.pos[1] + this.size[1];
     }
 
     clean(): void {
@@ -47,9 +55,9 @@ export default class RenderComponent<C extends Component> extends RenderObject {
 
     render(sketch: p5): void {
         sketch.strokeWeight(1);
-        sketch.stroke(getColour(this.isSelected ? Colour.Cursor : Colour.Blank));
+        sketch.stroke(getColour(this.isSelected ? Colour.Cursor : (!this.component.out.includes(false) ? Colour.Active : Colour.Blank)));
 
-        const {scl} = manager.setState().board;
+        const {gridScale: scl} = manager.setState();
         const [inputNum, outputNum] = this.component.getConnections(this.props.direction > 1);
 
         if (this.props.direction % 2 === 0) {
@@ -86,9 +94,9 @@ export default class RenderComponent<C extends Component> extends RenderObject {
 
     protected update(sketch: p5): void {
         const [inputNum, outputNum] = this.component.getConnections();
-        const {scl, padding} = manager.setState().board;
+        const {gridScale: scl, board: {padding, pos: boardPos}} = manager.setState();
 
-        const pos: [number, number] = [this.props.pos[0] * scl + padding + 0.5 + this.buff, this.props.pos[1] * scl + padding + 0.5 + this.buff];
+        const pos: [number, number] = [this.props.pos[0] * scl + 0.5 + this.buff + boardPos.x, this.props.pos[1] * scl + padding + 0.5 + this.buff];
         const size: [number, number] = [Math.max(1, Math.min(inputNum, outputNum)) * scl - 2 * this.buff, Math.max(inputNum, outputNum, 1) * scl - 2 * this.buff];
 
         this.pos = pos;
@@ -96,7 +104,6 @@ export default class RenderComponent<C extends Component> extends RenderObject {
     }
 
     onClick() {
-        this.isSelected = true;
         this.component.activate(this);
     }
 }

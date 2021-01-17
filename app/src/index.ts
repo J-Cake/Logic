@@ -6,7 +6,7 @@ import RenderObject from './sys/components/RenderObject';
 import StateManager from "./sys/util/stateManager";
 import DragObject from "./sys/components/DragObject";
 import DropObject from "./sys/components/DropObject";
-import Colour, {getColour, Theme} from "./sys/util/Colour";
+import Colour, {getColour, rgb, Theme, themes} from "./sys/util/Colour";
 import Board from './sys/components/Board';
 import {Interpolation} from './sys/util/interpolation';
 import Cursor from "./UI/cursor";
@@ -14,6 +14,9 @@ import debug, {Debug} from "./Logic/Debug";
 import CircuitManager from "./CircuitManager";
 import RenderComponent, {renderComponents} from "./UI/RenderComponent";
 import {GenComponent} from "./ComponentFetcher";
+import * as events from "events";
+import handleEvents from "./UI/events";
+import ComponentMenu from "./UI/ComponentMenu";
 
 declare global {
     interface Array<T> {
@@ -24,8 +27,17 @@ Array.prototype.last = function (i: number = 0) {
     return this[this.length - (Math.max(i, 0) + 1)];
 }
 
+export enum Tool {
+    Pointer,
+    Select,
+    Move,
+    Wire,
+    Debug
+}
+
 export interface State {
     board: Board,
+    componentMenu: ComponentMenu,
     mouseDown: boolean,
     dragObjects: DragObject[],
     mouse: {
@@ -45,13 +57,19 @@ export interface State {
     debugger: StateManager<Debug>,
     circuit: CircuitManager,
     loading: boolean,
+    tool: Tool,
     keys: {
         shift: boolean,
         alt: boolean,
         ctrl: boolean,
         meta: boolean
     },
-    renderedComponents: RenderComponent<GenComponent>[]
+    renderedComponents: RenderComponent<GenComponent>[],
+    canvas: JQuery,
+    p5Canvas: _p5.Renderer,
+    sidebarWidth: number,
+    sidebarIsLeft: boolean,
+    gridScale: number
 }
 
 export const manager: StateManager<State> = new StateManager<State>({
@@ -60,27 +78,41 @@ export const manager: StateManager<State> = new StateManager<State>({
     dropObjects: [],
     mouse: {x: 0, y: 0},
     dragStart: {x: 0, y: 0},
-    themes: [Theme.Light],
+    themes: [Theme.DarkRed],
     debugger: debug,
-    loading: true
+    gridScale: 35,
+    loading: true,
+    sidebarIsLeft: true
 });
 
 new _p5(function (sketch: import('p5')) {
     sketch.setup = async function () {
+        const root = $(":root");
+        const colours: Record<Colour, rgb> = themes[manager.setState().themes.last()]();
+        for (const i in colours)
+            root.css(`--${Colour[Number(i) as Colour].toLowerCase()}`, `rgb(${getColour(Number(i)).join(', ')})`);
 
         const container = $('#canvas-container');
         $("#status-bar")
             .css('background', `rgb(${getColour(Colour.SecondaryAccent)})`)
             .css('color', `rgb(${getColour(Colour.Background)})`);
 
-        const canvas = sketch.createCanvas(container.width() ?? window.innerWidth, container.height() ?? window.innerHeight);
-        canvas.parent(container[0]);
+        const p5Canvas = sketch.createCanvas(container.width() ?? window.innerWidth, container.height() ?? window.innerHeight);
+        p5Canvas.parent(container[0]);
 
-        const comps = manager.setState({
+        const {canvas} = manager.setState({
+            p5Canvas: p5Canvas,
+            canvas: $(p5Canvas.elt)
+        });
+
+        handleEvents(canvas, sketch, manager.setState(({
             renderedComponents: await renderComponents(manager.setState(() => ({
                 font: sketch.loadFont("/app/font.ttf"),
                 board: new Board(),
+                componentMenu: new ComponentMenu(),
+                sidebarWidth: 6,
                 switchFrame: 0,
+                tool: Tool.Pointer,
                 cursor: new Cursor(),
                 circuit: new CircuitManager($("#circuitToken").text()),
                 keys: {
@@ -90,62 +122,9 @@ new _p5(function (sketch: import('p5')) {
                     meta: false
                 }
             })).circuit)
-        }).renderedComponents;
-
-        $(document).on('keyup keydown', e => manager.setState({
-            keys: {
-                shift: e.shiftKey ?? false,
-                ctrl: e.ctrlKey ?? false,
-                alt: e.altKey ?? false,
-                meta: e.metaKey ?? false
-            }
-        }));
+        })).renderedComponents);
 
         sketch.textFont(manager.setState().font);
-
-        window.addEventListener("resize", function () {
-            sketch.resizeCanvas(container.width() ?? window.innerWidth, container.height() ?? window.innerHeight);
-        });
-
-        window.addEventListener("click", function () {
-            const {dragStart, mouse, keys} = manager.setState();
-
-            if (Math.sqrt((dragStart.x - mouse.x) ** 2 + (dragStart.y - mouse.y) ** 2) < 10) { // Only if there are objects that aren't in a dragging state
-                if (!keys.shift)
-                    comps.forEach(i => i.isSelected = false);
-                manager.dispatch("click", () => ({mouse: {x: sketch.mouseX, y: sketch.mouseY}}));
-            }
-        })
-
-        window.addEventListener("mousedown", function () {
-            manager.setState({
-                dragStart: {x: sketch.mouseX, y: sketch.mouseY}
-            });
-        });
-
-        window.addEventListener("mousemove", function () { // Call MouseDown only after traveling a minimum distance
-            const {dragStart, mouse} = manager.setState();
-            if (Math.sqrt((dragStart.x - mouse.x) ** 2 + (dragStart.y - mouse.y) ** 2) > 5)
-                if (!manager.setState().dragObjects.find(i => i.isDragging))
-                    manager.dispatch("mouseDown", {
-                        mouse
-                    });
-        });
-
-        window.addEventListener("mouseup", function () {
-            manager.dispatch("mouseUp", {
-                mouseDown: true
-            })
-        });
-
-        manager.on("restart", function () {
-            manager.setState().board.reset();
-            RenderObject.print();
-        });
-
-        mousetrap.bind("enter", () => manager.broadcast("enter"));
-
-        manager.broadcast("turnChange");
     }
 
     sketch.draw = function () {

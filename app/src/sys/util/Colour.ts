@@ -9,52 +9,69 @@ enum Colour {
     Label,
     Accent,
     SecondaryAccent,
-
     Cursor,
-    Blank,
-    White,
-    Black,
     Panel,
     Background,
+    Blank
 }
 
 export default Colour;
 
 export enum Theme {
-    Light,
-    Dark
+    White,
+    DarkBlue,
+    DarkRed,
+    DarkOrange,
 }
 
-const themes: Record<Theme, () => Record<Colour, [number, number, number]>> = { // Here is a set of predefined colours.
-    [Theme.Light]: () => ({
+export const themes: Record<Theme, () => Record<Colour, [number, number, number]>> = { // Here is a set of predefined colours.
+    [Theme.White]: () => ({
         [Colour.Primary]: [217, 217, 217],
         [Colour.Danger]: [248, 203, 173],
         [Colour.Active]: [255, 230, 153],
         [Colour.Label]: [198, 224, 180],
         [Colour.Accent]: [142, 169, 219],
         [Colour.SecondaryAccent]: [91, 155, 213],
-
         [Colour.Cursor]: [142, 169, 219],
-        [Colour.White]: [255, 255, 255],
-        [Colour.Black]: [25, 25, 25],
         [Colour.Panel]: [217, 217, 217],
         [Colour.Background]: [255, 255, 255],
         [Colour.Blank]: [60, 65, 70]
     }),
-    [Theme.Dark]: () => ({
-        [Colour.Primary]: [217, 217, 217],
-        [Colour.Danger]: [248, 203, 173],
-        [Colour.Active]: [255, 230, 153],
+    [Theme.DarkBlue]: () => ({
+        [Colour.Primary]: [85, 85, 85],
+        [Colour.Danger]: [125, 20, 20],
+        [Colour.Active]: [14, 92, 175],
         [Colour.Label]: [198, 224, 180],
         [Colour.Accent]: [142, 169, 219],
         [Colour.SecondaryAccent]: [91, 155, 213],
-
         [Colour.Cursor]: [142, 169, 219],
-        [Colour.White]: [245, 245, 245],
-        [Colour.Black]: [25, 25, 25],
-        [Colour.Panel]: [60, 65, 70],
-        [Colour.Background]: [25, 30, 35],
-        [Colour.Blank]: [235, 235, 235]
+        [Colour.Panel]: [0, 0, 0],
+        [Colour.Background]: [0x25, 0x25, 0x25],
+        [Colour.Blank]: [0xba, 0xba, 0xba]
+    }),
+    [Theme.DarkRed]: () => ({
+        [Colour.Primary]: [85, 85, 85],
+        [Colour.Danger]: [125, 20, 20],
+        [Colour.Active]: [142, 44, 49],
+        [Colour.Label]: [198, 224, 180],
+        [Colour.Accent]: [198, 11, 83],
+        [Colour.SecondaryAccent]: [109, 10, 48],
+        [Colour.Cursor]: [142, 5, 12],
+        [Colour.Panel]: [0, 0, 0],
+        [Colour.Background]: [0x25, 0x25, 0x25],
+        [Colour.Blank]: [0xba, 0xba, 0xba]
+    }),
+    [Theme.DarkOrange]: () => ({
+        [Colour.Primary]: [85, 85, 85],
+        [Colour.Danger]: [125, 20, 20],
+        [Colour.Active]: [142, 44, 49],
+        [Colour.Label]: [198, 224, 180],
+        [Colour.Accent]: [198, 11, 83],
+        [Colour.SecondaryAccent]: [109, 10, 48],
+        [Colour.Cursor]: [0x8e, 0x58, 0x2c],
+        [Colour.Panel]: [0, 0, 0],
+        [Colour.Background]: [0x25, 0x25, 0x25],
+        [Colour.Blank]: [0xba, 0xba, 0xba]
     })
 }
 
@@ -70,7 +87,7 @@ export function interpolateColour(frame: number, endFrame: number, colour1: rgb,
     ];
 }
 
-export function getColour(colour: Colour, interpolation?: {duration: number, type?: Interpolation}): rgb {
+export function getColour(colour: Colour, interpolation?: { duration: number, type?: Interpolation }): rgb {
     const colours: Record<Colour, rgb> = themes[manager.setState().themes.last()]();
 
     if (interpolation) { // colour interpolation - smooth transition between colours.

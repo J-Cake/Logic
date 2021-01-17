@@ -53,13 +53,17 @@ export default async function fetchComponent(component: string): Promise<new(map
             return class extends GenComponent {
                 constructor(mapKey: string) {
                     super(mapKey, apiComponent.inputLabels, apiComponent.outputLabels, apiComponent.name);
+                    this.update();
                 }
 
                 computeOutputs(inputs: boolean[]): boolean[] {
-                    for (const inputSet of apiComponent.component as TruthTable)
-                        if (compareArray<boolean>(inputSet[0], inputs))
-                            return inputSet[1];
-                    return apiComponent.outputLabels.map(_ => false);
+                    // console.log(this.name, inputs);
+                    return ((inputs: boolean[]) => {
+                        for (const inputSet of apiComponent.component as TruthTable)
+                            if (compareArray<boolean>(inputSet[0], inputs))
+                                return inputSet[1];
+                        return [];
+                    })(inputs);
                 }
             }
         } else if (typeof apiComponent.component === "object") { // it's a stateful component
@@ -87,12 +91,11 @@ export default async function fetchComponent(component: string): Promise<new(map
                     }
 
                     this.memberComponents = memberComponents;
+
+                    this.update();
                 }
 
                 computeOutputs(inputs: boolean[]): boolean[] { // TODO: Evaluate stateful components
-
-                    console.log(this.inputIds, this.outputIds);
-
                     return [];
                 }
 
@@ -105,22 +108,23 @@ export default async function fetchComponent(component: string): Promise<new(map
                     super(mapKey, apiComponent.inputLabels, apiComponent.outputLabels, apiComponent.name);
 
                     let plugin: Partial<Plugin> = {};
-                    const that = this;
 
-                    fetch(apiComponent.component as string).then(function (res) {
+                    fetch(apiComponent.component as string).then(res => {
                         return res.text().then(fn => plugin = new Function(fn)()(apiComponent)({ // wtf
                             onClick: (callback: (renderObj: RenderComponent<GenComponent>) => void) => plugin.onClick = callback,
                             setComputeFn: (callback: (inputs: boolean[]) => boolean[]) => plugin.setComputeFn = callback,
-                            update: () => that.update(),
-                            component: that
+                            update: () => this.update(),
+                            component: this
                         }));
-                    });
+                    }).then(() => this.update());
 
                     this.plugin = plugin;
                 }
 
                 computeOutputs(inputs: boolean[]): boolean[] {
                     // TODO: Offload computation to external script object
+                    if (this.plugin && this.plugin.setComputeFn)
+                        return this.plugin.setComputeFn(inputs);
                     return [];
                 }
 
