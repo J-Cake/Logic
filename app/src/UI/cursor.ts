@@ -1,7 +1,8 @@
 import * as p5 from "p5";
 import RenderObject from "../sys/components/RenderObject";
 import {manager, Tool} from "../index";
-import Colour, {getColour, transparent} from "../sys/util/Colour";
+import {getColour, transparent} from "../sys/util/Colour";
+import Colour from "../sys/util/Themes";
 
 export default class Cursor extends RenderObject {
 

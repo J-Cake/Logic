@@ -1,0 +1,38 @@
+doctype html
+html
+    head
+        link(rel="stylesheet", href="/app/ui.css")
+        title Components
+
+        if devMode
+            script.
+                console.log("Enabling Live-Reload");
+                new WebSocket(`ws://${window.location.hostname}:#{devMode}`).addEventListener('message', _ => location.reload());
+    body
+        #toolbar
+            button#find-component 
+            button#search 
+        section#components
+            each component in components
+                div.component
+                    span.name= component
+                    .controls
+                        button.info 
+                        button.remove 
+
+        script.
+            fetch('/app/comps.js', {
+                method: "HEAD"
+            }).then(function (res) {
+                if (res.ok)
+                    document.body.appendChild((function () {
+                        const script = document.createElement('script');
+                        script.id = "scr";
+                        script.setAttribute('src', '/app/comps.js');
+                        return script;
+                    })());
+                else {
+                    alert('The build has not finished yet. Please wait until the build finishes.')
+                    window.location.reload();
+                }
+            });

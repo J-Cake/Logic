@@ -35,6 +35,11 @@ block content
                 button#save 
                 button#open 
                 button#new 
+            hr
+            #controls
+                button#undo 
+                button#redo 
+                button#history 
             input#document-name(placeholder="Document Name")
             #tool-box
                 input(type="radio", name="tool", checked)#pointer
@@ -54,7 +59,8 @@ block content
 
                 hr
 
-                button#add-component 
+                input(type="checkbox")#add-component
+                label(for="add-component") 
                 button#remove-component 
                 button#import-component 
 

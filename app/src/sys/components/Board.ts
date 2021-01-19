@@ -1,9 +1,11 @@
 import * as p5 from 'p5';
 
 import RenderObject from './RenderObject';
-import Colour, {getColour} from "../util/Colour";
+import {getColour} from "../util/Colour";
 import {Interpolation} from "../util/interpolation";
 import {manager} from '../../index';
+import {CircuitManagerState} from "../../CircuitManager";
+import Colour from "../util/Themes";
 
 export default class Board extends RenderObject {
     padding: number;
@@ -28,6 +30,11 @@ export default class Board extends RenderObject {
         manager.on("click", async ({mouse}) => {
 
         });
+    }
+
+    getMouseGridCoords(mouse: [number, number]): [number, number] {
+        const scl = manager.setState().gridScale;
+        return [Math.floor((mouse[0] - this.pos.x) / scl), Math.floor((mouse[1] - this.pos.y) / scl)];
     }
 
     private drawRulers(sketch: p5) {
@@ -77,6 +84,19 @@ export default class Board extends RenderObject {
 
         for (let j = this.pos.y; j < this.size.h + this.pos.y; j += scl)
             sketch.line(this.pos.x, j + 0.5, this.pos.x + this.size.w, j + 0.5);
+
+        const managerState: CircuitManagerState = manager.setState().circuit.state.setState();
+        if (managerState.document && managerState.document.wires)
+            for (const wire of managerState.document.wires) {
+                const {board, gridScale} = manager.setState();
+
+                sketch.stroke(getColour(Colour.Blank));
+                sketch.strokeWeight(1);
+                sketch.beginShape();
+                for (const coords of wire)
+                    sketch.vertex(board.pos.x + coords[0] * gridScale + gridScale / 2, board.pos.y + coords[1] * gridScale + gridScale / 2 + 0.5);
+                sketch.endShape();
+            }
     }
 
     update(sketch: p5): void {

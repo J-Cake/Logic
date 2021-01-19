@@ -41,7 +41,7 @@
     flex-direction: row;
 }
 
-#file-box, #tool-box {
+#file-box, #controls, #tool-box {
     display: flex;
     flex-direction: row;
 }
@@ -103,7 +103,8 @@ canvas {
 
 #toolbar input {
     padding: 3px 8px;
-    min-width: 512px;
+    flex: 1;
+    max-width: 520px;
     border: none;
     border-bottom: 2px solid var(--panel);
     transition: border-color 0.3s;

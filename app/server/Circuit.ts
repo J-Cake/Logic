@@ -10,7 +10,8 @@ export interface CircuitObj {
     circuitName: string,
     content: { [id: string]: GenericComponent },
     components: string[],
-    ownerEmail: string
+    ownerEmail: string,
+    wires: [number, number][][]
 }
 
 export default class Circuit implements CircuitObj {
@@ -20,7 +21,7 @@ export default class Circuit implements CircuitObj {
 
     constructor(documentId: number) {
         this.docId = documentId;
-        this.info = {circuitName: "", components: [], content: {}, ownerEmail: ""};
+        this.info = {circuitName: "", components: [], content: {}, ownerEmail: "", wires: []};
 
         void this.fetchInfo(); // ignore promise
     }
@@ -32,6 +33,10 @@ export default class Circuit implements CircuitObj {
 
         if (physicalLocation)
             this.info = JSON.parse(fs.readFileSync(path.join(rootFn(process.cwd()), 'Data', 'documents', physicalLocation)).toString()) as CircuitObj;
+    }
+
+    get wires() {
+        return this.info.wires;
     }
 
     get circuitName() {

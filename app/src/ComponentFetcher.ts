@@ -35,11 +35,11 @@ const compareArray: <T>(arr1: T[], arr2: T[]) => boolean = function <T>(arr1: T[
 }
 
 export abstract class GenComponent extends Component {
-    mapKey: string;
+    documentComponentKey: string;
 
-    protected constructor(mapKey: string, inputs: string[], outputs: string[], name: string) {
+    protected constructor(documentComponentKey: string, inputs: string[], outputs: string[], name: string) {
         super(inputs, outputs, name);
-        this.mapKey = mapKey;
+        this.documentComponentKey = documentComponentKey;
     }
 }
 
@@ -51,13 +51,13 @@ export default async function fetchComponent(component: string): Promise<new(map
 
         if (apiComponent.component.constructor.name === "Array") { // it's a truth table
             return class extends GenComponent {
-                constructor(mapKey: string) {
-                    super(mapKey, apiComponent.inputLabels, apiComponent.outputLabels, apiComponent.name);
+                constructor(documentComponentKey: string) {
+                    console.log("Map Key:", documentComponentKey);
+                    super(documentComponentKey, apiComponent.inputLabels, apiComponent.outputLabels, apiComponent.name);
                     this.update();
                 }
 
                 computeOutputs(inputs: boolean[]): boolean[] {
-                    // console.log(this.name, inputs);
                     return ((inputs: boolean[]) => {
                         for (const inputSet of apiComponent.component as TruthTable)
                             if (compareArray<boolean>(inputSet[0], inputs))
@@ -72,8 +72,8 @@ export default async function fetchComponent(component: string): Promise<new(map
                 private readonly inputIds: number[] = [];
                 private readonly outputIds: number[] = [];
 
-                constructor(mapKey: string) {
-                    super(mapKey, apiComponent.inputLabels, apiComponent.outputLabels, apiComponent.name);
+                constructor(documentComponentKey: string) {
+                    super(documentComponentKey, apiComponent.inputLabels, apiComponent.outputLabels, apiComponent.name);
 
                     const availComponents = manager.setState().circuit.state.setState().availableComponents;
 
@@ -104,8 +104,8 @@ export default async function fetchComponent(component: string): Promise<new(map
             return class extends GenComponent {
                 plugin: Partial<Plugin>;
 
-                constructor(mapKey: string) {
-                    super(mapKey, apiComponent.inputLabels, apiComponent.outputLabels, apiComponent.name);
+                constructor(documentComponentKey: string) {
+                    super(documentComponentKey, apiComponent.inputLabels, apiComponent.outputLabels, apiComponent.name);
 
                     let plugin: Partial<Plugin> = {};
 

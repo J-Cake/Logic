@@ -1,0 +1,89 @@
+@font-face {
+    font-family: Remix;
+    src: url('/app/remixicon.woff2');
+}
+
+:root, * {
+    padding: 0;
+    margin: 0;
+    position: relative;
+    box-sizing: border-box !important;
+    outline: none;
+
+    user-select: none;
+
+    font-family: 'Montserrat', sans-serif;
+
+    overflow: hidden;
+}
+
+:root, body {
+    background: var(--background);
+}
+
+button, input, .icon {
+    color: var(--blank);
+    width: 34px;
+    height: 34px;
+    border-radius: 3px;
+    display: flex;
+    border: none;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0);
+    transition-duration: 0.3s;
+    transition-property: background, color;
+    margin: 0 3px;
+    font-family: Remix;
+    font-size: 16pt;
+}
+
+*:focus {
+    background: var(--panel);
+}
+
+button:active {
+    background: var(--active);
+}
+
+#components {
+    max-width: 1000px;
+    /*background: var(--background);*/
+    padding: 24px;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    overflow-y: auto;
+    max-height: 650px;
+}
+
+#components span {
+    min-width: 180px;
+}
+
+.component {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
+    color: var(--blank);
+    align-items: center;
+    min-width: 180px;
+    max-width: 100%;
+    padding: 0 6px;
+    background: var(--background);
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+.component:hover, .component:focus {
+    background: var(--panel);
+}
+
+.controls {
+    display: flex;
+}
+#toolbar {
+    display: flex;
+}

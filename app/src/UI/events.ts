@@ -6,6 +6,10 @@ import RenderObject from "../sys/components/RenderObject";
 import {manager, Tool} from "../index";
 import RenderComponent from "./RenderComponent";
 import {GenComponent} from "../ComponentFetcher";
+import {closeAll, Dialog, setVisible} from "./DialogManager";
+import StateManager from "../sys/util/stateManager";
+import type {State} from "../../componentMenu";
+import buildComponentPrompt, {addComponent} from "./ComponentLifecycle";
 
 export default function handleEvents(canvas: JQuery, sketch: p5, comps: RenderComponent<GenComponent>[]) {
     const container = $('#canvas-container');
@@ -37,7 +41,10 @@ export default function handleEvents(canvas: JQuery, sketch: p5, comps: RenderCo
         sketch.resizeCanvas(container.width() ?? window.innerWidth, container.height() ?? window.innerHeight);
     });
 
-    // window.addEventListener('beforeunload', e => e.returnValue = `There may be unsaved changes. Are you sure you wish to leave?`);
+    window.addEventListener('beforeunload', function (e) {
+        new Promise(() => closeAll());
+        e.returnValue = `There may be unsaved changes. Are you sure you wish to leave?`;
+    });
 
     canvas.on("click", function () {
         const {dragStart, mouse, keys, tool} = manager.setState();
@@ -54,6 +61,9 @@ export default function handleEvents(canvas: JQuery, sketch: p5, comps: RenderCo
     })
 
     canvas.on("mousedown", function () {
+        const {tool} = manager.setState();
+        if (tool === Tool.Move)
+            manager.dispatch('mouse-grab', () => ({mouse: {x: sketch.mouseX, y: sketch.mouseY}}))
         manager.setState({
             dragStart: {x: sketch.mouseX, y: sketch.mouseY}
         });
@@ -69,9 +79,12 @@ export default function handleEvents(canvas: JQuery, sketch: p5, comps: RenderCo
     });
 
     canvas.on("mouseup", function () {
+        const {tool} = manager.setState();
+        if (tool === Tool.Move)
+            manager.dispatch("mouse-drop", () => ({mouse: {x: sketch.mouseX, y: sketch.mouseY}}));
         manager.dispatch("mouseUp", {
             mouseDown: true
-        })
+        });
     });
 
     manager.on("restart", function () {
@@ -82,4 +95,10 @@ export default function handleEvents(canvas: JQuery, sketch: p5, comps: RenderCo
     mousetrap.bind("enter", () => manager.broadcast("enter"));
 
     mousetrap.bind("ctrl+a", () => manager.setState().renderedComponents.forEach(i => i.isSelected = true));
+
+    mousetrap.bind("ctrl+1", () => $("#pointer").prop('checked', true));
+    mousetrap.bind("ctrl+2", () => $("#select").prop('checked', true));
+    mousetrap.bind("ctrl+3", () => $("#move").prop('checked', true));
+    mousetrap.bind("ctrl+4", () => $("#wire").prop('checked', true));
+    mousetrap.bind("ctrl+5", () => $("#debug").prop('checked', true));
 }

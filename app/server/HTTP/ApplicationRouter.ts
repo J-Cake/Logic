@@ -4,14 +4,13 @@ import {verifyUser} from "../User";
 import sql from "../sql";
 
 import {reloadPort} from "./index";
+import getFile from "../getFile";
 
 const router = Router();
 
 router.use(async function (req, res, next) {
     const userId = req.cookies.userId ?? req.header("userId");
     req.userId = userId;
-
-    console.log(userId);
 
     if (!userId || !await verifyUser(userId))
         res.redirect('/user/login');
@@ -41,6 +40,19 @@ router.get('/dashboard', async function (req, res) {
 
 router.get('/edit/:circuit', function (req, res) {
     res.render("app", {circuit: req.params.circuit, devMode: reloadPort });
+})
+
+router.get('/components/:circuit/', async function (req, res) {
+    const userId: string = req.userId || "";
+    const file = await getFile(userId, req.params.circuit);
+    await file?.fetchInfo();
+
+    if (file)
+        res.render("componentMenu", {components: file.components, devMode: reloadPort});
+    else {
+        res.status(403);
+        res.end('Access to the requested document was denied');
+    }
 })
 
 export default router;

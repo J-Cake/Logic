@@ -2,8 +2,8 @@ import RenderComponent from "../UI/RenderComponent";
 
 export default abstract class Component {
 
-    private readonly inputNames: string[];
-    private readonly outputNames: string[];
+    readonly inputNames: string[];
+    readonly outputNames: string[];
 
     public readonly name: string;
 
@@ -45,8 +45,6 @@ export default abstract class Component {
     update() { // THIS FUCKING FUNCTION TOOK ME FOREVER TO WRITE
         const inputs = this.inputs.map((i, a) => i.out[this.inputIndex[a]]);
         this.out = this.computeOutputs(inputs);
-
-        console.log(this.name, this.out);
 
         this.outputs.forEach(i => i.update());
     }

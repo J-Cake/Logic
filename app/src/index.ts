@@ -6,17 +6,20 @@ import RenderObject from './sys/components/RenderObject';
 import StateManager from "./sys/util/stateManager";
 import DragObject from "./sys/components/DragObject";
 import DropObject from "./sys/components/DropObject";
-import Colour, {getColour, rgb, Theme, themes} from "./sys/util/Colour";
 import Board from './sys/components/Board';
 import {Interpolation} from './sys/util/interpolation';
+import {getColour, rgb} from "./sys/util/Colour";
 import Cursor from "./UI/cursor";
 import debug, {Debug} from "./Logic/Debug";
 import CircuitManager from "./CircuitManager";
 import RenderComponent, {renderComponents} from "./UI/RenderComponent";
 import {GenComponent} from "./ComponentFetcher";
-import * as events from "events";
 import handleEvents from "./UI/events";
-import ComponentMenu from "./UI/ComponentMenu";
+import StatefulPreviewPane from "./UI/StatefulPreviewPane";
+import Action from "./Action";
+import Colour, {Theme, themes} from "./sys/util/Themes";
+import DialogManager, {Dialogs} from "./UI/DialogManager";
+import buildComponentPrompt from "./UI/ComponentLifecycle";
 
 declare global {
     interface Array<T> {
@@ -37,17 +40,9 @@ export enum Tool {
 
 export interface State {
     board: Board,
-    componentMenu: ComponentMenu,
+    componentMenu: StatefulPreviewPane,
     mouseDown: boolean,
     dragObjects: DragObject[],
-    mouse: {
-        x: number,
-        y: number
-    },
-    dragStart: {
-        x: number,
-        y: number
-    },
     dropObjects: DropObject[],
     themes: Theme[],
     font: _p5.Font,
@@ -58,18 +53,33 @@ export interface State {
     circuit: CircuitManager,
     loading: boolean,
     tool: Tool,
+    renderedComponents: RenderComponent<GenComponent>[],
+    canvas: JQuery,
+    p5Canvas: _p5.Renderer,
+    sidebarWidth: number,
+    sidebarIsLeft: boolean,
+    gridScale: number,
+    actionChain: Action[],
+    dialogManager: StateManager<Dialogs>,
+    documentIdentifier: string,
+    mouse: {
+        x: number,
+        y: number
+    },
+    p_mouse: {
+        x: number,
+        y: number
+    },
+    dragStart: {
+        x: number,
+        y: number
+    },
     keys: {
         shift: boolean,
         alt: boolean,
         ctrl: boolean,
         meta: boolean
     },
-    renderedComponents: RenderComponent<GenComponent>[],
-    canvas: JQuery,
-    p5Canvas: _p5.Renderer,
-    sidebarWidth: number,
-    sidebarIsLeft: boolean,
-    gridScale: number
 }
 
 export const manager: StateManager<State> = new StateManager<State>({
@@ -77,12 +87,15 @@ export const manager: StateManager<State> = new StateManager<State>({
     dragObjects: [],
     dropObjects: [],
     mouse: {x: 0, y: 0},
+    p_mouse: {x: 0, y: 0},
     dragStart: {x: 0, y: 0},
     themes: [Theme.DarkRed],
     debugger: debug,
     gridScale: 35,
     loading: true,
-    sidebarIsLeft: true
+    sidebarIsLeft: true,
+    actionChain: [],
+    dialogManager: DialogManager
 });
 
 new _p5(function (sketch: import('p5')) {
@@ -91,6 +104,8 @@ new _p5(function (sketch: import('p5')) {
         const colours: Record<Colour, rgb> = themes[manager.setState().themes.last()]();
         for (const i in colours)
             root.css(`--${Colour[Number(i) as Colour].toLowerCase()}`, `rgb(${getColour(Number(i)).join(', ')})`);
+
+        const documentId: string = $("#circuitToken").text();
 
         const container = $('#canvas-container');
         $("#status-bar")
@@ -107,14 +122,15 @@ new _p5(function (sketch: import('p5')) {
 
         handleEvents(canvas, sketch, manager.setState(({
             renderedComponents: await renderComponents(manager.setState(() => ({
-                font: sketch.loadFont("/app/font.ttf"),
+                font: sketch.loadFont("/app/font-2.ttf"),
                 board: new Board(),
-                componentMenu: new ComponentMenu(),
+                componentMenu: new StatefulPreviewPane(),
                 sidebarWidth: 6,
                 switchFrame: 0,
                 tool: Tool.Pointer,
                 cursor: new Cursor(),
-                circuit: new CircuitManager($("#circuitToken").text()),
+                documentIdentifier: documentId,
+                circuit: new CircuitManager(documentId),
                 keys: {
                     shift: false,
                     alt: false,
@@ -125,6 +141,8 @@ new _p5(function (sketch: import('p5')) {
         })).renderedComponents);
 
         sketch.textFont(manager.setState().font);
+
+        buildComponentPrompt();
     }
 
     sketch.draw = function () {
@@ -134,6 +152,10 @@ new _p5(function (sketch: import('p5')) {
             mouse: {
                 x: sketch.mouseX,
                 y: sketch.mouseY
+            },
+            p_mouse: {
+                x: sketch.pmouseX,
+                y: sketch.pmouseY
             },
             frame: sketch.frameCount,
             mouseDown: sketch.mouseIsPressed
