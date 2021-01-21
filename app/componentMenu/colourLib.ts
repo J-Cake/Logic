@@ -6,6 +6,5 @@ import {rgb} from "../src/sys/util/Colour";
 export {rgb, rgba} from '../src/sys/util/Colour';
 
 export default function getColour(this: StateManager<State>, colour: Colour): rgb {
-    const colours: Record<Colour, rgb> = themes[this.setState().themes.last()]();
-    return colours[colour];
+    return this.setState().theme[colour];
 }
