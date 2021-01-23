@@ -18,63 +18,63 @@
             "identifier": "std/and",
             "direction": 0,
             "position": [1, 0],
-            "inputs": [1, 2],
-            "outputs": [8]
+            "inputs": ["1", "2"],
+            "outputs": ["8"]
         },
         "1": {
             "identifier": "std/input",
             "direction": 0,
             "position": [0, 0],
             "inputs": [],
-            "outputs": [0]
+            "outputs": ["0"]
         },
         "2": {
             "identifier": "std/input",
             "direction": 0,
             "position": [0, 1],
             "inputs": [],
-            "outputs": [0]
+            "outputs": ["0"]
         },
         "4": {
             "identifier": "std/xor",
             "direction": 0,
             "position": [1, 2],
-            "inputs": [1, 2],
-            "outputs": [8]
+            "inputs": ["1", "2"],
+            "outputs": ["8"]
         },
         "5": {
             "identifier": "std/input",
             "direction": 0,
             "position": [0, 2],
             "inputs": [],
-            "outputs": [4]
+            "outputs": ["4"]
         },
         "6": {
             "identifier": "std/input",
             "direction": 0,
             "position": [0, 3],
             "inputs": [],
-            "outputs": [4]
+            "outputs": ["4"]
         },
         "8": {
             "identifier": "std/or",
             "direction": 0,
             "position": [3, 1],
-            "inputs": [0, 4],
-            "outputs": [9]
+            "inputs": ["0", "4"],
+            "outputs": ["9"]
         },
         "9": {
             "identifier": "std/not",
             "direction": 0,
             "position": [4, 1],
-            "inputs": [8],
-            "outputs": [10]
+            "inputs": ["8"],
+            "outputs": ["10"]
         },
         "10": {
             "identifier": "std/output",
             "direction": 0,
             "position": [5, 1],
-            "inputs": [9],
+            "inputs": ["9rem`"],
             "outputs": []
         }
     }

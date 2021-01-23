@@ -6,10 +6,7 @@ import RenderObject from "../sys/components/RenderObject";
 import {manager, Tool} from "../index";
 import RenderComponent from "./RenderComponent";
 import {GenComponent} from "../ComponentFetcher";
-import {closeAll, Dialog, setVisible} from "./DialogManager";
-import StateManager from "../sys/util/stateManager";
-import type {State} from "../../componentMenu";
-import buildComponentPrompt, {addComponent} from "./ComponentLifecycle";
+import {closeAll} from "./DialogManager";
 
 export default function handleEvents(canvas: JQuery, sketch: p5, comps: RenderComponent<GenComponent>[]) {
     const container = $('#canvas-container');

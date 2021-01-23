@@ -1,9 +1,9 @@
 -- auto-generated definition
-create table users
+create table if not exists users
 (
     userId     int             not null
-        constraint users_pk
-            primary key,
+    constraint users_pk
+    primary key,
     email      text            not null,
     password   text            not null,
     joined     date            not null,
@@ -12,19 +12,19 @@ create table users
 );
 
 create
-unique index "users_""email""_uindex"
+unique index if not exists "users_""email""_uindex"
     on users (email);
 
 create
-unique index "users_""userId""_uindex"
+unique index if not exists "users_""userId""_uindex"
     on users (userId);
 
 create
-unique index users_userToken_uindex
+unique index if not exists users_userToken_uindex
     on users (userToken);
 
 -- auto-generated definition
-create table documents
+create table if not exists documents
 (
     ownerId          int                   not null,
     physicalLocation text                  not null,
@@ -38,15 +38,15 @@ create table documents
 );
 
 create
-unique index documents_documentId_uindex
+unique index if not exists documents_documentId_uindex
     on documents (documentId);
 
 create
-unique index documents_documentToken_uindex
+unique index if not exists documents_documentToken_uindex
     on documents (documentToken);
 
 -- auto-generated definition
-create table access
+create table if not exists access
 (
     documentId  int  not null,
     userId      int  not null,
@@ -54,7 +54,7 @@ create table access
 );
 
 -- auto-generated definition
-create table components
+create table if not exists components
 (
     componentId    int  default 0  not null
         constraint components_pk
@@ -65,14 +65,11 @@ create table components
     componentToken text default '' not null
 );
 
-create
-unique index components_componentId_uindex
+create unique index if not exists components_componentId_uindex
     on components (componentId);
 
-create
-unique index components_componentToken_uindex
+create unique index if not exists components_componentToken_uindex
     on components (componentToken);
 
-create
-unique index components_location_uindex
-    on components (location);
+create unique index if not exists components_location_uindex
+on components (location);

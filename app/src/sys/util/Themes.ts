@@ -26,12 +26,12 @@ export const themes: Record<Theme, () => Record<Colour, rgb>> = { // Here is a s
     [Theme.White]: () => ({
         [Colour.Primary]: [217, 217, 217],
         [Colour.Danger]: [248, 203, 173],
-        [Colour.Active]: [255, 230, 153],
+        [Colour.Active]: [239, 166, 239],
         [Colour.Label]: [198, 224, 180],
         [Colour.Accent]: [142, 169, 219],
-        [Colour.SecondaryAccent]: [91, 155, 213],
+        [Colour.SecondaryAccent]: [255, 230, 153],
         [Colour.Cursor]: [142, 169, 219],
-        [Colour.Panel]: [217, 217, 217],
+        [Colour.Panel]: [0xEF, 0xEF, 0xEF],
         [Colour.Background]: [255, 255, 255],
         [Colour.Blank]: [60, 65, 70]
     }),

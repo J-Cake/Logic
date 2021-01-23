@@ -1,24 +1,17 @@
 import * as $ from 'jquery';
 import * as _p5 from 'p5';
-import * as mousetrap from "mousetrap";
 
+import {manager, Tool} from './State';
 import RenderObject from './sys/components/RenderObject';
-import StateManager from "./sys/util/stateManager";
-import DragObject from "./sys/components/DragObject";
-import DropObject from "./sys/components/DropObject";
 import Board from './sys/components/Board';
 import {Interpolation} from './sys/util/interpolation';
 import {getColour, rgb} from "./sys/util/Colour";
 import Cursor from "./UI/cursor";
-import debug, {Debug} from "./Logic/Debug";
 import CircuitManager from "./CircuitManager";
-import RenderComponent, {renderComponents} from "./UI/RenderComponent";
-import {GenComponent} from "./ComponentFetcher";
+import {renderComponents} from "./UI/RenderComponent";
 import handleEvents from "./UI/events";
 import StatefulPreviewPane from "./UI/StatefulPreviewPane";
-import Action from "./Action";
-import Colour, {Theme, themes} from "./sys/util/Themes";
-import DialogManager, {Dialogs} from "./UI/DialogManager";
+import Colour, {themes} from "./sys/util/Themes";
 import buildComponentPrompt from "./UI/ComponentLifecycle";
 
 declare global {
@@ -30,73 +23,7 @@ Array.prototype.last = function (i: number = 0) {
     return this[this.length - (Math.max(i, 0) + 1)];
 }
 
-export enum Tool {
-    Pointer,
-    Select,
-    Move,
-    Wire,
-    Debug
-}
-
-export interface State {
-    board: Board,
-    componentMenu: StatefulPreviewPane,
-    mouseDown: boolean,
-    dragObjects: DragObject[],
-    dropObjects: DropObject[],
-    themes: Theme[],
-    font: _p5.Font,
-    switchFrame: number, // The frame on which the theme was last switched
-    frame: number,
-    cursor: Cursor,
-    debugger: StateManager<Debug>,
-    circuit: CircuitManager,
-    loading: boolean,
-    tool: Tool,
-    renderedComponents: RenderComponent<GenComponent>[],
-    canvas: JQuery,
-    p5Canvas: _p5.Renderer,
-    sidebarWidth: number,
-    sidebarIsLeft: boolean,
-    gridScale: number,
-    actionChain: Action[],
-    dialogManager: StateManager<Dialogs>,
-    documentIdentifier: string,
-    mouse: {
-        x: number,
-        y: number
-    },
-    p_mouse: {
-        x: number,
-        y: number
-    },
-    dragStart: {
-        x: number,
-        y: number
-    },
-    keys: {
-        shift: boolean,
-        alt: boolean,
-        ctrl: boolean,
-        meta: boolean
-    },
-}
-
-export const manager: StateManager<State> = new StateManager<State>({
-    mouseDown: false,
-    dragObjects: [],
-    dropObjects: [],
-    mouse: {x: 0, y: 0},
-    p_mouse: {x: 0, y: 0},
-    dragStart: {x: 0, y: 0},
-    themes: [Theme.DarkRed],
-    debugger: debug,
-    gridScale: 35,
-    loading: true,
-    sidebarIsLeft: true,
-    actionChain: [],
-    dialogManager: DialogManager
-});
+export * from './State';
 
 new _p5(function (sketch: import('p5')) {
     sketch.setup = async function () {
