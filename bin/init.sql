@@ -56,22 +56,23 @@ create table access
 -- auto-generated definition
 create table components
 (
-    componentId    int     default 0 not null
+    componentId    int  default 0  not null
         constraint components_pk
             primary key,
-    ownerId        int  not null,
-    componentName  text    default '' not null,
-    location       text not null,
-    componentToken text    default '' not null,
-    public         boolean default false not null
+    ownerId        int             not null,
+    componentName  text default '' not null,
+    location       text            not null,
+    componentToken text default '' not null
 );
 
-create unique index components_componentId_uindex
+create
+unique index components_componentId_uindex
     on components (componentId);
 
-create unique index components_componentToken_uindex
+create
+unique index components_componentToken_uindex
     on components (componentToken);
 
-create unique index components_location_uindex
+create
+unique index components_location_uindex
     on components (location);
-
