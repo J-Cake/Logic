@@ -2,7 +2,7 @@
     "name": "nn",
     "version": "1.0.0",
     "description": "",
-    "main": "build/app/server/index.js",
+    "main": "build/app/server/HTTP/index.js",
     "scripts": {
         "build": "tsc && node ./bin/build"
     },
