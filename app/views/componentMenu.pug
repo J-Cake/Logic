@@ -21,18 +21,22 @@ html
                         button.remove 
 
         script.
-            fetch('/app/comps.js', {
-                method: "HEAD"
-            }).then(function (res) {
-                if (res.ok)
-                    document.body.appendChild((function () {
-                        const script = document.createElement('script');
-                        script.id = "scr";
-                        script.setAttribute('src', '/app/comps.js');
-                        return script;
-                    })());
-                else {
-                    alert('The build has not finished yet. Please wait until the build finishes.')
-                    window.location.reload();
-                }
+            window.src = new Promise(function(resolve, reject) {
+                fetch('/app/comps.js', {
+                    method: "HEAD"
+                }).then(function (res) {
+                    if (res.ok)
+                        document.body.appendChild((function () {
+                            const script = document.createElement('script');
+                            script.id = "scr";
+                            script.setAttribute('src', '/app/comps.js');
+                            resolve();
+                            return script;
+                        })());
+                    else {
+                        reject();
+                        alert('The build has not finished yet. Please wait until the build finishes.')
+                        window.location.reload();
+                    }
+                });
             });

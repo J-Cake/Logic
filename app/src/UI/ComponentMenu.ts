@@ -1,11 +1,11 @@
 import * as $ from 'jquery';
 
 import RenderComponent from "./RenderComponent";
-import Component from "../Logic/Component";
 import {manager, Tool} from "../index";
 import {Dialog, setVisible} from "./DialogManager";
 import {State} from "../../componentMenu";
 import {themes} from "../sys/util/Themes";
+import StateManager from "../sys/util/stateManager";
 
 export default function buildPrompt() {
     $("#add-component").on("change", function () {
@@ -13,19 +13,19 @@ export default function buildPrompt() {
     });
 
     manager.setState().dialogManager.on('open', prev => {
-        const win = prev[Dialog.ComponentView];
-        if (win)
-            win.window.addEventListener('load', function () {
-                if ("init" in (win.window as Window & {init: (s: State) => void}))
-                    win.init({
-                        onSelect: id => addComponent(id),
-                        theme: themes[manager.setState().themes.last()]()
-                    });
-                else
-                    console.error('no init function');
-            });
-        else
-            console.error('no window');
+        (prev[Dialog.ComponentView] as (Window & {
+            init: (s: State) => void,
+            stateManager: StateManager<State>,
+            src: Promise<void>
+        })).addEventListener('connect', function (e: CustomEvent<(state: Partial<State>) => void>) {
+            if (typeof e.detail === 'function')
+                e.detail({
+                    onSelect: id => addComponent(id),
+                    theme: themes[manager.setState().themes.last()]()
+                });
+            else
+                console.error('no init function');
+        } as EventListener);
     });
 }
 
@@ -34,7 +34,7 @@ export function addComponent(componentId: string) {
     const availableComponents = mgr.state.setState().availableComponents;
     const Component = availableComponents[componentId];
 
-    console.log(componentId, Component);
+    // console.log(componentId, Component);
 
     if (Component) {
         const name = prompt("Component Label");

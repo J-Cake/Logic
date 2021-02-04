@@ -29,15 +29,18 @@ const manager = window.stateManager = new StateManager<State>({});
 export default manager;
 export const mousetrap = new Mousetrap();
 
-window.init = (state: Partial<State>) => {
-    window.stateManager = new StateManager<State>(state);
-    $("span.name").on('click', e => state.onSelect ? state.onSelect(e.target.innerText) : null);
-    loadColours((window.stateManager.setState() as State).theme);
-};
-
 mousetrap.bind('esc', () => window.close());
 
+window.dispatchEvent(new CustomEvent('connect', {
+    detail: window.init = function (state: Partial<State>) {
+        window.stateManager = new StateManager<State>(state);
+        $("span.name").on('click', e => state.onSelect ? state.onSelect(e.target.innerText) : null);
+        loadColours((window.stateManager.setState() as State).theme);
+    }.bind(window)
+}));
+
 loadColours((window.stateManager.setState() as State).theme);
+
 export function loadColours(theme: Record<Colour, rgb>) {
     console.log(window.stateManager.setState().themes);
     const root = $(":root");

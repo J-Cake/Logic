@@ -1,11 +1,10 @@
 import * as path from 'path';
-import * as http from 'http';
 
 import * as express from 'express';
+import * as morgan from 'morgan';
 import * as sm from 'source-map-support';
 import * as body from 'body-parser';
 import * as cookies from 'cookie-parser';
-import * as WebSocket from 'ws';
 
 import UserRouter from "./UserRouter";
 import DocumentRouter from "./DocumentRouter";
@@ -19,6 +18,8 @@ import {liveReload} from "./util";
 sm.install();
 
 export const app = express();
+
+app.use(morgan('short'));
 
 app.set("view engine", "pug");
 app.set("views", path.join(rootFn(process.cwd()), 'app', 'views'));
