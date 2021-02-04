@@ -18,7 +18,9 @@ export interface RenderProps {
 
 export default class RenderComponent<C extends Component> extends RenderObject {
 
-    component: C;
+export default class RenderComponent extends RenderObject {
+
+    component: Component;
     props: RenderProps;
 
     pos: [number, number];
@@ -29,7 +31,14 @@ export default class RenderComponent<C extends Component> extends RenderObject {
 
     mousePos: [number, number];
 
-    constructor(component: C, props: RenderProps) {
+    // inputDashesCoords: [[number, number, number, number], [number, number]][];
+    // outputDashesCoords: [[number, number, number, number], [number, number][];
+    inputDashesCoords: [number, number, number, number][];
+    outputDashesCoords: [number, number, number, number][];
+
+    wires: Wire[];
+
+    constructor(component: Component, props: RenderProps) {
         super();
 
         this.component = component;

@@ -2,13 +2,17 @@ import * as fs from "fs";
 import * as path from "path";
 
 import * as express from 'express';
+import * as bodyParser from 'body-parser';
 
 import getFile, {DBUser} from "../getFile";
 import {verifyUser} from "../User";
 import {rootFn} from "../utils";
 import sql from "../sql";
+import Circuit, {CircuitObj} from "../Circuit";
 
 const router = express.Router();
+
+router.use(bodyParser.json({}));
 
 router.use(async function (req, res, next) {
     const userId = req.cookies.userId ?? req.header("userId");
@@ -36,7 +40,9 @@ router.get("/make", async function (req, res) {
     const filePath = path.join(rootFn(process.cwd()), 'Data', 'documents', fileName);
     fs.writeFileSync(filePath, JSON.stringify({
         circuitName: name,
-        ownerEmail: (await sql.sql_get<{email: string}>(`SELECT email from users where userToken == ?`, [userId])).email,
+        ownerEmail: (await sql.sql_get<{ email: string }>(`SELECT email
+                                                           from users
+                                                           where userToken == ?`, [userId])).email,
         components: [
             "std/and",
             "std/or",
@@ -53,8 +59,8 @@ router.get("/make", async function (req, res) {
     }, null, 4));
 
     await sql.sql_query(`INSERT INTO documents
-                   VALUES ((SELECT userId from users where userToken == ?), ?, ?, ?, false, ?,
-                           date('now'))`, [userId, fileName, circuitId, name, circuitToken]);
+                         VALUES ((SELECT userId from users where userToken == ?), ?, ?, ?, false, ?,
+                                 date('now'))`, [userId, fileName, circuitId, name, circuitToken]);
 
     res.redirect(`/edit/${circuitToken}`);
 });
@@ -63,7 +69,6 @@ router.get("/make", async function (req, res) {
 
 router.get('/circuit/raw/:circuit', async function (req, res) {
     const userId: string = req.userId || "";
-
     const file = await getFile(userId, req.params.circuit);
 
     await file?.fetchInfo();
@@ -76,8 +81,31 @@ router.get('/circuit/raw/:circuit', async function (req, res) {
     }
 });
 
-// router.put('/circuit/save/:circuit', async function (req, res) { // File Save
-//
-// });
+router.put('/circuit/raw/:circuit', async function (req, res) { // File Save
+    const userId: string = req.userId || "";
+    const usr = await verifyUser(userId);
+    // const file = await (await getFile(userId, req.params.circuit))?.fetchInfo();
+
+    if (!usr) {
+        res.status(403);
+        res.end('Access to the requested document was denied');
+    } else {
+        res.status(501);
+        try {
+            const file: Circuit | null = await getFile(userId, req.params.circuit);
+            if (['circuitName', 'content', 'components', 'ownerEmail', 'wires'].map(i => i in req.body).includes(false)) {
+                res.status(400);
+                res.end('The file is invalid as it may be malformed. Confirm the correctness of the file before saving again.');
+            } else {
+                file?.writeContents(req.body as CircuitObj);
+                res.status(200);
+                res.end('Success');
+            }
+        } catch (err) {
+            res.status(500);
+            res.end('Saving failed for unknown reasons.');
+        }
+    }
+});
 
 export default router;

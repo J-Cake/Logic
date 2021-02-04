@@ -3,7 +3,7 @@
         "target": "es5",
         "lib": [
             "ES2019",
-            "dom"
+            "dom",
         ],
         "module": "CommonJS",
         "outDir": "./build/app",

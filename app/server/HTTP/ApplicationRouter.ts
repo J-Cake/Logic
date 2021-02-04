@@ -33,13 +33,14 @@ router.get('/dashboard', async function (req, res) {
 
         res.render("dashboard", {
             own: own || [],
-            shared: shared || []
+            shared: shared || [],
+            title: "Dashboard"
         });
     }
 });
 
 router.get('/edit/:circuit', function (req, res) {
-    res.render("app", {circuit: req.params.circuit, devMode: reloadPort });
+    res.render("app", {circuit: req.params.circuit, devMode: reloadPort, title: `Editing ${req.params.circuit}` });
 })
 
 router.get('/components/:circuit/', async function (req, res) {
@@ -48,7 +49,7 @@ router.get('/components/:circuit/', async function (req, res) {
     await file?.fetchInfo();
 
     if (file)
-        res.render("componentMenu", {components: file.components, devMode: reloadPort});
+        res.render("componentMenu", {components: file.components, devMode: reloadPort, title: `Components`});
     else {
         res.status(403);
         res.end('Access to the requested document was denied');

@@ -7,7 +7,7 @@ export type Body = TruthTable | { [componentId: number]: GenericComponent } | st
 
 export interface Plugin {
     setComputeFn: (inputs: boolean[]) => boolean[],
-    onClick: (renderObj: RenderComponent<GenComponent>) => void,
+    onClick: (renderObj: RenderComponent) => void,
 
 }
 
@@ -36,10 +36,12 @@ const compareArray: <T>(arr1: T[], arr2: T[]) => boolean = function <T>(arr1: T[
 
 export abstract class GenComponent extends Component {
     documentComponentKey: string;
+    raw: ApiComponent | null;
 
     protected constructor(documentComponentKey: string, inputs: string[], outputs: string[], name: string) {
         super(inputs, outputs, name);
         this.documentComponentKey = documentComponentKey;
+        this.raw = null;
     }
 }
 
@@ -48,13 +50,14 @@ export default async function fetchComponent(component: string): Promise<new(map
 
     if (getComponent.ok) {
         const apiComponent: ApiComponent = await getComponent.json();
+        apiComponent.token = component;
 
         if (apiComponent.component.constructor.name === "Array") { // it's a truth table
             return class extends GenComponent {
                 constructor(documentComponentKey: string) {
-                    console.log("Map Key:", documentComponentKey);
                     super(documentComponentKey, apiComponent.inputLabels, apiComponent.outputLabels, apiComponent.name);
                     this.update();
+                    this.raw = apiComponent;
                 }
 
                 computeOutputs(inputs: boolean[]): boolean[] {
@@ -92,6 +95,7 @@ export default async function fetchComponent(component: string): Promise<new(map
 
                     this.memberComponents = memberComponents;
 
+                    this.raw = apiComponent;
                     this.update();
                 }
 
@@ -111,7 +115,7 @@ export default async function fetchComponent(component: string): Promise<new(map
 
                     fetch(apiComponent.component as string).then(res => {
                         return res.text().then(fn => plugin = new Function(fn)()(apiComponent)({ // wtf
-                            onClick: (callback: (renderObj: RenderComponent<GenComponent>) => void) => plugin.onClick = callback,
+                            onClick: (callback: (renderObj: RenderComponent) => void) => plugin.onClick = callback,
                             setComputeFn: (callback: (inputs: boolean[]) => boolean[]) => plugin.setComputeFn = callback,
                             update: () => this.update(),
                             component: this
@@ -119,6 +123,7 @@ export default async function fetchComponent(component: string): Promise<new(map
                     }).then(() => this.update());
 
                     this.plugin = plugin;
+                    this.raw = apiComponent;
                 }
 
                 computeOutputs(inputs: boolean[]): boolean[] {
@@ -128,7 +133,7 @@ export default async function fetchComponent(component: string): Promise<new(map
                     return [];
                 }
 
-                activate(renderer: RenderComponent<GenComponent>) {
+                activate(renderer: RenderComponent) {
                     if (this.plugin.onClick)
                         this.plugin.onClick(renderer);
                 }

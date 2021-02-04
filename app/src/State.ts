@@ -10,8 +10,6 @@ import Cursor from "./UI/cursor";
 import debug, {Debug} from "./Logic/Debug";
 import CircuitManager from "./CircuitManager";
 import RenderComponent from "./UI/RenderComponent";
-import {GenComponent} from "./ComponentFetcher";
-import Action from "./Action";
 import DialogManager, {Dialogs} from "./UI/DialogManager";
 
 export enum Tool {
@@ -37,13 +35,13 @@ export interface State {
     circuit: CircuitManager,
     loading: boolean,
     tool: Tool,
-    renderedComponents: RenderComponent<GenComponent>[],
+    renderedComponents: RenderComponent[],
     canvas: JQuery,
     p5Canvas: _p5.Renderer,
     sidebarWidth: number,
     sidebarIsLeft: boolean,
     gridScale: number,
-    actionChain: Action[],
+    actionChain: Partial<State>[],
     dialogManager: StateManager<Dialogs>,
     documentIdentifier: string,
     mouse: {

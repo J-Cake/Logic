@@ -1,25 +1,25 @@
-GET http://localhost:3500/circuit/circuit1
+GET http://localhost:2560/circuit/circuit1
 Accept: application/json
 Cookie: userId=aunpw
 userId: aunpw
 
 ### Owner
 
-GET http://localhost:3500/circuit/circuit1
+GET http://localhost:2560/circuit/circuit1
 Accept: application/json
 Cookie: userId=bunpw
 userId: bunpw
 
 ### permitted
 
-GET http://localhost:3500/circuit/circuit1
+GET http://localhost:2560/circuit/circuit1
 Accept: application/json
 Cookie: userId=cunpw
 userId: cunpw
 
 ### Permitted
 
-GET http://localhost:3500/circuit/circuit1
+GET http://localhost:2560/circuit/circuit1
 Accept: application/json
 Cookie: userId=dunpw
 userId: dunpw

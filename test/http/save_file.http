@@ -1,0 +1,121 @@
+PUT http://localhost:2560 /circuit/raw/circuit1
+Content-Type: application/json
+
+{
+    "circuitName": "ALU",
+    "components": [
+        "std/and",
+        "std/or",
+        "std/not",
+        "std/nand",
+        "std/nor",
+        "std/xnor",
+        "std/xor",
+        "std/buffer",
+        "std/input",
+        "std/output"
+    ],
+    "content": {
+        "0": {
+            "direction": 0,
+            "identifier": "And",
+            "outputs": [
+                6
+            ],
+            "position": [
+                0,
+                0
+            ]
+        },
+        "1": {
+            "direction": 0,
+            "identifier": "Input",
+            "outputs": [
+                0
+            ],
+            "position": [
+                0,
+                0
+            ]
+        },
+        "2": {
+            "direction": 0,
+            "identifier": "Input",
+            "outputs": [
+                0
+            ],
+            "position": [
+                0,
+                0
+            ]
+        },
+        "3": {
+            "direction": 0,
+            "identifier": "Xor",
+            "outputs": [
+                6
+            ],
+            "position": [
+                0,
+                0
+            ]
+        },
+        "4": {
+            "direction": 0,
+            "identifier": "Input",
+            "outputs": [
+                3
+            ],
+            "position": [
+                0,
+                0
+            ]
+        },
+        "5": {
+            "direction": 0,
+            "identifier": "Input",
+            "outputs": [
+                3
+            ],
+            "position": [
+                0,
+                0
+            ]
+        },
+        "6": {
+            "direction": 0,
+            "identifier": "Or",
+            "outputs": [
+                7
+            ],
+            "position": [
+                0,
+                0
+            ]
+        },
+        "7": {
+            "direction": 0,
+            "identifier": "Not",
+            "outputs": [
+                8
+            ],
+            "position": [
+                0,
+                0
+            ]
+        },
+        "8": {
+            "direction": 0,
+            "identifier": "Output",
+            "outputs": [],
+            "position": [
+                0,
+                0
+            ]
+        }
+    },
+    "ownerEmail": "a@b.c",
+    "wires": []
+}
+
+###

@@ -15,24 +15,14 @@ export interface CircuitObj {
 }
 
 export default class Circuit implements CircuitObj {
-    private readonly docId: number;
-
     info: CircuitObj;
+    private readonly docId: number;
 
     constructor(documentId: number) {
         this.docId = documentId;
         this.info = {circuitName: "", components: [], content: {}, ownerEmail: "", wires: []};
 
         void this.fetchInfo(); // ignore promise
-    }
-
-    async fetchInfo() {
-        const {physicalLocation} = await sql.sql_get<Partial<DBDocument>>(`SELECT physicalLocation
-                                                                           from documents
-                                                                           where documentId == ?`, [this.docId]);
-
-        if (physicalLocation)
-            this.info = JSON.parse(fs.readFileSync(path.join(rootFn(process.cwd()), 'Data', 'documents', physicalLocation)).toString()) as CircuitObj;
     }
 
     get wires() {
@@ -53,5 +43,23 @@ export default class Circuit implements CircuitObj {
 
     get ownerEmail() {
         return this.info.ownerEmail;
+    }
+
+    async fetchInfo() {
+        const {physicalLocation} = await sql.sql_get<Partial<DBDocument>>(`SELECT physicalLocation
+                                                                           from documents
+                                                                           where documentId == ?`, [this.docId]);
+
+        if (physicalLocation)
+            this.info = JSON.parse(fs.readFileSync(path.join(rootFn(process.cwd()), 'Data', 'documents', physicalLocation)).toString()) as CircuitObj;
+    }
+
+    async writeContents(circuit: CircuitObj): Promise<void> {
+        const {physicalLocation} = await sql.sql_get<Partial<DBDocument>>(`SELECT physicalLocation
+                                                                           from documents
+                                                                           where documentId == ?`, [this.docId]);
+
+        if (physicalLocation)
+            fs.writeFileSync(path.join(rootFn(process.cwd()), 'Data', 'documents', physicalLocation), JSON.stringify(circuit, null, 4));
     }
 }

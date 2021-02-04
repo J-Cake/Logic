@@ -5,10 +5,11 @@ import * as mousetrap from "mousetrap";
 import RenderObject from "../sys/components/RenderObject";
 import {manager, Tool} from "../index";
 import RenderComponent from "./RenderComponent";
-import {GenComponent} from "../ComponentFetcher";
 import {closeAll} from "./DialogManager";
+import saveDocument from "../DocumentWriter";
+import {buildWire} from "./Wire";
 
-export default function handleEvents(canvas: JQuery, sketch: p5, comps: RenderComponent<GenComponent>[]) {
+export default function handleEvents(canvas: JQuery, sketch: p5, comps: RenderComponent[]) {
     const container = $('#canvas-container');
 
     $(document).on('keyup keydown', e => manager.setState({
@@ -19,6 +20,9 @@ export default function handleEvents(canvas: JQuery, sketch: p5, comps: RenderCo
             meta: e.metaKey ?? false
         }
     }));
+
+    $('button#save').on('click', () => saveDocument());
+    $('button#close').on('click', () => window.location.href = '/dashboard');
 
     const toolBtnId: { [key in 'debug' | 'move' | 'pointer' | 'select' | 'wire']: Tool } = {
         'debug': Tool.Debug,
@@ -38,8 +42,8 @@ export default function handleEvents(canvas: JQuery, sketch: p5, comps: RenderCo
         sketch.resizeCanvas(container.width() ?? window.innerWidth, container.height() ?? window.innerHeight);
     });
 
-    window.addEventListener('beforeunload', function (e) {
-        new Promise(() => closeAll());
+    window.addEventListener('beforeunload', async function (e) {
+        await new Promise(() => closeAll());
         e.returnValue = `There may be unsaved changes. Are you sure you wish to leave?`;
     });
 
@@ -93,9 +97,16 @@ export default function handleEvents(canvas: JQuery, sketch: p5, comps: RenderCo
 
     mousetrap.bind("ctrl+a", () => manager.setState().renderedComponents.forEach(i => i.isSelected = true));
 
-    mousetrap.bind("ctrl+1", () => $("#pointer").prop('checked', true));
-    mousetrap.bind("ctrl+2", () => $("#select").prop('checked', true));
-    mousetrap.bind("ctrl+3", () => $("#move").prop('checked', true));
-    mousetrap.bind("ctrl+4", () => $("#wire").prop('checked', true));
-    mousetrap.bind("ctrl+5", () => $("#debug").prop('checked', true));
+    mousetrap.bind("1", () => $("#pointer").prop('checked', true));
+    mousetrap.bind("2", () => $("#select").prop('checked', true));
+    mousetrap.bind("3", () => $("#move").prop('checked', true));
+    mousetrap.bind("4", () => $("#wire").prop('checked', true));
+    mousetrap.bind("5", () => $("#debug").prop('checked', true));
+
+    mousetrap.bind('ctrl+s', async function (e) {
+        e.preventDefault();
+        await saveDocument();
+    });
+
+    buildWire();
 }

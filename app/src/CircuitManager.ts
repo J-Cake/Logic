@@ -14,11 +14,13 @@ export default class CircuitManager {
 
     state: StateManager<CircuitManagerState>;
     loading: Promise<void>;
+    readonly circuitId: string;
 
     constructor(circuitId: string) {
         this.state = new StateManager<CircuitManagerState>({});
 
         this.loading = this.loadCircuit(circuitId);
+        this.circuitId = circuitId;
     }
 
     private async loadCircuit(circuitId: string) {

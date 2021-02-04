@@ -12,7 +12,7 @@ import {renderComponents} from "./UI/RenderComponent";
 import handleEvents from "./UI/events";
 import StatefulPreviewPane from "./UI/StatefulPreviewPane";
 import Colour, {themes} from "./sys/util/Themes";
-import buildComponentPrompt from "./UI/ComponentLifecycle";
+import buildComponentPrompt from "./UI/ComponentMenu";
 
 declare global {
     interface Array<T> {
@@ -89,6 +89,8 @@ new _p5(function (sketch: import('p5')) {
         });
 
         const board = manager.setState().board;
+
+        $("span#grid-pos").text(`${board.getMouseGridCoords([sketch.mouseX, sketch.mouseY]).map(i => Math.max(0, i)).join(',')}`);
 
         board.render(sketch);
         board.update(sketch);

@@ -9,8 +9,8 @@ export default abstract class Component {
 
     value: boolean[];
 
-    private readonly inputs: Component[];
-    private readonly outputs: Component[];
+    readonly inputs: Component[];
+    readonly outputs: Component[];
 
     private readonly inputIndex: number[];
 
@@ -49,7 +49,7 @@ export default abstract class Component {
         this.outputs.forEach(i => i.update());
     }
 
-    activate(renderer: RenderComponent<Component>) {
+    activate(renderer: RenderComponent) {
         this.update();
     }
 }
