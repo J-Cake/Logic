@@ -5,8 +5,8 @@ create table if not exists users
     constraint users_pk
     primary key,
     email      text            not null,
-    password   text            not null,
     joined     date            not null,
+    password   text            not null,
     identifier text,
     userToken  text default '' not null
 );
