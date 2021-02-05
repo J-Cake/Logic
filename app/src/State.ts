@@ -46,7 +46,8 @@ export interface State {
     documentIdentifier: string,
     mouse: {
         x: number,
-        y: number
+        y: number,
+        pressed: boolean
     },
     p_mouse: {
         x: number,
@@ -68,10 +69,10 @@ export const manager: StateManager<State> = new StateManager<State>({
     mouseDown: false,
     dragObjects: [],
     dropObjects: [],
-    mouse: {x: 0, y: 0},
+    mouse: {x: 0, y: 0, pressed: false},
     p_mouse: {x: 0, y: 0},
     dragStart: {x: 0, y: 0},
-    themes: [Theme.DarkRed],
+    themes: [Theme.White],
     debugger: debug,
     gridScale: 35,
     loading: true,

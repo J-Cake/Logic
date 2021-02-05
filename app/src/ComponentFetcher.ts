@@ -8,24 +8,35 @@ export type Body = TruthTable | { [componentId: number]: GenericComponent } | st
 export interface Plugin {
     setComputeFn: (inputs: boolean[]) => boolean[],
     onClick: (renderObj: RenderComponent) => void,
-
 }
 
-export interface ApiComponent { // This is the shape of the component as received by the API
+// This is the shape of the component as received by the API. Consider this the JSON equivalent of a constructor
+export interface ApiComponent {
     token: string,
     name: string,
     owner: string,
     component: Body,
     inputLabels: string[],
     outputLabels: string[],
+    wires: wires
 }
 
-export interface GenericComponent { // This is a classless representation of a component in use
+export type wires = {
+    [dest: number]: {
+        coords: [number, number][],
+        inputIndex: number,
+        outputIndex: number
+    }
+};
+
+// This is a classless representation of a component in use.
+export interface GenericComponent {
     identifier: string,
     direction: 0 | 1 | 2 | 3
     inputs?: number[],
     outputs: number[],
-    position: [number, number]
+    position: [number, number],
+    wires: wires
 }
 
 const compareArray: <T>(arr1: T[], arr2: T[]) => boolean = function <T>(arr1: T[], arr2: T[]): boolean {
@@ -35,17 +46,19 @@ const compareArray: <T>(arr1: T[], arr2: T[]) => boolean = function <T>(arr1: T[
 }
 
 export abstract class GenComponent extends Component {
-    documentComponentKey: string;
+    documentComponentKey: number;
     raw: ApiComponent | null;
+    base: GenericComponent | null;
 
-    protected constructor(documentComponentKey: string, inputs: string[], outputs: string[], name: string) {
+    protected constructor(documentComponentKey: number, inputs: string[], outputs: string[], name: string) {
         super(inputs, outputs, name);
         this.documentComponentKey = documentComponentKey;
         this.raw = null;
+        this.base = null;
     }
 }
 
-export default async function fetchComponent(component: string): Promise<new(mapKey: string) => GenComponent> {
+export default async function fetchComponent(component: string): Promise<new(mapKey: number, base: GenericComponent) => GenComponent> {
     const getComponent = await fetch(`/component/${component}`);
 
     if (getComponent.ok) {
@@ -53,11 +66,12 @@ export default async function fetchComponent(component: string): Promise<new(map
         apiComponent.token = component;
 
         if (apiComponent.component.constructor.name === "Array") { // it's a truth table
-            return class extends GenComponent {
-                constructor(documentComponentKey: string) {
+            return class StatelessComponent extends GenComponent {
+                constructor(documentComponentKey: number, base: GenericComponent) {
                     super(documentComponentKey, apiComponent.inputLabels, apiComponent.outputLabels, apiComponent.name);
                     this.update();
                     this.raw = apiComponent;
+                    this.base = base;
                 }
 
                 computeOutputs(inputs: boolean[]): boolean[] {
@@ -70,12 +84,12 @@ export default async function fetchComponent(component: string): Promise<new(map
                 }
             }
         } else if (typeof apiComponent.component === "object") { // it's a stateful component
-            return class extends GenComponent {
+            return class StatefulComponent extends GenComponent {
                 private readonly memberComponents: { [id: number]: GenComponent };
                 private readonly inputIds: number[] = [];
                 private readonly outputIds: number[] = [];
 
-                constructor(documentComponentKey: string) {
+                constructor(documentComponentKey: number, base: GenericComponent) {
                     super(documentComponentKey, apiComponent.inputLabels, apiComponent.outputLabels, apiComponent.name);
 
                     const availComponents = manager.setState().circuit.state.setState().availableComponents;
@@ -85,7 +99,7 @@ export default async function fetchComponent(component: string): Promise<new(map
                     let componentId: number = -1;
 
                     for (const i in apiComponent.component as { [componentId: number]: GenericComponent }) {
-                        memberComponents[++componentId] = new availComponents[i](i);
+                        memberComponents[++componentId] = new availComponents[i](Number(i), apiComponent.component[i] as GenericComponent);
 
                         if ((apiComponent.component[i] as GenericComponent).identifier === "std/input")
                             this.inputIds.push(componentId);
@@ -96,6 +110,7 @@ export default async function fetchComponent(component: string): Promise<new(map
                     this.memberComponents = memberComponents;
 
                     this.raw = apiComponent;
+                    this.base = base;
                     this.update();
                 }
 
@@ -105,10 +120,10 @@ export default async function fetchComponent(component: string): Promise<new(map
 
             }
         } else { // it's a dynamic component, the value is updated by a script located by the value of the string
-            return class extends GenComponent {
+            return class DynamicComponent extends GenComponent {
                 plugin: Partial<Plugin>;
 
-                constructor(documentComponentKey: string) {
+                constructor(documentComponentKey: number, base: GenericComponent) {
                     super(documentComponentKey, apiComponent.inputLabels, apiComponent.outputLabels, apiComponent.name);
 
                     let plugin: Partial<Plugin> = {};
@@ -124,6 +139,7 @@ export default async function fetchComponent(component: string): Promise<new(map
 
                     this.plugin = plugin;
                     this.raw = apiComponent;
+                    this.base = base;
                 }
 
                 computeOutputs(inputs: boolean[]): boolean[] {

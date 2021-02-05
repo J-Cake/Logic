@@ -30,18 +30,20 @@ export default function buildPrompt() {
 }
 
 export function addComponent(componentId: string) {
-    const mgr = manager.setState().circuit;
-    const availableComponents = mgr.state.setState().availableComponents;
-    const Component = availableComponents[componentId];
-
-    // console.log(componentId, Component);
-
+    const {circuit: mgr, board, mouse} = manager.setState(), {availableComponents} = mgr.state.setState(),
+        Component = availableComponents[componentId];
     if (Component) {
         const name = prompt("Component Label");
         if (name) {
             $("#move").prop("checked", true);
-            const component = new Component(mgr.getNextAvailComponentId());
-            console.log(componentId, component);
+            const component = new Component(mgr.getNextAvailComponentId(), {
+                direction: 1,
+                identifier: name,
+                outputs: [],
+                position: board.getMouseGridCoords([mouse.x, mouse.y]),
+                wires: {}
+            });
+            // console.log(componentId, component);
             mgr.addComponent(component);
 
             manager.setState(prev => ({

@@ -8,10 +8,9 @@ import {GenericComponent} from "../src/ComponentFetcher";
 
 export interface CircuitObj {
     circuitName: string,
-    content: { [id: string]: GenericComponent },
+    content: { [id: number]: GenericComponent },
     components: string[],
     ownerEmail: string,
-    wires: [number, number][][]
 }
 
 export default class Circuit implements CircuitObj {
@@ -20,13 +19,9 @@ export default class Circuit implements CircuitObj {
 
     constructor(documentId: number) {
         this.docId = documentId;
-        this.info = {circuitName: "", components: [], content: {}, ownerEmail: "", wires: []};
+        this.info = {circuitName: "", components: [], content: {}, ownerEmail: ""};
 
         void this.fetchInfo(); // ignore promise
-    }
-
-    get wires() {
-        return this.info.wires;
     }
 
     get circuitName() {

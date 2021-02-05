@@ -93,7 +93,7 @@ router.put('/circuit/raw/:circuit', async function (req, res) { // File Save
         res.status(501);
         try {
             const file: Circuit | null = await getFile(userId, req.params.circuit);
-            if (['circuitName', 'content', 'components', 'ownerEmail', 'wires'].map(i => i in req.body).includes(false)) {
+            if (['circuitName', 'content', 'components', 'ownerEmail'].map(i => i in req.body).includes(false)) {
                 res.status(400);
                 res.end('The file is invalid as it may be malformed. Confirm the correctness of the file before saving again.');
             } else {

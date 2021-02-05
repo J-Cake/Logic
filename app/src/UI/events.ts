@@ -52,19 +52,21 @@ export default function handleEvents(canvas: JQuery, sketch: p5, comps: RenderCo
 
         if (Math.sqrt((dragStart.x - mouse.x) ** 2 + (dragStart.y - mouse.y) ** 2) < 10) {
             if (tool === Tool.Pointer)
-                manager.dispatch("click", () => ({mouse: {x: sketch.mouseX, y: sketch.mouseY}}));
+                manager.dispatch("click", () => ({mouse: {x: sketch.mouseX, y: sketch.mouseY, pressed: true}}));
             else if (!keys.shift && tool === Tool.Select)
                 comps.forEach(i => i.isSelected = false);
+            else if (tool === Tool.Wire)
+                manager.broadcast('wire_click');
 
             if (tool === Tool.Select)
-                manager.dispatch("select", () => ({mouse: {x: sketch.mouseX, y: sketch.mouseY}}));
+                manager.dispatch("select", () => ({mouse: {x: sketch.mouseX, y: sketch.mouseY, pressed: true}}));
         }
     })
 
     canvas.on("mousedown", function () {
         const {tool} = manager.setState();
         if (tool === Tool.Move)
-            manager.dispatch('mouse-grab', () => ({mouse: {x: sketch.mouseX, y: sketch.mouseY}}))
+            manager.dispatch('mouse-grab', () => ({mouse: {x: sketch.mouseX, y: sketch.mouseY, pressed: true}}))
         manager.setState({
             dragStart: {x: sketch.mouseX, y: sketch.mouseY}
         });
@@ -82,7 +84,7 @@ export default function handleEvents(canvas: JQuery, sketch: p5, comps: RenderCo
     canvas.on("mouseup", function () {
         const {tool} = manager.setState();
         if (tool === Tool.Move)
-            manager.dispatch("mouse-drop", () => ({mouse: {x: sketch.mouseX, y: sketch.mouseY}}));
+            manager.dispatch("mouse-drop", () => ({mouse: {x: sketch.mouseX, y: sketch.mouseY, pressed: false}}));
         manager.dispatch("mouseUp", {
             mouseDown: true
         });

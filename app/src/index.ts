@@ -78,7 +78,8 @@ new _p5(function (sketch: import('p5')) {
         const state = manager.setState({
             mouse: {
                 x: sketch.mouseX,
-                y: sketch.mouseY
+                y: sketch.mouseY,
+                pressed: sketch.mouseIsPressed
             },
             p_mouse: {
                 x: sketch.pmouseX,

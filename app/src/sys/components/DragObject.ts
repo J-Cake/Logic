@@ -51,12 +51,9 @@ export default abstract class DragObject extends RenderObject {
         });
     }
 
-    protected abstract isHover(mousePos: {x: number, y: number}): boolean;
-
     abstract draw(sketch: p5): void;
-    protected abstract tick(sketch: p5): void;
 
-    move(pos: {x: number, y: number}) {
+    move(pos: { x: number, y: number }) {
         this.pos = pos;
     }
 
@@ -71,20 +68,26 @@ export default abstract class DragObject extends RenderObject {
             Math.sqrt((this.dragStart.x + sketch.mouseX) ** 2 + (this.dragStart.y + sketch.mouseY) ** 2) > 5) // Threshold for movement being considered a drag
             this.isDragging = true;
 
+        // if (this.isDragging) {
+        //     this.pos.x = sketch.mouseX;
+        //     this.pos.y = sketch.mouseY;
+        // }
+
+        // relative movement
         if (this.isDragging) {
-            this.pos.x = sketch.mouseX;
-            this.pos.y = sketch.mouseY;
+            this.pos.x += sketch.mouseX - sketch.pmouseX;
+            this.pos.y += sketch.mouseY - sketch.pmouseY;
         }
 
         this.tick(sketch);
-
-        // relative movement
-        // this.pos.x += sketch.mouseX - sketch.pmouseX;
-        // this.pos.y += sketch.mouseY - sketch.pmouseY;
     }
 
     clean() {
 
     }
+
+    protected abstract isHover(mousePos: { x: number, y: number }): boolean;
+
+    protected abstract tick(sketch: p5): void;
 
 }

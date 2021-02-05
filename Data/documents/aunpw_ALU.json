@@ -22,7 +22,14 @@
             ],
             "outputs": [
                 6
-            ]
+            ],
+            "wires": {
+                "6": {
+                    "coords": [],
+                    "inputIndex": 0,
+                    "outputIndex": 0
+                }
+            }
         },
         "1": {
             "identifier": "std/input",
@@ -33,7 +40,14 @@
             ],
             "outputs": [
                 0
-            ]
+            ],
+            "wires": {
+                "0": {
+                    "coords": [],
+                    "inputIndex": 0,
+                    "outputIndex": 0
+                }
+            }
         },
         "2": {
             "identifier": "std/input",
@@ -44,40 +58,68 @@
             ],
             "outputs": [
                 0
-            ]
+            ],
+            "wires": {
+                "0": {
+                    "coords": [],
+                    "inputIndex": 1,
+                    "outputIndex": 0
+                }
+            }
         },
         "3": {
             "identifier": "std/xor",
             "direction": 0,
             "position": [
                 2,
-                2
+                3
             ],
             "outputs": [
                 6
-            ]
+            ],
+            "wires": {
+                "6": {
+                    "coords": [],
+                    "inputIndex": 1,
+                    "outputIndex": 0
+                }
+            }
         },
         "4": {
             "identifier": "std/input",
             "direction": 0,
             "position": [
                 0,
-                2
+                3
             ],
             "outputs": [
                 3
-            ]
+            ],
+            "wires": {
+                "3": {
+                    "coords": [],
+                    "inputIndex": 0,
+                    "outputIndex": 0
+                }
+            }
         },
         "5": {
             "identifier": "std/input",
             "direction": 0,
             "position": [
                 0,
-                3
+                4
             ],
             "outputs": [
                 3
-            ]
+            ],
+            "wires": {
+                "3": {
+                    "coords": [],
+                    "inputIndex": 1,
+                    "outputIndex": 0
+                }
+            }
         },
         "6": {
             "identifier": "std/or",
@@ -88,7 +130,14 @@
             ],
             "outputs": [
                 7
-            ]
+            ],
+            "wires": {
+                "7": {
+                    "coords": [],
+                    "inputIndex": 0,
+                    "outputIndex": 0
+                }
+            }
         },
         "7": {
             "identifier": "std/not",
@@ -99,7 +148,14 @@
             ],
             "outputs": [
                 8
-            ]
+            ],
+            "wires": {
+                "8": {
+                    "coords": [],
+                    "inputIndex": 0,
+                    "outputIndex": 0
+                }
+            }
         },
         "8": {
             "identifier": "std/output",
@@ -108,9 +164,9 @@
                 8,
                 1
             ],
-            "outputs": []
+            "outputs": [],
+            "wires": {}
         }
     },
-    "ownerEmail": "a@b.c",
-    "wires": []
+    "ownerEmail": "a@b.c"
 }

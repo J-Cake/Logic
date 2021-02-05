@@ -5,7 +5,7 @@ import fetchComponent, {GenComponent, GenericComponent} from "./ComponentFetcher
 
 export interface CircuitManagerState {
     components: GenComponent[],
-    availableComponents: { [componentId: string]: new(mapKey: string) => GenComponent },
+    availableComponents: { [componentId: string]: new(mapKey: number, base: GenericComponent) => GenComponent },
     componentMap: {[id: string]: [GenericComponent, Component]},
     document: CircuitObj
 }
@@ -13,7 +13,7 @@ export interface CircuitManagerState {
 export default class CircuitManager {
 
     state: StateManager<CircuitManagerState>;
-    loading: Promise<void>;
+    loading: Promise<{[id: number]: [GenericComponent, GenComponent]}>;
     readonly circuitId: string;
 
     constructor(circuitId: string) {
@@ -23,21 +23,21 @@ export default class CircuitManager {
         this.circuitId = circuitId;
     }
 
-    private async loadCircuit(circuitId: string) {
+    private async loadCircuit(circuitId: string): Promise<{[id: number]: [GenericComponent, GenComponent]}> {
         const circuit = await fetch(`/circuit/raw/${circuitId}`);
 
         if (circuit.ok) {
             const loaded: CircuitObj = await circuit.json();
 
-            const availSync: { [componentId: string]: new(mapKey: string) => GenComponent } = {};
+            const availSync: { [componentId: string]: new(mapKey: number, base: GenericComponent) => GenComponent } = {};
 
             for (const id of loaded.components)
                 availSync[id] = await fetchComponent(id);
 
-            const components: {[id: string]: [GenericComponent, GenComponent]} = {};
+            const components: {[id: number]: [GenericComponent, GenComponent]} = {};
             for (const i in loaded.content)
                 if (loaded.content[i].identifier)
-                    components[i] = [loaded.content[i], new availSync[loaded.content[i].identifier](i)];
+                    components[i] = [loaded.content[i], new availSync[loaded.content[i].identifier](Number(i), loaded.content[i])];
                 else
                     throw {};
 
@@ -51,7 +51,9 @@ export default class CircuitManager {
                 componentMap: components,
                 document: loaded
             }).components.forEach(i => i.update());
-        }
+
+            return components;
+        } else return {};
     }
 
     addComponent(component: GenComponent) {
@@ -60,7 +62,7 @@ export default class CircuitManager {
         }));
     }
 
-    getNextAvailComponentId(): string {
-        return (this.state.setState().components.map(i => parseInt(i.documentComponentKey, 36)).reduce((a, i) => a > i ? a : i) + 1).toString(36);
+    getNextAvailComponentId(): number {
+        return (this.state.setState().components.map(i => i.documentComponentKey).reduce((a, i) => a > i ? a : i) + 1);
     }
 }
