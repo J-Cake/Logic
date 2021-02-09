@@ -53,7 +53,9 @@ router.get("/make", async function (req, res) {
             "std/xor",
             "std/buffer",
             "std/input",
-            "std/output"
+            "std/output",
+            "std/splitter",
+            "std/clock"
         ],
         content: {}
     }, null, 4));
