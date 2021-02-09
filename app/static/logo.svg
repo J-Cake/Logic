@@ -1,0 +1,24 @@
+<svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com">
+  <defs>
+    <bx:grid x="0" y="0" width="5.048" height="5.083"></bx:grid>
+    <linearGradient gradientUnits="userSpaceOnUse" x1="475.635" y1="248.597" x2="475.635" y2="271.403" id="gradient-0" spreadMethod="reflect" gradientTransform="matrix(0.960428, -0.211608, 0.408304, 1.087294, -90.397597, 77.94476)">
+      <stop offset="0" style="stop-color: rgb(191, 0, 255);"></stop>
+      <stop offset="1" style="stop-color: rgb(0, 213, 255);"></stop>
+    </linearGradient>
+    <linearGradient gradientUnits="userSpaceOnUse" x1="15.337" y1="2.941" x2="15.337" y2="26.941" id="gradient-1" gradientTransform="matrix(0.688198, -0.725523, 1.333334, 1.333334, -14.476223, 7.206005)">
+      <stop offset="0" style="stop-color: rgb(49, 172, 243);"></stop>
+      <stop offset="1" style="stop-color: rgba(74, 0, 0, 1)"></stop>
+    </linearGradient>
+    <linearGradient gradientUnits="userSpaceOnUse" x1="475.635" y1="248.597" x2="475.635" y2="271.403" id="gradient-2" spreadMethod="reflect" gradientTransform="matrix(0.960428, -0.211608, 0.408304, 1.087294, -90.397597, 77.94476)">
+      <stop offset="0" style="stop-color: rgb(77, 0, 102);"></stop>
+      <stop offset="1" style="stop-color: rgb(0, 85, 102);"></stop>
+    </linearGradient>
+    <radialGradient gradientUnits="userSpaceOnUse" cx="5.048" cy="5.083" r="12.081" id="gradient-3" gradientTransform="matrix(2.46709, 1.953651, -1.666636, 2.104647, 1.065638, -15.476953)">
+      <stop offset="0" style="stop-color: rgb(49, 172, 243);"></stop>
+      <stop offset="1" style="stop-color: rgba(74, 0, 0, 1)"></stop>
+    </radialGradient>
+  </defs>
+  <path style="paint-order: fill; fill: url(#gradient-2);" transform="matrix(0.491025, 0.891482, -1.162477, 0.640286, 85.61528, -572.669739)" d="M 466.747 251.201 A 11.403 11.403 0 1 1 466.747 268.799 A 8.818 8.818 0 0 0 466.747 251.201 Z" bx:shape="crescent 474 260 11.403 259 0.543 1@2644e158"></path>
+  <circle style="fill: url(#gradient-3);" cx="15.337" cy="14.941" r="12.081"></circle>
+  <path style="fill: url(#gradient-0); paint-order: fill;" transform="matrix(0.491025, 0.891482, -1.162477, 0.640286, 85.616135, -572.669739)" d="M 466.747 251.201 A 11.403 11.403 0 1 1 466.747 268.799 A 9.684 9.684 0 1 0 466.747 251.201 Z" bx:shape="crescent 474 260 11.403 259 0.784 1@61351750"></path>
+</svg>
