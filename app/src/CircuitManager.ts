@@ -37,7 +37,7 @@ export default class CircuitManager {
             const components: {[id: number]: [GenericComponent, GenComponent]} = {};
             for (const i in loaded.content)
                 if (loaded.content[i].identifier)
-                    components[i] = [loaded.content[i], new availSync[loaded.content[i].identifier](Number(i), loaded.content[i])];
+                    components[i] = [loaded.content[i], new availSync[loaded.content[i].identifier as string](Number(i), loaded.content[i])];
                 else
                     throw {};
 
@@ -63,6 +63,6 @@ export default class CircuitManager {
     }
 
     getNextAvailComponentId(): number {
-        return (this.state.setState().components.map(i => i.documentComponentKey).reduce((a, i) => a > i ? a : i) + 1);
+        return Math.max(...this.state.setState().components.map(i => i.documentComponentKey));
     }
 }

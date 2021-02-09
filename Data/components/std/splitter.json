@@ -1,0 +1,7 @@
+{
+    "name": "Splitter",
+    "owner": null,
+    "inputLabels": ["i"],
+    "outputLabels": ["0", "1"],
+    "component": "/component/src/splitter.js"
+}

@@ -62,10 +62,10 @@ export default abstract class DragObject extends RenderObject {
     }
 
     update(sketch: p5): void {
-        const {mouseDown, mouse} = manager.setState();
+        const {mouseDown, mouse, p_mouse, board} = manager.setState();
         if (mouseDown &&
             this.isHover(mouse) &&
-            Math.sqrt((this.dragStart.x + sketch.mouseX) ** 2 + (this.dragStart.y + sketch.mouseY) ** 2) > 5) // Threshold for movement being considered a drag
+            Math.sqrt((this.dragStart.x + mouse.x) ** 2 + (this.dragStart.y + mouse.x) ** 2) > 5) // Threshold for movement being considered a drag
             this.isDragging = true;
 
         // if (this.isDragging) {
@@ -75,8 +75,8 @@ export default abstract class DragObject extends RenderObject {
 
         // relative movement
         if (this.isDragging) {
-            this.pos.x += sketch.mouseX - sketch.pmouseX;
-            this.pos.y += sketch.mouseY - sketch.pmouseY;
+            this.pos.x += mouse.x - p_mouse.x;
+            this.pos.y += mouse.y - p_mouse.y;
         }
 
         this.tick(sketch);

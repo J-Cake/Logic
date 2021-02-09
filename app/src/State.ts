@@ -1,4 +1,5 @@
 import * as _p5 from "p5";
+import * as $ from 'jquery';
 
 import StateManager from "./sys/util/stateManager";
 import Board from "./sys/components/Board";
@@ -26,7 +27,7 @@ export interface State {
     mouseDown: boolean,
     dragObjects: DragObject[],
     dropObjects: DropObject[],
-    themes: Theme[],
+    theme: Theme,
     font: _p5.Font,
     switchFrame: number, // The frame on which the theme was last switched
     frame: number,
@@ -63,6 +64,9 @@ export interface State {
         ctrl: boolean,
         meta: boolean
     },
+    pref: StateManager<{
+        showLabels: boolean
+    }>
 }
 
 export const manager: StateManager<State> = new StateManager<State>({
@@ -72,11 +76,14 @@ export const manager: StateManager<State> = new StateManager<State>({
     mouse: {x: 0, y: 0, pressed: false},
     p_mouse: {x: 0, y: 0},
     dragStart: {x: 0, y: 0},
-    themes: [Theme.White],
+    theme: Theme.DarkBlue,
     debugger: debug,
     gridScale: 35,
     loading: true,
     sidebarIsLeft: true,
     actionChain: [],
-    dialogManager: DialogManager
+    dialogManager: DialogManager,
+    pref: new StateManager<{showLabels: boolean}>({
+        showLabels: $("#show-labels").prop("checked")
+    })
 });

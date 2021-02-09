@@ -46,38 +46,9 @@
     flex-direction: row;
 }
 
-#toolbar label, #toolbar button {
-    color: var(--blank);
-    width: 34px;
-    height: 34px;
-    border-radius: 3px;
-    display: flex;
-    border: none;
-    justify-content: center;
-    align-items: center;
-    background: rgba(0, 0, 0, 0);
-    transition-duration: 0.3s;
-    transition-property: background, color;
-    margin: 0 3px;
-    font-family: Remix;
-    font-size: 16pt;
-}
-
-#toolbar label:hover, #toolbar button:hover {
-    background: var(--panel);
-}
-
-#toolbar input[type="radio"], #toolbar input[type="checkbox"] {
-    display: none;
-}
-
-#toolbar input[type="radio"]:checked + label, #toolbar button:active, #toolbar input[type="checkbox"]:checked + label {
-    background: var(--active);
-    /*color: var(--background);*/
-}
-
 #body #canvas-container {
     grid-row: 2;
+    touch-action: none;
 }
 
 #status-bar {
@@ -101,19 +72,14 @@ canvas {
     margin: 0 4px;
 }
 
-#toolbar input {
-    padding: 3px 8px;
-    flex: 1;
-    max-width: 520px;
-    border: none;
-    border-bottom: 2px solid var(--panel);
-    transition: border-color 0.3s;
-    background: transparent;
-    color: var(--blank);
+#toolbar {
+    justify-content: space-between;
+    width: 100%;
 }
 
-#toolbar input:focus {
-    border-color: var(--active);
+#toolbar, #toolbar .left > *, #toolbar .right > *, .left, .right {
+    display: flex;
+    flex-direction: row;
 }
 
 hr {

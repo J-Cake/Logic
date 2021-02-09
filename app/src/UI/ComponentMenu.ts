@@ -21,7 +21,7 @@ export default function buildPrompt() {
             if (typeof e.detail === 'function')
                 e.detail({
                     onSelect: id => addComponent(id),
-                    theme: themes[manager.setState().themes.last()]()
+                    theme: themes[manager.setState().theme]()
                 });
             else
                 console.error('no init function');
@@ -30,33 +30,38 @@ export default function buildPrompt() {
 }
 
 export function addComponent(componentId: string) {
-    const {circuit: mgr, board, mouse} = manager.setState(), {availableComponents} = mgr.state.setState(),
+    const {circuit: mgr, board, mouse} = manager.setState(),
+        {availableComponents} = mgr.state.setState(),
         Component = availableComponents[componentId];
     if (Component) {
-        const name = prompt("Component Label");
-        if (name) {
-            $("#move").prop("checked", true);
-            const component = new Component(mgr.getNextAvailComponentId(), {
-                direction: 1,
-                identifier: name,
-                outputs: [],
-                position: board.getMouseGridCoords([mouse.x, mouse.y]),
-                wires: {}
-            });
-            // console.log(componentId, component);
-            mgr.addComponent(component);
+        window.focus();
+        // const name = prompt("Component Label");
+        $("#move").prop("checked", true);
+        const component = new Component(mgr.getNextAvailComponentId(), {
+            direction: 1,
+            outputs: [],
+            position: board.getMouseGridCoords([mouse.x, mouse.y]),
+            wires: {}
+        });
+        // console.log(componentId, component);
+        mgr.addComponent(component);
 
-            manager.setState(prev => ({
+        manager.setState(function (prev) {
+            const r = new RenderComponent(component, {
+                direction: 0,
+                isStateful: false,
+                label: name || '',
+                pos: prev.board.getMouseGridCoords([prev.mouse.x, prev.mouse.y]),
+                isMoving: true
+            });
+
+            r.mousePos = r.pos = [prev.mouse.x, prev.mouse.y];
+
+            return ({
                 tool: Tool.Move,
-                renderedComponents: [...prev.renderedComponents, new RenderComponent(component, {
-                    direction: 0,
-                    isStateful: false,
-                    label: name || '',
-                    pos: prev.board.getMouseGridCoords([prev.mouse.x, prev.mouse.y]),
-                    isMoving: true
-                })]
-            }));
-        }
+                renderedComponents: [...prev.renderedComponents, r]
+            });
+        });
     } else
         alert("The component wasn't found or is unusable");
 }

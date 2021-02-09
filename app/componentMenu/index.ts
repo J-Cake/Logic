@@ -33,16 +33,17 @@ mousetrap.bind('esc', () => window.close());
 
 window.dispatchEvent(new CustomEvent('connect', {
     detail: window.init = function (state: Partial<State>) {
-        window.stateManager = new StateManager<State>(state);
+        const {theme} = manager.setState(state);
+
         $("span.name").on('click', e => state.onSelect ? state.onSelect(e.target.innerText) : null);
-        loadColours((window.stateManager.setState() as State).theme);
+
+        loadColours(theme);
     }.bind(window)
 }));
 
 loadColours((window.stateManager.setState() as State).theme);
 
 export function loadColours(theme: Record<Colour, rgb>) {
-    console.log(window.stateManager.setState().themes);
     const root = $(":root");
     for (const i in theme)
         root.css(`--${Colour[Number(i) as Colour].toLowerCase()}`, `rgb(${getColour.bind(window.stateManager)(Number(i)).join(', ')})`);

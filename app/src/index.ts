@@ -13,6 +13,7 @@ import handleEvents from "./UI/events";
 import StatefulPreviewPane from "./UI/StatefulPreviewPane";
 import Colour, {themes} from "./sys/util/Themes";
 import buildComponentPrompt from "./UI/ComponentMenu";
+import {mousetrap} from "../componentMenu";
 
 declare global {
     interface Array<T> {
@@ -25,10 +26,14 @@ Array.prototype.last = function (i: number = 0) {
 
 export * from './State';
 
-new _p5(function (sketch: import('p5')) {
+new _p5(function (sketch: _p5) {
+
+    let scl: number;
+    let pan: [number, number] = [0, 0];
+
     sketch.setup = async function () {
         const root = $(":root");
-        const colours: Record<Colour, rgb> = themes[manager.setState().themes.last()]();
+        const colours: Record<Colour, rgb> = themes[manager.setState().theme]();
         for (const i in colours)
             root.css(`--${Colour[Number(i) as Colour].toLowerCase()}`, `rgb(${getColour(Number(i)).join(', ')})`);
 
@@ -69,29 +74,43 @@ new _p5(function (sketch: import('p5')) {
 
         sketch.textFont(manager.setState().font);
 
+        $("#canvas-container").on('wheel', function (e) {
+            const event: WheelEvent = e.originalEvent as WheelEvent;
+            pan[0] -= event.deltaX;
+            pan[1] -= event.deltaY;
+            e.preventDefault();
+        });
+
+        mousetrap.bind('alt+s', () => pan = [0, 0]);
+
         buildComponentPrompt();
     }
 
     sketch.draw = function () {
+
+        sketch.translate(pan[0], pan[1]);
+        // sketch.scale(scl);
+        // sketch.translate(-pan[0], -pan[1]);
         sketch.background(getColour(Colour.Background, {duration: 30, type: Interpolation.linear}));
 
-        const state = manager.setState({
+        const state = manager.setState(prev => ({
             mouse: {
-                x: sketch.mouseX,
-                y: sketch.mouseY,
+                x: sketch.mouseX + prev.board.translate[0],
+                y: sketch.mouseY + prev.board.translate[1],
                 pressed: sketch.mouseIsPressed
             },
             p_mouse: {
-                x: sketch.pmouseX,
-                y: sketch.pmouseY
+                x: sketch.pmouseX + prev.board.translate[0],
+                y: sketch.pmouseY + prev.board.translate[1]
             },
             frame: sketch.frameCount,
             mouseDown: sketch.mouseIsPressed
-        });
+        }));
 
         const board = manager.setState().board;
+        board.translate = [-pan[0], -pan[1]];
 
-        $("span#grid-pos").text(`${board.getMouseGridCoords([sketch.mouseX, sketch.mouseY]).map(i => Math.max(0, i)).join(',')}`);
+        $("span#grid-pos").text(`${board.getMouseGridCoords([state.mouse.x, state.mouse.y]).join(',')}`);
 
         board.render(sketch);
         board.update(sketch);

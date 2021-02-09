@@ -1,13 +1,18 @@
 extends index
 
 block content
-    form(action="/user/login", method="post")
-        if err
-            span#err= err
+    form(action="/user/login", method="post")#form
+        h1 Log in to your account
 
-        input(name="email", type="email", placeholder="Email")
-        input(name="password", type="password", placeholder="Password")
+        p Please enter your email address and password. #[a(href="/user/signup") Need an account?]
 
-        a(href="/user/signup") Need an account?
+        #input
+            input(name="email", type="email", placeholder="Email")
+            input(name="password", type="password", placeholder="Password")
+
+            if err
+                #err
+                    h3 There was an error signing you in:
+                    span#err= err
 
         button(type="submit") Log In

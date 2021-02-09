@@ -1,0 +1,227 @@
+:root {
+    margin: 0;
+    padding: 0;
+
+    box-sizing: border-box;
+}
+
+h1 {
+    font-family: Lora, serif;
+    font-weight: bold;
+    font-style: italic;
+    font-size: 32pt;
+    line-height: 2;
+    margin-bottom: 0.2em;
+    margin-left: 1em;
+}
+
+h3 {
+    line-height: 2;
+    font-size: 15pt;
+}
+
+#err {
+    margin: 8px 24px;
+    font-size: 90%;
+    opacity: 0.9;
+}
+
+#err h3 {
+    font-size: 90%;
+}
+
+* {
+    font-family: "Raleway", sans-serif;
+}
+
+@media screen and (prefers-color-scheme: light) {
+    :root {
+        --primary: #efefef;
+        --danger: #F8CBAD;
+        --secondary: #FFE699;
+        --label: #C6E0B4;
+        --accent: #8EA9DB;
+        --active: #EFA6EF;
+        --secondaryaccent: rgb(255, 230, 153);
+        --cursor: rgb(142, 169, 219);
+        --panel: rgb(239, 239, 239);
+        --background: rgb(255, 255, 255);
+        --blank: rgb(60, 65, 70);
+    }
+}
+
+@media screen and (prefers-color-scheme: dark) {
+    :root {
+        --primary: #cec9c4;
+        --danger: #4c3a33;
+        --secondary: #a84401;
+        --label: #0cb3c9;
+        --accent: #28334c;
+        --active: #419b62;
+        --secondaryaccent: #ba0950;
+        --cursor: #454747;
+        --panel: #2f3334;
+        --background: #151b1c;
+        --blank: #c3c3c8;
+    }
+}
+
+body {
+    color: var(--blank);
+}
+
+a {
+    text-decoration: none;
+    color: var(--secondary);
+}
+
+#form {
+    background: var(--panel);
+    min-width: 850px;
+    max-width: 1125px;
+    min-height: 580px;
+    max-height: 950px;
+    padding: 24px;
+
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+
+    display: flex;
+    flex-direction: column;
+}
+
+#form #toolbar {
+    min-height: 4em;
+    display: flex;
+    align-content: center;
+}
+
+#docList {
+    padding: 3px;
+}
+
+#form button {
+    border: none;
+
+    background: var(--background);
+    border-radius: 4px;
+    min-width: 180px;
+    font-family: Raleway, sans-serif;
+    right: 0;
+}
+
+#form #input {
+    flex: 1;
+}
+
+#tab-bar {
+    display: flex;
+    justify-content: space-evenly;
+    width: 100%;
+}
+
+#tab-bar h4 {
+    font-family: Raleway;
+    min-width: 256px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    line-height: 2;
+    font-size: 14pt;
+    text-align: center;
+    border-bottom: 3px solid var(--background);
+    transition: border 0.3s;
+}
+
+#tab-bar h4.selected {
+    border-bottom-color: var(--secondary);
+}
+
+#tab-view #own, #tab-view #shared {
+    display: none;
+    padding: 8px;
+
+    margin-top: 12px;
+
+    flex-wrap: wrap;
+    flex-direction: column;
+
+    overflow: auto;
+}
+
+#tab-view #own.selected, #tab-view #shared.selected {
+    display: flex;
+}
+
+#tab-view #own .doc:before, #tab-view #shared .doc:before {
+    font-size: 15pt;
+    width: 4em;
+    height: 3em;
+    line-height: 3em;
+    content: '';
+    font-family: Remix;
+    background: var(--background);
+    color: var(--blank);
+    display: inline-block;
+    text-align: center;
+    border-radius: 12px 0 0 12px;
+}
+
+#tab-view #own .doc .info, #tab-view #shared .doc .info {
+    padding-left: 15pt;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+#tab-view #own .doc .info .edited, #tab-view #shared .doc .info .edited {
+    font-size: 9.5pt;
+    color: var(--blank);
+}
+
+#tab-view #own .doc:hover, #tab-view #shared .doc:hover {
+    box-shadow: 0 0 12px 0 var(--background);
+}
+
+#tab-view #own .doc .controls, #tab-view #shared .doc .controls {
+    display: flex;
+    font-family: Remix;
+    margin-right: 12px;
+}
+
+#tab-view #own .doc .controls button, #tab-view #shared .doc .controls button {
+    font-family: Remix;
+    width: 34px;
+    height: 34px;
+
+    min-width: auto;
+    min-height: auto;
+    font-size: 15pt;
+    background: transparent;
+}
+
+#tab-view #own .doc .controls button:hover, #tab-view #shared .doc .controls button:hover {
+    background: var(--background);
+}
+
+#tab-view #own .doc, #tab-view #shared .doc {
+    font-family: 'Remix';
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    font-size: 15pt;
+    color: var(--blank);
+    border-radius: 12px;
+    transition: box-shadow 0.3s;
+    margin: 4px 0;
+}
+
+#form #toolbar button, #form #toolbar input[type="button"] {
+    font-size: 18pt;
+    /*background: var(--background);*/
+    border: none;
+    width: fit-content;
+    height: fit-content;
+}

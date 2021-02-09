@@ -2,8 +2,7 @@ extends index
 
 block content
 
-    a(href="/user/logout")
-        button Log Out
+    script(src="/app/ui.js")
 
     script.
         window.addEventListener("load", function() {
@@ -14,21 +13,40 @@ block content
             });
         });
 
-    button#mkDoc
-        img(src="/res/icon/plus", alt="New")
+    section#form
+        #toolbar
+            .left
+                a(href="/user/logout")
+                    input(type="button", value="")
+                input(type="button", value="")#mkDoc
 
-    #doclist
-        #own
-            if own.length > 0
-                for doc in own
-                    a(href="/edit/" + doc.documentToken).doc
-                        span.title= doc.documentTitle
-            else
-                span You own no documents.
-        #shared
-            if shared.length > 0
-                for doc in shared
-                    a(href="/circuit/" + doc.documentToken).doc
-                        span.title= doc.documentTitle
-            else
-                span No one has shared any documents with you.
+        #doclist
+            #tab-bar
+                h4#own-tab.selected Yours
+                h4#shared-tab Shared with you
+
+            #tab-view
+                #own.selected
+                    if own.length > 0
+                        for doc in own
+                            div(data-href=doc.documentToken).doc
+                                span.info
+                                    span.title= doc.documentTitle
+                                    span.edited Edited on #{new Date(doc.edited).toLocaleDateString()}
+                                .controls
+                                    button.addCollaborator 
+                                    button.editName 
+                                    button.deleteDoc 
+                    else
+                        span You own no documents.
+
+                #shared
+                    if shared.length > 0
+                        for doc in shared
+                            div(data-href=doc.documentToken).doc
+                                span.title= doc.documentTitle
+                                span.edited= new Date(doc.edited).toLocaleDateString()
+                                .controls
+                                    button.leaveDoc 
+                    else
+                        span No one has shared any documents with you.

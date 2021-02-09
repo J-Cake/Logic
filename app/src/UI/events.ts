@@ -8,6 +8,7 @@ import RenderComponent from "./RenderComponent";
 import {closeAll} from "./DialogManager";
 import saveDocument from "../DocumentWriter";
 import {buildWire} from "./Wire";
+import touch from "./touch";
 
 export default function handleEvents(canvas: JQuery, sketch: p5, comps: RenderComponent[]) {
     const container = $('#canvas-container');
@@ -38,6 +39,16 @@ export default function handleEvents(canvas: JQuery, sketch: p5, comps: RenderCo
         });
     });
 
+    $("#show-labels").on('change', function () {
+        return manager.setState().pref.setState({
+            showLabels: $(this).prop("checked")
+        });
+    });
+
+    $('#in').on('click', () => manager.setState(prev => ({ gridScale: prev.gridScale * 1.15 })));
+    $('#out').on('click', () => manager.setState(prev => ({ gridScale: prev.gridScale * 0.85 })));
+    $('#reset').on('click', () => manager.setState(prev => ({ gridScale: 35 })));
+
     window.addEventListener("resize", function () {
         sketch.resizeCanvas(container.width() ?? window.innerWidth, container.height() ?? window.innerHeight);
     });
@@ -52,24 +63,42 @@ export default function handleEvents(canvas: JQuery, sketch: p5, comps: RenderCo
 
         if (Math.sqrt((dragStart.x - mouse.x) ** 2 + (dragStart.y - mouse.y) ** 2) < 10) {
             if (tool === Tool.Pointer)
-                manager.dispatch("click", () => ({mouse: {x: sketch.mouseX, y: sketch.mouseY, pressed: true}}));
+                manager.dispatch("click", prev => ({
+                    mouse: {
+                        x: sketch.mouseX + prev.board.translate[0],
+                        y: sketch.mouseY + prev.board.translate[1],
+                        pressed: true
+                    }
+                }));
             else if (!keys.shift && tool === Tool.Select)
                 comps.forEach(i => i.isSelected = false);
             else if (tool === Tool.Wire)
                 manager.broadcast('wire_click');
 
             if (tool === Tool.Select)
-                manager.dispatch("select", () => ({mouse: {x: sketch.mouseX, y: sketch.mouseY, pressed: true}}));
+                manager.dispatch("select", prev => ({
+                    mouse: {
+                        x: sketch.mouseX + prev.board.translate[0],
+                        y: sketch.mouseY + prev.board.translate[1],
+                        pressed: true
+                    }
+                }));
         }
     })
 
     canvas.on("mousedown", function () {
         const {tool} = manager.setState();
         if (tool === Tool.Move)
-            manager.dispatch('mouse-grab', () => ({mouse: {x: sketch.mouseX, y: sketch.mouseY, pressed: true}}))
-        manager.setState({
-            dragStart: {x: sketch.mouseX, y: sketch.mouseY}
-        });
+            manager.dispatch('mouse-grab', (prev) => ({
+                mouse: {
+                    x: sketch.mouseX + prev.board.translate[0],
+                    y: sketch.mouseY + prev.board.translate[1],
+                    pressed: true
+                }
+            }));
+        manager.setState(prev => ({
+            dragStart: {x: sketch.mouseX + prev.board.translate[0], y: sketch.mouseY + prev.board.translate[1]}
+        }));
     });
 
     canvas.on("mousemove", function () { // Call MouseDown only after traveling a minimum distance
@@ -84,7 +113,13 @@ export default function handleEvents(canvas: JQuery, sketch: p5, comps: RenderCo
     canvas.on("mouseup", function () {
         const {tool} = manager.setState();
         if (tool === Tool.Move)
-            manager.dispatch("mouse-drop", () => ({mouse: {x: sketch.mouseX, y: sketch.mouseY, pressed: false}}));
+            manager.dispatch("mouse-drop", prev => ({
+                mouse: {
+                    x: sketch.mouseX + prev.board.translate[0],
+                    y: sketch.mouseY + prev.board.translate[1],
+                    pressed: false
+                }
+            }));
         manager.dispatch("mouseUp", {
             mouseDown: true
         });
@@ -98,6 +133,7 @@ export default function handleEvents(canvas: JQuery, sketch: p5, comps: RenderCo
     mousetrap.bind("enter", () => manager.broadcast("enter"));
 
     mousetrap.bind("ctrl+a", () => manager.setState().renderedComponents.forEach(i => i.isSelected = true));
+    mousetrap.bind("ctrl+alt+a", () => manager.setState().renderedComponents.forEach(i => i.isSelected = false));
 
     mousetrap.bind("1", () => $("#pointer").prop('checked', true));
     mousetrap.bind("2", () => $("#select").prop('checked', true));
@@ -110,5 +146,6 @@ export default function handleEvents(canvas: JQuery, sketch: p5, comps: RenderCo
         await saveDocument();
     });
 
+    touch();
     buildWire();
 }

@@ -7,7 +7,7 @@ import {getColour} from "../sys/util/Colour";
 import {manager, State, Tool} from "../index";
 import Colour from "../sys/util/Themes";
 import {renderWire, Wire} from "./Wire";
-import {GenComponent, GenericComponent} from "../ComponentFetcher";
+import {GenComponent} from "../ComponentFetcher";
 
 export interface RenderProps {
     pos: [number, number],
@@ -99,15 +99,14 @@ export default class RenderComponent extends RenderObject {
             renderWire.bind(sketch)(i, this.component.out[a]);
 
         sketch.strokeWeight(1);
-        sketch.stroke(getColour(this.isSelected ? Colour.Cursor : (!this.component.out.includes(false) ? Colour.Active : Colour.Blank)));
+        sketch.stroke(getColour(this.isSelected ? Colour.Cursor : (this.component.out.includes(true) ? Colour.Active : Colour.Blank)));
 
-        const {gridScale: scl, tool} = manager.setState();
-        const mouse: [number, number] = [sketch.mouseX, sketch.mouseY];
+        const {gridScale: scl, tool, pref, mouse} = manager.setState();
 
         for (const i of this.inputDashesCoords.concat(this.outputDashesCoords)) {
-            sketch.stroke(getColour(this.isSelected ? Colour.Cursor : (!this.component.out.includes(false) ? Colour.Active : Colour.Blank)));
+            sketch.stroke(getColour(this.isSelected ? Colour.Cursor : (this.component.out.includes(true) ? Colour.Active : Colour.Blank)));
             sketch.strokeWeight(1);
-            if (getDist([i[0], i[1]], mouse) < scl / 4 && tool === Tool.Wire) {
+            if (getDist([i[0], i[1]], [mouse.x, mouse.y]) < scl / 4 && tool === Tool.Wire) {
                 sketch.stroke(getColour(Colour.Cursor));
                 sketch.strokeWeight(3);
             }
@@ -115,24 +114,26 @@ export default class RenderComponent extends RenderObject {
             sketch.line(...i);
         }
 
-        sketch.stroke(getColour(this.isSelected ? Colour.Cursor : (!this.component.out.includes(false) ? Colour.Active : Colour.Blank)));
+        sketch.stroke(getColour(this.isSelected ? Colour.Cursor : (this.component.out.includes(true) ? Colour.Active : Colour.Blank)));
         sketch.strokeWeight(1);
 
-        sketch.fill(getColour(Colour.Panel));
+        // sketch.fill(getColour(Colour.Panel));
+        sketch.fill(getColour(Colour.Background));
         sketch.rect(this.pos[0], this.pos[1], this.size[0], this.size[1]);
 
-        if (this.isWithinBounds(manager.setState())) {
+        if ((pref.setState().showLabels && !this.isWithinBounds(manager.setState())) || (!pref.setState().showLabels && this.isWithinBounds(manager.setState()))) {
+            sketch.noStroke();
             sketch.textAlign(sketch.CENTER);
             const fontSize = 14;
             sketch.textSize(fontSize);
-            sketch.noStroke();
 
-            const name = this.props.label || this.component.name;
-            const strWidth = sketch.textWidth(name);
+            // const name = this.props.label || this.component.name;
+            const name = this.component.name;
+            const strWidth = sketch.textWidth(name) + 12;
             const strHeight = fontSize * 1.25;
             const coords: [number, number, number, number] = [this.pos[0] + this.size[0] / 2 - strWidth / 2, this.pos[1] + this.size[1] / 2 - (strHeight / 2) + 0.5, strWidth, strHeight];
 
-            sketch.fill(getColour(Colour.Panel));
+            sketch.fill(getColour(Colour.Background));
             sketch.rect(...coords);
 
             sketch.fill(getColour(Colour.Label));
@@ -146,11 +147,11 @@ export default class RenderComponent extends RenderObject {
 
     protected update(sketch: p5): void {
         const [inputNum, outputNum] = this.getConnections(this.props.direction > 1);
-        const {gridScale: scl, board} = manager.setState();
+        const {gridScale: scl, board, mouse, p_mouse} = manager.setState();
 
         const {padding, pos: boardPos} = board;
 
-        this.mousePos = [this.mousePos[0] + (sketch.mouseX - sketch.pmouseX), this.mousePos[1] + (sketch.mouseY - sketch.pmouseY)];
+        this.mousePos = [this.mousePos[0] + (mouse.x - p_mouse.x), this.mousePos[1] + (mouse.y - p_mouse.y)];
 
         if (this.props.isMoving)
             this.props.pos = board.getMouseGridCoords(this.mousePos);
@@ -210,7 +211,6 @@ export async function renderComponents(circuitManager: CircuitManager): Promise<
             isMoving: false,
         })).map(function (i, a, comps) {
             const raw = (i.component as GenComponent).base;
-            console.log(raw);
             if (raw)
                 for (const [w_key, w] of Object.entries(raw.wires))
                     i.wires.push({

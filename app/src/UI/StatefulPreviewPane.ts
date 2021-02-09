@@ -39,7 +39,7 @@ export default class StatefulPreviewPane extends RenderObject {
             else
                 sketch.rect(this.pos[0] + manager.setState().board.padding, this.pos[1], this.size[0], this.size[1]);
 
-            const gridScale = manager.setState().gridScale;
+            const {gridScale, mouse} = manager.setState();
 
             const components = manager.setState().circuit.state.setState().availableComponents;
             let b: number = 0;
@@ -50,7 +50,7 @@ export default class StatefulPreviewPane extends RenderObject {
             for (const a in components) {
                 const coords = [this.pos[0] + gridScale / 4, this.pos[1] + b++ * gridScale + 0.5 + gridScale / 8, this.size[0], gridScale];
                 sketch.fill(lighten(Colour.Panel, 25));
-                if (sketch.mouseX > coords[0] && sketch.mouseX < coords[0] + coords[2] && sketch.mouseY > coords[1] && sketch.mouseY < coords[1] + coords[3])
+                if (mouse.x > coords[0] && mouse.x < coords[0] + coords[2] && mouse.y > coords[1] && mouse.y < coords[1] + coords[3])
                     sketch.rect(coords[0] - gridScale / 4, coords[1] - gridScale / 8 - 1, coords[2], coords[3]);
                 sketch.fill(getColour(Colour.Blank));
                 sketch.text(a, coords[0], coords[1], coords[2], coords[3]);

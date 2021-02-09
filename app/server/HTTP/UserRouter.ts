@@ -19,7 +19,6 @@ router.post("/login", async function (req, res) {
     const password: string = req.body.password;
 
     if (email && password) {
-
         const db = await sql.sql_get<Partial<DBUser>>(`SELECT *
                                                        from users
                                                        where email == ?`, [email])

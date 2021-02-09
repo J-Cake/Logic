@@ -47,6 +47,8 @@ export default class Circuit implements CircuitObj {
 
         if (physicalLocation)
             this.info = JSON.parse(fs.readFileSync(path.join(rootFn(process.cwd()), 'Data', 'documents', physicalLocation)).toString()) as CircuitObj;
+        else
+            throw {err: 'Unable to read file. Location was not found'};
     }
 
     async writeContents(circuit: CircuitObj): Promise<void> {
@@ -55,6 +57,11 @@ export default class Circuit implements CircuitObj {
                                                                            where documentId == ?`, [this.docId]);
 
         if (physicalLocation)
-            fs.writeFileSync(path.join(rootFn(process.cwd()), 'Data', 'documents', physicalLocation), JSON.stringify(circuit, null, 4));
+            try {
+                fs.writeFileSync(path.join(rootFn(process.cwd()), 'Data', 'documents', physicalLocation), JSON.stringify(circuit, null, 4));
+                sql.sql_query(`UPDATE documents SET edited = ? where documentToken == ?`, [new Date().getTime(), this.docId]);
+            } catch (err) {
+                throw {err: 'write failed'};
+            }
     }
 }

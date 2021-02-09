@@ -31,7 +31,7 @@ export type wires = {
 
 // This is a classless representation of a component in use.
 export interface GenericComponent {
-    identifier: string,
+    identifier?: string,
     direction: 0 | 1 | 2 | 3
     inputs?: number[],
     outputs: number[],
@@ -101,10 +101,10 @@ export default async function fetchComponent(component: string): Promise<new(map
                     for (const i in apiComponent.component as { [componentId: number]: GenericComponent }) {
                         memberComponents[++componentId] = new availComponents[i](Number(i), apiComponent.component[i] as GenericComponent);
 
-                        if ((apiComponent.component[i] as GenericComponent).identifier === "std/input")
-                            this.inputIds.push(componentId);
-                        else if ((apiComponent.component[i] as GenericComponent).identifier === "std/output")
-                            this.outputIds.push(componentId);
+                        // if ((apiComponent.component[i] as GenericComponent).identifier === "std/input")
+                        //     this.inputIds.push(componentId);
+                        // else if ((apiComponent.component[i] as GenericComponent).identifier === "std/output")
+                        //     this.outputIds.push(componentId);
                     }
 
                     this.memberComponents = memberComponents;

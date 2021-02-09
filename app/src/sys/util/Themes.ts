@@ -17,6 +17,7 @@ export default Colour;
 
 export enum Theme {
     White,
+    Black,
     DarkBlue,
     DarkRed,
     DarkOrange,
@@ -27,13 +28,25 @@ export const themes: Record<Theme, () => Record<Colour, rgb>> = { // Here is a s
         [Colour.Primary]: [217, 217, 217],
         [Colour.Danger]: [248, 203, 173],
         [Colour.Active]: [239, 166, 239],
-        [Colour.Label]: [0x1, 0x75, 0x42],
+        [Colour.Label]: [40, 179, 118],
         [Colour.Accent]: [142, 169, 219],
         [Colour.SecondaryAccent]: [255, 230, 153],
         [Colour.Cursor]: [142, 169, 219],
         [Colour.Panel]: [0xEF, 0xEF, 0xEF],
         [Colour.Background]: [255, 255, 255],
         [Colour.Blank]: [60, 65, 70]
+    }),
+    [Theme.Black]: () => ({
+        [Colour.Primary]: [0xce, 0xc9, 0xc4],
+        [Colour.Danger]: [0x4c, 0x3a, 0x33],
+        [Colour.Active]: [0xa8, 0x44, 0x01],
+        [Colour.Label]: [0x0c, 0xb3, 0xc9],
+        [Colour.Accent]: [0x28, 0x33, 0x4c],
+        [Colour.SecondaryAccent]: [0x41, 0x9b, 0x62],
+        [Colour.Cursor]: [0xba, 0x09, 0x50],
+        [Colour.Panel]: [0x2f, 0x33, 0x34],
+        [Colour.Background]: [0x15, 0x1b, 0x1c],
+        [Colour.Blank]: [0xc3, 0xc3, 0xc8],
     }),
     [Theme.DarkBlue]: () => ({
         [Colour.Primary]: [85, 85, 85],

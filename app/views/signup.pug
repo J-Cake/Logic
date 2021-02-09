@@ -1,16 +1,23 @@
 extends index
 
 block content
-    form(action="/user/signup", method="post")
-        if err
-            span#err= err
+    form(action="/user/signup", method="post")#form
+        h1 Let's create your account
 
-        input(name="email", type="email", placeholder="Email")
-        input(name="name", type="text", placeholder="Your name")
+        p.
+            Please enter the required information below. You may note that we #[b never] send you spam or advertisement. #[br]
+            #[a(href="/user/login") Already have an account?]
 
-        input(name="password", type="password", placeholder="Password")
-        input(name="passwordConfirm", type="password", placeholder="Confirm Password")
+        #input
+            input(name="email", type="email", placeholder="Email")
+            input(name="name", type="text", placeholder="Your name")
 
-        a(href="/user/login") Already have an account?
+            input(name="password", type="password", placeholder="Password")
+            input(name="passwordConfirm", type="password", placeholder="Confirm Password")
+
+            if err
+                #err
+                    h3 There was an error creating your account.
+                    span#err= err
 
         button(type="submit") Log In

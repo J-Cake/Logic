@@ -16,10 +16,11 @@ export function interpolateColour(frame: number, endFrame: number, colour1: rgb,
 }
 
 export function getColour(colour: Colour, interpolation?: { duration: number, type?: Interpolation }): rgb {
-    const colours: Record<Colour, rgb> = themes[manager.setState().themes.last()]();
+    const colours: Record<Colour, rgb> = themes[manager.setState().theme]();
 
     if (interpolation) { // colour interpolation - smooth transition between colours.
-        const prevColours: () => Record<Colour, rgb> = themes[manager.setState().themes.last(1)];
+        const prevColours: () => Record<Colour, rgb> = themes[manager.setState().theme];
+        // const prevColours: () => Record<Colour, rgb> = themes[manager.setState().theme.last(1)];
         if (!prevColours)
             return colours[colour];
         else

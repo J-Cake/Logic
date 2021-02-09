@@ -31,53 +31,63 @@ block content
 
     section#body
         div#toolbar
-            button#close 
-            hr
-            #file-box
-                button#save 
-                button#open 
-                button#new 
-            hr
-            #controls
-                button#undo 
-                button#redo 
-                button#history 
-            input#document-name(placeholder="Document Name")
-            #tool-box
-                input(type="radio", name="tool", checked)#pointer
-                label(for="pointer") 
-
-                input(type="radio", name="tool")#select
-                label(for="select") 
-
-                input(type="radio", name="tool")#move
-                label(for="move") 
-
-                input(type="radio", name="tool")#wire
-                label(for="wire") 
-
-                input(type="radio", name="tool")#debug
-                label(for="debug") 
-
+            .left
+                button#close 
                 hr
-
-                input(type="checkbox")#add-component
-                label(for="add-component") 
-                button#remove-component 
-                button#import-component 
-
+                #file-box
+                    button#save 
+                    button#open 
+                    button#new 
                 hr
+                #controls
+                    button#undo 
+                    button#redo 
+                hr
+                #tool-box
 
-                input(type="checkbox", name="panel-visibility")#panel-vis
-                label(for="panel-vis") 
+                    input(type="radio", name="tool", checked)#pointer
+                    label(for="pointer") 
+
+                    input(type="radio", name="tool")#select
+                    label(for="select") 
+
+                    input(type="radio", name="tool")#move
+                    label(for="move") 
+
+                    input(type="radio", name="tool")#wire
+                    label(for="wire") 
+
+                    input(type="radio", name="tool")#debug
+                    label(for="debug") 
+
+                    hr
+
+                    input(type="checkbox")#add-component
+                    label(for="add-component") 
+                    button#remove-component 
+                    button#import-component 
+
+            .right
+                #pref
+                    input(type="checkbox", name="panel-visibility")#panel-vis
+                    label(for="panel-vis") 
+
+                    input(type="checkbox", name="pref")#show-labels
+                    label(for="show-labels") 
+
+                    hr
+
+                    button#in 
+                    button#reset 
+                    button#out 
 
         div#canvas-container
 
         div#status-bar
-            #left
+            .left
                 span#grid-pos 0,0
                 span#document-title ...
                 span#document-id ...
-            #right
+            .right
                 span#save-status saved
                 span#owner ...

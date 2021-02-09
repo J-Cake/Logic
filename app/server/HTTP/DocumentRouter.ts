@@ -60,7 +60,7 @@ router.get("/make", async function (req, res) {
 
     await sql.sql_query(`INSERT INTO documents
                          VALUES ((SELECT userId from users where userToken == ?), ?, ?, ?, false, ?,
-                                 date('now'))`, [userId, fileName, circuitId, name, circuitToken]);
+                                 date('now'), date('now'))`, [userId, fileName, circuitId, name, circuitToken]);
 
     res.redirect(`/edit/${circuitToken}`);
 });
@@ -93,6 +93,7 @@ router.put('/circuit/raw/:circuit', async function (req, res) { // File Save
         res.status(501);
         try {
             const file: Circuit | null = await getFile(userId, req.params.circuit);
+            await file?.info;
             if (['circuitName', 'content', 'components', 'ownerEmail'].map(i => i in req.body).includes(false)) {
                 res.status(400);
                 res.end('The file is invalid as it may be malformed. Confirm the correctness of the file before saving again.');
@@ -104,6 +105,36 @@ router.put('/circuit/raw/:circuit', async function (req, res) { // File Save
         } catch (err) {
             res.status(500);
             res.end('Saving failed for unknown reasons.');
+        }
+    }
+});
+
+router.get('/circuit/props/:circuit', async function (req, res) {
+    const userId: string = req.userId || "";
+    const usr = await verifyUser(userId);
+
+    if (!usr) {
+        res.status(403);
+        res.end('Unverified request');
+    } else {
+        res.status(501);
+        try {
+            const file: Circuit | null = await getFile(userId, req.params.circuit);
+
+            if (file) {
+                await file?.fetchInfo();
+
+                res.json({
+                    name: file?.circuitName,
+                    dateCreated: new Date((await sql.sql_get<{created: string}>(`SELECT (created) FROM documents where documentToken == ?`, [req.params.circuit])).created).getTime()
+                });
+            } else {
+                res.status(403);
+                res.end('Access to the requested document was denied');
+            }
+        } catch (err) {
+            res.status(500);
+            res.end('Reading failed for unknown reasons.');
         }
     }
 });
