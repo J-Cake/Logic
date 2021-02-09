@@ -8,7 +8,5 @@ const dir = path.dirname(import.meta.url.slice(6));
 const db = new (sqlite3.verbose().Database)('./Data/Users');
 
 db.serialize(function() {
-    const src = fs.readFileSync('./init.sql').toString().split(';');
-    for (const cmd of src)
-        db.run(cmd);
-})
+    db.exec(fs.readFileSync('./bin/init.sql').toString());
+});
