@@ -14,7 +14,7 @@ const router = express.Router();
 
 router.use(bodyParser.json({}));
 
-router.use(async function (req, res, next) {
+router.use('/', async function (req, res, next) {
     const userId = req.cookies.userId ?? req.header("userId");
     req.userId = userId;
 

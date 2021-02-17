@@ -4,7 +4,7 @@ import * as path from 'path';
 import sql from "./sql";
 import {DBDocument} from "./getFile";
 import {rootFn} from "./utils";
-import {GenericComponent} from "../src/ComponentFetcher";
+import {GenericComponent} from "../src/Logic/ComponentFetcher";
 
 export interface CircuitObj {
     circuitName: string,

@@ -9,7 +9,7 @@ import DropObject from "./sys/components/DropObject";
 import {Theme} from "./sys/util/Themes";
 import Cursor from "./UI/cursor";
 import debug, {Debug} from "./Logic/Debug";
-import CircuitManager from "./CircuitManager";
+import CircuitManager from "./Logic/CircuitManager";
 import RenderComponent from "./UI/RenderComponent";
 import DialogManager, {Dialogs} from "./UI/DialogManager";
 
@@ -18,7 +18,8 @@ export enum Tool {
     Select,
     Move,
     Wire,
-    Debug
+    Debug,
+    Label,
 }
 
 export interface State {
@@ -76,7 +77,7 @@ export const manager: StateManager<State> = new StateManager<State>({
     mouse: {x: 0, y: 0, pressed: false},
     p_mouse: {x: 0, y: 0},
     dragStart: {x: 0, y: 0},
-    theme: Theme.DarkBlue,
+    theme: Theme.White,
     debugger: debug,
     gridScale: 35,
     loading: true,

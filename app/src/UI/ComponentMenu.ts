@@ -39,8 +39,9 @@ export function addComponent(componentId: string) {
         $("#move").prop("checked", true);
         const component = new Component(mgr.getNextAvailComponentId(), {
             direction: 1,
-            outputs: [],
-            position: board.getMouseGridCoords([mouse.x, mouse.y]),
+            outputs: {},
+            position: board.coordsToGrid([mouse.x, mouse.y]),
+            flip: false,
             wires: {}
         });
         // console.log(componentId, component);
@@ -51,7 +52,8 @@ export function addComponent(componentId: string) {
                 direction: 0,
                 isStateful: false,
                 label: name || '',
-                pos: prev.board.getMouseGridCoords([prev.mouse.x, prev.mouse.y]),
+                pos: prev.board.coordsToGrid([prev.mouse.x, prev.mouse.y]),
+                flip: false,
                 isMoving: true
             });
 

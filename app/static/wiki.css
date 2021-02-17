@@ -1,0 +1,117 @@
+h1, h2, h3, h4, h5, h6 {
+    margin: 0.25em 0;
+}
+
+h1 {
+    font-size: 28pt;
+    font-family: Lora, serif;
+    font-style: italic;
+    font-weight: bold;
+    color: var(--blank);
+}
+
+h2 {
+    font-size: 18pt;
+    font-family: Rasa, serif;
+    width: 100%;
+    border-bottom: 1px solid var(--blank);
+    font-weight: normal;
+    font-style: italic;
+}
+h3 {
+    font-size: 16pt;
+    font-family: Rasa, serif;
+    font-weight: normal;
+}
+h4 {
+    font-size: 16pt;
+}
+h5 {
+    font-size: 12pt;
+}
+h6 {
+    font-size: 8pt;
+}
+
+p, li {
+    margin: 0.5em 0;
+    font-family: Raleway, sans-serif;
+    line-height: 150%;
+    letter-spacing: 0.3px;
+    text-align: justify;
+    font-size: 10pt;
+}
+
+ul li:before, .page:before {
+    content: '';
+    background: var(--secondary);
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 35px;
+
+    line-height: 10pt;
+    margin: 0 0.75em;
+}
+
+ol {
+    counter-reset: list;
+}
+
+ol li:before {
+    counter-increment: list;
+    content: counter(list);
+    color: var(--secondary);
+
+    line-height: 10pt;
+    margin: 0 0.75em;
+}
+
+.pages {
+    padding: 8px 24px;
+    display: flex;
+    flex-direction: column;
+}
+
+.pages .page {
+    display: flex;
+    color: var(--primary);
+    line-height: 150%;
+    font-size: 10pt;
+    text-align: justify;
+    align-items: center;
+}
+
+.indent {
+    padding-left: 24px;
+}
+
+.pages .page:before {
+    content: '';
+    display: block;
+}
+
+article {
+    /*overflow: auto;*/
+    /*height: 100%;*/
+    padding: 12px;
+}
+
+pre, code {
+    font-family: Inconsolata, monospace;
+    background: var(--panel);
+    padding: 4px;
+    box-sizing: content-box;
+    border-radius: 2px;
+}
+
+blockquote {
+    background: var(--panel);
+    width: 100%;
+    padding: 8px;
+    border-radius: 4px;
+    line-height: 125%;
+    border-left: var(--secondary) 4px solid;
+
+    margin-right: 4px;
+}

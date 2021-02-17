@@ -1,0 +1,34 @@
+extends ../web
+
+block content
+    header
+        nav#content
+            nav.site
+                a(href="/") Home
+                a(href="/folio") Folio
+                a(href="/docs") Docs
+                a(href="/wiki") LogicX Wiki
+            nav.social
+                a(href="https://github.com/J-Cake/Logic").icon 
+            nav.user
+                a(href="/dashboard").icon 
+
+    section#body
+        //img(src="https://www.lifeofpix.com/wp-content/uploads/2018/05/308-name6012-ake-1-1600x1067.jpg")#bg-img
+        section#banner
+
+        section#page
+            block page
+
+        footer
+            nav
+                div.ref
+                    a(href="/license") License
+                    a(href="/ref") References
+                    a(href="/acknowledgements") Acknowledgements
+                div#copyright
+                    a(href="https://jschneiderprojects.com.au") Jacob Schneider - 2021
+                div.res
+                    a(href="/dashboard") Dashboard
+                    a(href="https://github.com/J-Cake/Logic") GitHub
+                    a(href="https://logic.jschneiderprojects.com.au") WebSite

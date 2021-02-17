@@ -38,7 +38,7 @@ export default class Board extends RenderObject {
         });
     }
 
-    getMouseGridCoords(mouse: [number, number]): [number, number] {
+    coordsToGrid(mouse: [number, number]): [number, number] {
         const scl = manager.setState().gridScale;
         return [Math.floor((mouse[0] - this.pos.x) / scl), Math.floor((mouse[1] - this.pos.y) / scl)];
     }
@@ -69,11 +69,6 @@ export default class Board extends RenderObject {
 
         sketch.strokeWeight(1);
         sketch.stroke(getColour(Colour.Panel));
-        // for (let i = this.pos.x - scl; i <= sketch.width + scl; i += scl)
-        //     sketch.line(i + 0.5, this.pos.y - scl + this.translate[1], i + 0.5, sketch.height + scl + this.translate[1]); // +0.5 makes the lines sharper
-        //
-        // for (let j = this.pos.y - scl; j <= sketch.height + scl; j += scl)
-        //     sketch.line(this.pos.x - scl + this.translate[0], j + 0.5, sketch.width + scl + this.translate[0], j + 0.5);
 
         for (let i = 0; i <= sketch.width; i += scl) {
             const x = (this.translate[0] + i + 0.5) - (this.translate[0] - this.pos.x) % scl;

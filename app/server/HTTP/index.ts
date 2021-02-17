@@ -11,6 +11,7 @@ import DocumentRouter from "./DocumentRouter";
 import ComponentRouter from "./ComponentRouter";
 import ApplicationRouter from './ApplicationRouter';
 import ResourceRouter from './ResourceRouter';
+import WebRouter from './WebRouter';
 
 import {getTimeString, rootFn} from "../utils";
 import {liveReload} from "./util";
@@ -28,27 +29,23 @@ app.use(cookies());
 app.use(body.urlencoded({extended: true}));
 app.use(body.json({}));
 
-app.use(function (req, res, next) {
-    console.log(getTimeString(), req.method.toUpperCase(), req.path);
-    next();
-});
-
 app.use("/app", express.static(path.join(rootFn(process.cwd()), "./build/final")));
-
-app.get('/app', function (req, res) {
-    res.render('app');
-})
 
 app.use("/user", UserRouter);
 app.use("/component", ComponentRouter);
+
+app.use(WebRouter);
 app.use(DocumentRouter);
 app.use(ApplicationRouter);
-
 app.use(ResourceRouter);
 
 export const port = Number(process.argv[2]) || 3500;
 
 export const reloadPort = liveReload();
+
+app.use(function (req, res, next) {
+    res.status(404).render('site/404');
+});
 
 app.listen(port, function () {
     console.log('listening on port', port);

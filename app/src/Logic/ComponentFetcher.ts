@@ -1,6 +1,6 @@
-import Component from "./Logic/Component";
-import {manager} from "./index";
-import RenderComponent from "./UI/RenderComponent";
+import Component from "./Component";
+import {manager} from "../index";
+import RenderComponent from "../UI/RenderComponent";
 
 export type TruthTable = [boolean[], boolean[]][];
 export type Body = TruthTable | { [componentId: number]: GenericComponent } | string;
@@ -22,19 +22,22 @@ export interface ApiComponent {
 }
 
 export type wires = {
-    [dest: number]: {
+    [dest: number]: [{
         coords: [number, number][],
         inputIndex: number,
         outputIndex: number
-    }
+    }]
 };
 
 // This is a classless representation of a component in use.
 export interface GenericComponent {
     identifier?: string,
-    direction: 0 | 1 | 2 | 3
-    inputs?: number[],
-    outputs: number[],
+    direction: 0 | 1 | 2 | 3,
+    flip: boolean,
+    outputs: {
+        [terminal: string]: [number, string][] // [terminal: string]: [destId: number, destTerminal: string][]
+    }
+    // outputs: number[],
     position: [number, number],
     wires: wires
 }

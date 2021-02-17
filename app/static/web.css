@@ -12,7 +12,7 @@ h1 {
     font-size: 32pt;
     line-height: 2;
     margin-bottom: 0.2em;
-    margin-left: 1em;
+    padding-left: 1em;
 }
 
 h3 {

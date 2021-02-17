@@ -1,15 +1,16 @@
-extends index
+extends site/page
 
-block content
-
+block page
     script(src="/app/ui.js")
+
+    h1 Welcome to your Dashboard
 
     script.
         window.addEventListener("load", function() {
             document.querySelector("#mkDoc").addEventListener("click", function() {
                 const name = prompt("Enter a new Circuit name");
                 if (name && name.trim().length > 0)
-                    window.location.href = `/make?name=${encodeURIComponent(name)}`;
+                    window.location.href = `/doc/make?name=${encodeURIComponent(name)}`;
             });
         });
 

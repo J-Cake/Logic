@@ -1,6 +1,11 @@
 extends index
 
 block content
+    style.
+        section#body {
+            height: 100vh;
+        }
+
     if circuit
         span.hidden#circuitToken= circuit
 
@@ -59,6 +64,9 @@ block content
 
                     input(type="radio", name="tool")#debug
                     label(for="debug") 
+
+                    input(type="radio", name="tool")#label
+                    label(for="label") 
 
                     hr
 

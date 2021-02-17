@@ -2,16 +2,17 @@ import * as p5 from "p5";
 
 import RenderObject from "../sys/components/RenderObject";
 import Component from "../Logic/Component";
-import CircuitManager from "../CircuitManager";
+import CircuitManager from "../Logic/CircuitManager";
 import {getColour} from "../sys/util/Colour";
 import {manager, State, Tool} from "../index";
 import Colour from "../sys/util/Themes";
-import {renderWire, Wire} from "./Wire";
-import {GenComponent} from "../ComponentFetcher";
+import {renderWire, Wire, WireHandle} from "./Wire";
+import {GenComponent} from "../Logic/ComponentFetcher";
 
 export interface RenderProps {
     pos: [number, number],
     direction: 0 | 1 | 2 | 3,
+    flip: boolean
     label: string,
     isStateful: boolean,
     isMoving: boolean,
@@ -95,8 +96,8 @@ export default class RenderComponent extends RenderObject {
     }
 
     render(sketch: p5): void {
-        for (const [a, i] of this.wires.entries())
-            renderWire.bind(sketch)(i, this.component.out[a]);
+        for (const i of this.wires)
+            renderWire.bind(sketch)(i, this.component.out[i.startIndex]);
 
         sketch.strokeWeight(1);
         sketch.stroke(getColour(this.isSelected ? Colour.Cursor : (this.component.out.includes(true) ? Colour.Active : Colour.Blank)));
@@ -146,6 +147,8 @@ export default class RenderComponent extends RenderObject {
     }
 
     protected update(sketch: p5): void {
+        this.component.updated = false;
+
         const [inputNum, outputNum] = this.getConnections(this.props.direction > 1);
         const {gridScale: scl, board, mouse, p_mouse} = manager.setState();
 
@@ -154,7 +157,7 @@ export default class RenderComponent extends RenderObject {
         this.mousePos = [this.mousePos[0] + (mouse.x - p_mouse.x), this.mousePos[1] + (mouse.y - p_mouse.y)];
 
         if (this.props.isMoving)
-            this.props.pos = board.getMouseGridCoords(this.mousePos);
+            this.props.pos = board.coordsToGrid(this.mousePos);
         else
             this.mousePos = this.pos;
 
@@ -167,32 +170,46 @@ export default class RenderComponent extends RenderObject {
         this.inputDashesCoords = [];
         this.outputDashesCoords = [];
 
+        const loop = (int: number, cond: (i: number) => boolean, inc: (i: number) => number, cb: (i: number) => void) => {
+            let i = int;
+            while (cond(i)) {
+                cb(i);
+                i = inc(i);
+            }
+        }
+
+        const flip = this.props.flip;
+
         if (this.props.direction % 2 === 0) {
-            for (let i = 0; i < inputNum; i++)
-                this.inputDashesCoords.push([
-                    this.pos[0] - this.buff,
-                    this.pos[1] - this.buff + scl * i + scl / 2 + 0.5,
-                    this.pos[0] + 0,
-                    this.pos[1] - this.buff + scl * i + scl / 2 + 0.5]);
-            for (let o = 0; o < outputNum; o++)
-                this.outputDashesCoords.push([
-                    this.pos[0] + this.size[0],
-                    this.pos[1] - this.buff + scl * o + scl / 2 + 0.5,
-                    this.pos[0] + this.size[0] + this.buff,
-                    this.pos[1] - this.buff + scl * o + scl / 2 + 0.5]);
+            loop(0, i => i < Math.max(inputNum, outputNum), i => i + 1, i => this.inputDashesCoords.push([
+                this.pos[0] - this.buff,
+                this.pos[1] - this.buff + scl * i + scl / 2 + 0.5,
+                this.pos[0],
+                this.pos[1] - this.buff + scl * i + scl / 2 + 0.5]));
+            loop(0, o => o < Math.max(outputNum, inputNum), o => o + 1, o => this.outputDashesCoords.push([
+                this.pos[0] + this.size[0],
+                this.pos[1] - this.buff + scl * o + scl / 2 + 0.5,
+                this.pos[0] + this.size[0] + this.buff,
+                this.pos[1] - this.buff + scl * o + scl / 2 + 0.5]));
         } else {
-            for (let i = 0; i < outputNum; i++)
-                this.inputDashesCoords.push([
-                    this.pos[0] - this.buff + scl * i + scl / 2 + 0.5,
-                    this.pos[1] - this.buff,
-                    this.pos[0] - this.buff + scl * i + scl / 2 + 0.5,
-                    this.pos[1] + 0]);
-            for (let o = 0; o < inputNum; o++)
-                this.outputDashesCoords.push([
-                    this.pos[0] - this.buff + scl * o + scl / 2 + 0.5,
-                    this.pos[1] + this.size[1],
-                    this.pos[0] - this.buff + scl * o + scl / 2 + 0.5,
-                    this.pos[1] + this.size[1] + this.buff]);
+            loop(0, o => o < Math.max(outputNum, inputNum), o => o + 1, o => this.inputDashesCoords.push([
+                this.pos[0] - this.buff + scl * o + scl / 2 + 0.5,
+                this.pos[1] - this.buff,
+                this.pos[0] - this.buff + scl * o + scl / 2 + 0.5,
+                this.pos[1]]));
+            loop(0, i => i < Math.max(inputNum, outputNum), i => i + 1, i => this.outputDashesCoords.push([
+                this.pos[0] - this.buff + scl * i + scl / 2 + 0.5,
+                this.pos[1] + this.size[1],
+                this.pos[0] - this.buff + scl * i + scl / 2 + 0.5,
+                this.pos[1] + this.size[1] + this.buff]));
+        }
+
+        if (flip) {
+            this.inputDashesCoords = this.inputDashesCoords.slice(-this.component.inputNames.length);
+            this.outputDashesCoords = this.outputDashesCoords.slice(-this.component.outputNames.length);
+        } else {
+            this.inputDashesCoords = this.inputDashesCoords.slice(0, this.component.inputNames.length);
+            this.outputDashesCoords = this.outputDashesCoords.slice(0, this.component.outputNames.length);
         }
 
     }
@@ -201,6 +218,7 @@ export default class RenderComponent extends RenderObject {
 export async function renderComponents(circuitManager: CircuitManager): Promise<RenderComponent[]> {
     await circuitManager.loading;
     const state = circuitManager.state.setState();
+    const board = manager.setState().board;
 
     if (state)
         return state.components.map((i, a) => new RenderComponent(i, {
@@ -208,18 +226,20 @@ export async function renderComponents(circuitManager: CircuitManager): Promise<
             label: i.name,
             pos: state.componentMap[i.documentComponentKey][0].position,
             direction: state.componentMap[i.documentComponentKey][0].direction,
+            flip: state.componentMap[i.documentComponentKey][0].flip,
             isMoving: false,
         })).map(function (i, a, comps) {
             const raw = (i.component as GenComponent).base;
             if (raw)
                 for (const [w_key, w] of Object.entries(raw.wires))
-                    i.wires.push({
+                    i.wires.push(...w.map(w => ({
                         coords: w.coords,
+                        handles: w.coords.map((i, a) => new WireHandle((coords) => w.coords[a] = coords, board.gridToPix(i, true))),
                         startComponent: i,
                         startIndex: w.outputIndex,
                         endComponent: comps.find(i => (i.component as GenComponent).documentComponentKey === Number(w_key)) as never as RenderComponent,
                         endIndex: w.inputIndex
-                    });
+                    })));
 
             return i;
         });

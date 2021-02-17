@@ -1,0 +1,20 @@
+extends page
+
+mixin renderPages(pages, root)
+    for page in Object.keys(pages)
+        if (typeof pages[page] === 'string')
+            a.page(href="/wiki/" + encodeURIComponent(root + page))= page
+        else
+            span= page
+            .indent
+                +renderPages(pages[page], page + '/')
+
+block page
+    link(rel="stylesheet", href="/app/wiki.css")
+
+    h2 Index
+    .pages
+        +renderPages(pages, '')
+
+    if (content)
+        article#content !{content}

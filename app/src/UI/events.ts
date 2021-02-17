@@ -6,7 +6,7 @@ import RenderObject from "../sys/components/RenderObject";
 import {manager, Tool} from "../index";
 import RenderComponent from "./RenderComponent";
 import {closeAll} from "./DialogManager";
-import saveDocument from "../DocumentWriter";
+import saveDocument from "../Logic/DocumentWriter";
 import {buildWire} from "./Wire";
 import touch from "./touch";
 
@@ -25,12 +25,13 @@ export default function handleEvents(canvas: JQuery, sketch: p5, comps: RenderCo
     $('button#save').on('click', () => saveDocument());
     $('button#close').on('click', () => window.location.href = '/dashboard');
 
-    const toolBtnId: { [key in 'debug' | 'move' | 'pointer' | 'select' | 'wire']: Tool } = {
+    const toolBtnId: { [key in 'debug' | 'move' | 'pointer' | 'select' | 'wire' | 'label']: Tool } = {
         'debug': Tool.Debug,
         'move': Tool.Move,
         'pointer': Tool.Pointer,
         'select': Tool.Select,
-        'wire': Tool.Wire
+        'wire': Tool.Wire,
+        'label': Tool.Label
     };
 
     $('[name="tool"]').on('change', function () {
@@ -131,6 +132,11 @@ export default function handleEvents(canvas: JQuery, sketch: p5, comps: RenderCo
     });
 
     mousetrap.bind("enter", () => manager.broadcast("enter"));
+
+    // mousetrap.bind(['delete', 'backspace'], () => manager.broadcast('delete'));
+    mousetrap.bind(['del', 'backspace'], () => manager.setState().circuit.deleteSelected());
+
+    mousetrap.bind('space', () => manager.setState().renderedComponents.forEach(i => i.isSelected ? i.onClick() : null));
 
     mousetrap.bind("ctrl+a", () => manager.setState().renderedComponents.forEach(i => i.isSelected = true));
     mousetrap.bind("ctrl+alt+a", () => manager.setState().renderedComponents.forEach(i => i.isSelected = false));

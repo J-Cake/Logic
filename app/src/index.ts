@@ -7,7 +7,7 @@ import Board from './sys/components/Board';
 import {Interpolation} from './sys/util/interpolation';
 import {getColour, rgb} from "./sys/util/Colour";
 import Cursor from "./UI/cursor";
-import CircuitManager from "./CircuitManager";
+import CircuitManager from "./Logic/CircuitManager";
 import {renderComponents} from "./UI/RenderComponent";
 import handleEvents from "./UI/events";
 import StatefulPreviewPane from "./UI/StatefulPreviewPane";
@@ -76,8 +76,14 @@ new _p5(function (sketch: _p5) {
 
         $("#canvas-container").on('wheel', function (e) {
             const event: WheelEvent = e.originalEvent as WheelEvent;
-            pan[0] -= event.deltaX;
-            pan[1] -= event.deltaY;
+
+            if (manager.setState().keys.shift) {
+                pan[0] -= event.deltaY;
+                pan[1] -= event.deltaX;
+            } else {
+                pan[0] -= event.deltaX;
+                pan[1] -= event.deltaY;
+            }
             e.preventDefault();
         });
 
@@ -110,7 +116,7 @@ new _p5(function (sketch: _p5) {
         const board = manager.setState().board;
         board.translate = [-pan[0], -pan[1]];
 
-        $("span#grid-pos").text(`${board.getMouseGridCoords([state.mouse.x, state.mouse.y]).join(',')}`);
+        $("span#grid-pos").text(`${board.coordsToGrid([state.mouse.x, state.mouse.y]).join(',')}`);
 
         board.render(sketch);
         board.update(sketch);
@@ -120,5 +126,8 @@ new _p5(function (sketch: _p5) {
 
         state.cursor.render(sketch);
         state.cursor.update(sketch);
+
+        if (state.renderedComponents)
+            state.renderedComponents.forEach(i => i.component.updated = false);
     }
 });

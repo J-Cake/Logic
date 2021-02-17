@@ -1,13 +1,12 @@
 import CircuitManager from "./CircuitManager";
-import {CircuitObj} from "../server/Circuit";
-import {manager} from "./State";
+import {CircuitObj} from "../../server/Circuit";
+import {manager} from "../State";
 import {GenComponent, GenericComponent, wires} from "./ComponentFetcher";
-import Component from "./Logic/Component";
-import RenderComponent from "./UI/RenderComponent";
+import Component from "./Component";
+import RenderComponent from "../UI/RenderComponent";
 
 export default async function saveDocument(): Promise<void> {
     const mgr = manager.setState().circuit, file = await prepareForSave(mgr);
-    console.log(file);
     if (!(await fetch(`/circuit/raw/${mgr.circuitId}`, {
         body: JSON.stringify(file, null, 4),
         method: 'PUT',
@@ -15,7 +14,7 @@ export default async function saveDocument(): Promise<void> {
             'Content-type': 'application/json'
         }
     })).ok)
-        alert ('There was an issue saving the file. Check the logs for more info');
+        alert('There was an issue saving the file. Check the logs for more info');
 }
 
 export async function prepareForSave(c_man: CircuitManager): Promise<CircuitObj> {
@@ -36,30 +35,36 @@ export async function prepareForSave(c_man: CircuitManager): Promise<CircuitObj>
 
         // console.log(component.component.name, component.wires);
 
-        const findIdOfComponent = (component: RenderComponent) => (obj => obj ? obj[1] : -1)(Object.values(ids).find(i => i[0] === component.component));
+        const findIdOfComponent = (component: Component) => (obj => obj ? obj[1] : -1)(Object.values(ids).find(i => i[0] === component));
+        const findIdOfRenderComponent = (component: RenderComponent) => (obj => obj ? obj[1] : -1)(Object.values(ids).find(i => i[0] === component.component));
 
-        for (const wire of component.wires)
-            wires[findIdOfComponent(wire.endComponent)] = {
-                coords: wire.coords,
-                inputIndex: wire.endIndex,
-                outputIndex: wire.startIndex
-            };
+        for (const wire of component.wires) {
+            const id = findIdOfRenderComponent(wire.endComponent)
+            if (wires[id])
+                wires[id].push({
+                    coords: wire.coords,
+                    inputIndex: wire.endIndex,
+                    outputIndex: wire.startIndex
+                });
+            else
+                wires[id] = [{coords: wire.coords,
+                    inputIndex: wire.endIndex,
+                    outputIndex: wire.startIndex}];
+        }
 
-        const comp: GenericComponent = {
+        const outputs: { [terminal: string]: [number, string][] } = {};
+
+        for (const i in component.component.outputs)
+            outputs[i] = component.component.outputs[i].map(i => [findIdOfComponent(i[0]), i[1]]);
+
+        content[id] = {
             identifier: (component.component instanceof GenComponent && component.component.raw?.token) ? component.component.raw.token : component.component.name,
             direction: component.props.direction,
+            flip: component.props.flip,
             position: component.props.pos,
-            outputs: component.component.outputs.map(i => Object.values(ids).find(j => j[0] === i)).map(i => i ? i[1] : -1),
+            outputs: outputs,
             wires: wires
         };
-
-        if (id === -1 || comp.outputs.includes(-1))
-            throw {
-                Err: 'An error occurred saving the document',
-                Description: 'There was one or more components whose connections were invalidly configured.'
-            }
-
-        content[id] = comp;
     }
 
     return {
