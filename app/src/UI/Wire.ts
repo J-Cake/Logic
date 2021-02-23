@@ -38,7 +38,7 @@ export function linesAreIntersecting(line: [[number, number], [number, number]],
 
     const dist = (v1: p5.Vector, v2: p5.Vector) => ((v2.y - v1.y) ** 2 + (v2.x - v1.x) ** 2) ** 0.5;
 
-    if (dist(C, A) > l || dist(B, A) > l)
+    if (dist(C, A) > l + circle[1] / 2 || dist(B, A) > l + circle[1] / 2)
         return false;
 
     const ab = p5.Vector.sub(A, B);
@@ -166,11 +166,11 @@ export function buildWire() {
 export function renderWire(this: p5, wire: Wire, isActive: boolean = false): void {
     if (wire) {
         const {board, tool} = manager.setState();
-        this.stroke(getColour(isActive ? Colour.Active : Colour.Blank));
+        this.stroke(getColour(wire.endComponent ? (isActive ? Colour.Active : Colour.Blank) : Colour.Danger));
         this.strokeWeight(1);
         this.noFill();
 
-        if (wire.startComponent.outputDashesCoords[wire.startIndex] && wire.endComponent.inputDashesCoords[wire.endIndex]) {
+        if (wire.startComponent.outputDashesCoords[wire.startIndex]) {
             this.beginShape();
 
             const start = wire.startComponent.outputDashesCoords[wire.startIndex];
@@ -179,8 +179,10 @@ export function renderWire(this: p5, wire: Wire, isActive: boolean = false): voi
             for (const point of wire.coords)
                 this.vertex(...board.gridToPix(point, true));
 
-            const end = wire.endComponent.inputDashesCoords[wire.endIndex];
-            this.vertex(end[0], end[1]);
+            if (wire.endComponent) {
+                const end = wire.endComponent.inputDashesCoords[wire.endIndex];
+                this.vertex(end[0], end[1]);
+            }
 
             this.endShape();
 

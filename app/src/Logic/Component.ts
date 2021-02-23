@@ -96,22 +96,12 @@ export default abstract class Component {
         this.update();
     }
 
-    dropConnection(component: Component) {
-        // for (const i in this.inputs)
-        //     if (this.inputs[i][0] === component) {
-        //         for (const j in this.inputs[i][0].outputs)
-        //             for (const [a, k] of this.inputs[i][0].outputs[j].entries())
-        //                 if (k[0] === this)
-        //                     delete this.inputs[i][0].outputs[j];
-        //         delete this.inputs[i];
-        //     }
-    }
-
     dropAll() {
         for (const a in this.inputs)
-            this.dropConnection(this.inputs[a][0])
+            this.inputs[a][0].outputs[this.inputs[a][1]].splice(this.inputs[a][0].outputs[this.inputs[a][1]].findIndex(i => i[0] === this), 1);
+
         for (const a in this.outputs)
             for (const b in this.outputs[a])
-                this.dropConnection(this.outputs[a][b][0]);
+                delete this.outputs[a][b][0].inputs[this.outputs[a][b][1]];
     }
 }

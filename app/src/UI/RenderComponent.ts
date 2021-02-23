@@ -23,7 +23,6 @@ export const getDist = (point: [number, number], mouse: [number, number]): numbe
 
 
 export default class RenderComponent extends RenderObject {
-
     component: Component;
     props: RenderProps;
 
@@ -96,6 +95,8 @@ export default class RenderComponent extends RenderObject {
     }
 
     render(sketch: p5): void {
+        // console.log(this.wires)
+        this.wires = this.wires.filter(i => !i.endComponent.deleted);
         for (const i of this.wires)
             renderWire.bind(sketch)(i, this.component.out[i.startIndex]);
 

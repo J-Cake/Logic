@@ -95,8 +95,6 @@ new _p5(function (sketch: _p5) {
     sketch.draw = function () {
 
         sketch.translate(pan[0], pan[1]);
-        // sketch.scale(scl);
-        // sketch.translate(-pan[0], -pan[1]);
         sketch.background(getColour(Colour.Background, {duration: 30, type: Interpolation.linear}));
 
         const state = manager.setState(prev => ({
