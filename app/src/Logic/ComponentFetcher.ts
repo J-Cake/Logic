@@ -1,3 +1,5 @@
+import * as $ from 'jquery';
+
 import Component from "./Component";
 import {manager} from "../index";
 import RenderComponent from "../UI/RenderComponent";
@@ -37,7 +39,7 @@ export interface GenericComponent {
     outputs: {
         [terminal: string]: [number, string][] // [terminal: string]: [destId: number, destTerminal: string][]
     }
-    // outputs: number[],
+    label: string,
     position: [number, number],
     wires: wires
 }
@@ -75,6 +77,8 @@ export default async function fetchComponent(component: string): Promise<new(map
                     this.update();
                     this.raw = apiComponent;
                     this.base = base;
+
+                    this.label = this.base.label;
                 }
 
                 computeOutputs(inputs: boolean[]): boolean[] {
@@ -84,6 +88,10 @@ export default async function fetchComponent(component: string): Promise<new(map
                                 return inputSet[1];
                         return [];
                     })(inputs);
+                }
+
+                preUpdate(next: () => void): void {
+                    manager.setState().debug.inspectComponent(this, () => next());
                 }
             }
         } else if (typeof apiComponent.component === "object") { // it's a stateful component
@@ -114,11 +122,18 @@ export default async function fetchComponent(component: string): Promise<new(map
 
                     this.raw = apiComponent;
                     this.base = base;
+
+                    this.label = this.base.label;
+
                     this.update();
                 }
 
                 computeOutputs(inputs: boolean[]): boolean[] { // TODO: Evaluate stateful components
                     return [];
+                }
+
+                preUpdate(next: () => void): void {
+                    manager.setState().debug.inspectComponent(this, () => next());
                 }
 
             }
@@ -143,6 +158,12 @@ export default async function fetchComponent(component: string): Promise<new(map
                     this.plugin = plugin;
                     this.raw = apiComponent;
                     this.base = base;
+
+                    this.label = this.base.label;
+                }
+
+                preUpdate(next: () => void): void {
+                    manager.setState().debug.inspectComponent(this, () => next());
                 }
 
                 computeOutputs(inputs: boolean[]): boolean[] {

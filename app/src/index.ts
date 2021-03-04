@@ -10,7 +10,7 @@ import Cursor from "./UI/cursor";
 import CircuitManager from "./Logic/CircuitManager";
 import {renderComponents} from "./UI/RenderComponent";
 import handleEvents from "./UI/events";
-import StatefulPreviewPane from "./UI/StatefulPreviewPane";
+import TooltipPane from "./UI/TooltipPane";
 import Colour, {themes} from "./sys/util/Themes";
 import buildComponentPrompt from "./UI/ComponentMenu";
 import {mousetrap} from "../componentMenu";
@@ -41,8 +41,8 @@ new _p5(function (sketch: _p5) {
 
         const container = $('#canvas-container');
         $("#status-bar")
-            .css('background', `rgb(${getColour(Colour.SecondaryAccent)})`)
-            .css('color', `rgb(${getColour(Colour.Background)})`);
+            // .css('background', `rgb(${getColour(Colour.SecondaryAccent)})`)
+            // .css('color', `rgb(${getColour(Colour.Background)})`);
 
         const p5Canvas = sketch.createCanvas(container.width() ?? window.innerWidth, container.height() ?? window.innerHeight);
         p5Canvas.parent(container[0]);
@@ -55,8 +55,9 @@ new _p5(function (sketch: _p5) {
         handleEvents(canvas, sketch, manager.setState(({
             renderedComponents: await renderComponents(manager.setState(() => ({
                 font: sketch.loadFont("/app/font-2.ttf"),
+                iconFont: sketch.loadFont("/app/remixicon.ttf"),
                 board: new Board(),
-                componentMenu: new StatefulPreviewPane(),
+                tooltipPane: new TooltipPane(),
                 sidebarWidth: 6,
                 switchFrame: 0,
                 tool: Tool.Pointer,
@@ -93,6 +94,7 @@ new _p5(function (sketch: _p5) {
     }
 
     sketch.draw = function () {
+        $("#debug-container input").prop("disabled", true);
 
         sketch.translate(pan[0], pan[1]);
         sketch.background(getColour(Colour.Background, {duration: 30, type: Interpolation.linear}));
@@ -124,6 +126,9 @@ new _p5(function (sketch: _p5) {
 
         state.cursor.render(sketch);
         state.cursor.update(sketch);
+
+        state.tooltipPane.update(sketch);
+        state.tooltipPane.render(sketch);
 
         if (state.renderedComponents)
             state.renderedComponents.forEach(i => i.component.updated = false);

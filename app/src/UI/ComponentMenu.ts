@@ -41,6 +41,7 @@ export function addComponent(componentId: string) {
             direction: 1,
             outputs: {},
             position: board.coordsToGrid([mouse.x, mouse.y]),
+            label: '',
             flip: false,
             wires: {}
         });

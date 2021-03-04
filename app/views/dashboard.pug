@@ -10,7 +10,7 @@ block page
             document.querySelector("#mkDoc").addEventListener("click", function() {
                 const name = prompt("Enter a new Circuit name");
                 if (name && name.trim().length > 0)
-                    window.location.href = `/doc/make?name=${encodeURIComponent(name)}`;
+                    window.location.href = `/make?name=${encodeURIComponent(name)}`;
             });
         });
 

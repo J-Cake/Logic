@@ -1,5 +1,4 @@
 import RenderComponent from "../UI/RenderComponent";
-import {GenComponent} from "./ComponentFetcher";
 
 export const containsDuplicates = (list: string[]): boolean => new Set(list).size !== list.length;
 
@@ -10,6 +9,8 @@ export default abstract class Component {
 
     public readonly name: string;
 
+    public label: string;
+
     value: boolean[];
 
     readonly inputs: { [terminal: string]: [Component, string] };
@@ -17,9 +18,12 @@ export default abstract class Component {
     // readonly outputs: Component[];
 
     out: boolean[];
+    prevInput: [boolean[], boolean[]];
     outCache: { [terminal: string]: boolean };
     updated: boolean;
     isRecursive: boolean;
+
+    isBreakpoint: boolean;
 
     protected constructor(inputs: string[], outputs: string[], name: string) {
         if (containsDuplicates(inputs) || containsDuplicates(outputs))
@@ -31,35 +35,48 @@ export default abstract class Component {
         this.inputs = {};
         this.outputs = {};
 
-        this.out = this.computeOutputs(this.inputNames.map(i => i in this.inputs ? (this.inputs[i][0].out[this.inputs[i][0].outputNames.indexOf(i)]) : false)); // get the list of default values
+        this.prevInput = new Array(2).fill(Array.from(this.inputNames.map(i => i in this.inputs ? (this.inputs[i][0].out[this.inputs[i][0].outputNames.indexOf(i)]) : false))) as [boolean[], boolean[]];
+        this.out = this.computeOutputs(this.prevInput[this.prevInput.length - 1]); // get the list of default values
+
         this.outCache = {};
 
         for (const [a, i] of this.outputNames.entries())
             this.outCache[i] = this.out[a] || false;
 
         this.value = new Array(outputs.length).fill(false);
-        this.name = name;
+        this.label = this.name = name;
 
         this.updated = false;
         this.isRecursive = false;
+        this.isBreakpoint = false;
     }
 
     abstract computeOutputs(inputs: boolean[]): boolean[];
 
+    abstract preUpdate(next: (() => void)): void;
+
     isRecursivelyConnected(component: Component): boolean {
-        const compare = this;
+        const compare: Component = this;
+        const checked: Component[] = [];
         const checkComponent = function (component: Component): boolean {
+            if (checked.includes(component))
+                return true;
+            else
+                checked.push(component)
+
             for (const i in component.outputs)
-                if (component.outputs[i].find(i => i[0] === compare) || component.outputs[i].map(i => checkComponent(i[0])))
-                    return true
+                if (component.outputs[i].some(i => i[0] === compare || checkComponent(i[0])))
+                    return true;
             return false;
         }
 
-        return (component === compare) || checkComponent(component);
+        return checkComponent(component);
     }
 
     addInput(component: Component, from: string, to: string) {
         if (!this.inputs[to]) {
+
+            this.isRecursive = this.isRecursivelyConnected(component);
 
             this.inputs[to] = [component, from];
             if (!component.outputs[from])
@@ -69,27 +86,47 @@ export default abstract class Component {
 
     }
 
-    update() { // THIS FUCKING FUNCTION TOOK ME FOREVER TO WRITE
-        const inputs: boolean[] = this.inputNames.map((i: string): boolean => {
+    getInputs(): boolean[] {
+        return this.inputNames.map((i: string): boolean => {
             if (i in this.inputs)
                 return this.inputs[i][0].outCache[this.inputs[i][1]];
             else
                 return false;
         });
+    }
 
-        this.out = this.computeOutputs(inputs);
-        this.outCache = {};
+    update() { // THIS FUCKING FUNCTION TOOK ME FOREVER TO WRITE
+        const inputs: boolean[] = this.getInputs();
 
-        for (const [a, i] of this.outputNames.entries())
-            this.outCache[i] = this.out[a] || false;
+        const update = function (this: Component, next: boolean[], noRipple: boolean = false) {
+            this.out = next;
+            if (this.isBreakpoint)
+                console.log("Updating", this.name);
+                // console.log(this.name, this.prevInput, inputs);
+            this.prevInput.shift();
+            this.prevInput.push(Array.from(inputs));
+            this.outCache = {};
 
-        if (!this.updated) { // wait for the next render tick, allowing the stack to reduce.
-            this.updated = true;
+            for (const [a, i] of this.outputNames.entries())
+                this.outCache[i] = this.out[a] || false;
 
-            for (const a in this.outputs)
-                for (const i of this.outputs[a])
-                    i[0].update();
-        }
+            if (!this.updated) { // wait for the next render tick, allowing the stack to reduce.
+                this.updated = true;
+
+                for (const a in this.outputs)
+                    for (const i of this.outputs[a])
+                        i[0].update();
+            }
+        }.bind(this);
+
+        const next = this.computeOutputs(inputs);
+
+        if (this.isBreakpoint &&
+            (next.some((i, a) => this.out[a] !== i) || this.prevInput[1].some((i, a) => this.prevInput[0][a] !== i)))
+            // check if outputs will change
+            this.preUpdate(() => update(next));
+        else
+            update(next);
     }
 
     activate(renderer: RenderComponent) {

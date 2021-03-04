@@ -37,6 +37,9 @@ export default class RenderComponent extends RenderObject {
     inputDashesCoords: [number, number, number, number][];
     outputDashesCoords: [number, number, number, number][];
 
+    inputDashesGrid: [number, number, number, number][];
+    outputDashesGrid: [number, number, number, number][];
+
     wires: Wire[];
 
     constructor(component: Component, props: RenderProps) {
@@ -52,6 +55,8 @@ export default class RenderComponent extends RenderObject {
 
         this.inputDashesCoords = [];
         this.outputDashesCoords = [];
+        this.inputDashesGrid = [];
+        this.outputDashesGrid = [];
 
         this.isSelected = false;
 
@@ -72,6 +77,14 @@ export default class RenderComponent extends RenderObject {
             if (this.isWithinBounds(prev) || this.isSelected)
                 this.props.isMoving = true;
         });
+        manager.on('label_click', prev => {
+            if (this.isWithinBounds(prev))
+                return this.component.label = prompt("Change label") || this.component.label;
+        });
+        manager.on('debug_click', prev => {
+            if (this.isWithinBounds(prev))
+                this.component.isBreakpoint = !this.component.isBreakpoint;
+        })
     }
 
     isWithinBounds(prev: State): boolean {
@@ -100,14 +113,28 @@ export default class RenderComponent extends RenderObject {
         for (const i of this.wires)
             renderWire.bind(sketch)(i, this.component.out[i.startIndex]);
 
+        sketch.stroke(getColour(Colour.Blank));
+        sketch.fill(getColour(Colour.Background));
+        sketch.rect(this.pos[0], this.pos[1], this.size[0], this.size[1]);
+
         sketch.strokeWeight(1);
         sketch.stroke(getColour(this.isSelected ? Colour.Cursor : (this.component.out.includes(true) ? Colour.Active : Colour.Blank)));
 
-        const {gridScale: scl, tool, pref, mouse} = manager.setState();
+        const {gridScale: scl, tool, pref, mouse, debug, iconFont, font} = manager.setState();
 
-        for (const i of this.inputDashesCoords.concat(this.outputDashesCoords)) {
-            sketch.stroke(getColour(this.isSelected ? Colour.Cursor : (this.component.out.includes(true) ? Colour.Active : Colour.Blank)));
+        const terminals = Object.values(this.component.getInputs())
+            .concat(this.component.out);
+        const grid = this.inputDashesGrid
+            .concat(this.outputDashesGrid);
+
+        for (const [a, i] of this.inputDashesCoords.concat(this.outputDashesCoords).entries()) {
             sketch.strokeWeight(1);
+            sketch.stroke(getColour(terminals[a] ? Colour.Active : Colour.Blank));
+            if (grid[a])
+                sketch.rect(...grid[a]);
+
+            // sketch.stroke(getColour(this.isSelected ? Colour.Cursor : (this.component.out.includes(true) ? Colour.Active : Colour.Blank)));
+
             if (getDist([i[0], i[1]], [mouse.x, mouse.y]) < scl / 4 && tool === Tool.Wire) {
                 sketch.stroke(getColour(Colour.Cursor));
                 sketch.strokeWeight(3);
@@ -116,12 +143,12 @@ export default class RenderComponent extends RenderObject {
             sketch.line(...i);
         }
 
+        sketch.noStroke();
+        sketch.fill(getColour(Colour.Background));
+        sketch.rect(this.pos[0] + 0.5, this.pos[1] + 0.5, this.size[0] - 1, this.size[1] - 1);
+
         sketch.stroke(getColour(this.isSelected ? Colour.Cursor : (this.component.out.includes(true) ? Colour.Active : Colour.Blank)));
         sketch.strokeWeight(1);
-
-        // sketch.fill(getColour(Colour.Panel));
-        sketch.fill(getColour(Colour.Background));
-        sketch.rect(this.pos[0], this.pos[1], this.size[0], this.size[1]);
 
         if ((pref.setState().showLabels && !this.isWithinBounds(manager.setState())) || (!pref.setState().showLabels && this.isWithinBounds(manager.setState()))) {
             sketch.noStroke();
@@ -141,6 +168,22 @@ export default class RenderComponent extends RenderObject {
             sketch.fill(getColour(Colour.Label));
             sketch.text(name, ...coords);
         }
+
+        if (this.component.isBreakpoint) {
+            if (debug.isBreakComponent(this.component)) {
+                sketch.fill(getColour(Colour.SecondaryAccent));
+                sketch.noStroke();
+                sketch.ellipse(this.pos[0] + this.size[0] / 2, this.pos[1] + this.size[1] / 2, this.buff);
+            } else {
+                sketch.noStroke();
+                sketch.fill(getColour(Colour.Blank));
+                sketch.textAlign(sketch.CENTER, sketch.CENTER);
+                sketch.textFont(iconFont);
+                sketch.textSize(scl * 0.55);
+                sketch.text('', this.pos[0], this.pos[1], this.size[0], this.size[1]);
+                sketch.textFont(font);
+            }
+        }
     }
 
     onClick() {
@@ -149,9 +192,11 @@ export default class RenderComponent extends RenderObject {
 
     protected update(sketch: p5): void {
         this.component.updated = false;
+        const {gridScale: scl, board, mouse, p_mouse} = manager.setState();
+
+        this.buff = Math.floor(scl / 6);
 
         const [inputNum, outputNum] = this.getConnections(this.props.direction > 1);
-        const {gridScale: scl, board, mouse, p_mouse} = manager.setState();
 
         const {padding, pos: boardPos} = board;
 
@@ -170,6 +215,8 @@ export default class RenderComponent extends RenderObject {
 
         this.inputDashesCoords = [];
         this.outputDashesCoords = [];
+        this.inputDashesGrid = [];
+        this.outputDashesGrid = [];
 
         const loop = (int: number, cond: (i: number) => boolean, inc: (i: number) => number, cb: (i: number) => void) => {
             let i = int;
@@ -182,27 +229,60 @@ export default class RenderComponent extends RenderObject {
         const flip = this.props.flip;
 
         if (this.props.direction % 2 === 0) {
-            loop(0, i => i < Math.max(inputNum, outputNum), i => i + 1, i => this.inputDashesCoords.push([
-                this.pos[0] - this.buff,
-                this.pos[1] - this.buff + scl * i + scl / 2 + 0.5,
+            loop(0, i => i < inputNum, i => i + 1, i => {
+                this.inputDashesCoords.push([
+                    this.pos[0] - this.buff,
+                    this.pos[1] - this.buff + scl * i + scl / 2 + 0.5,
+                    this.pos[0],
+                    this.pos[1] - this.buff + scl * i + scl / 2 + 0.5]);
+            });
+            loop(0, o => o < outputNum, o => o + 1, o => {
+                this.outputDashesCoords.push([
+                    this.pos[0] + this.size[0],
+                    this.pos[1] - this.buff + scl * o + scl / 2 + 0.5,
+                    this.pos[0] + this.size[0] + this.buff,
+                    this.pos[1] - this.buff + scl * o + scl / 2 + 0.5]);
+
+            });
+            loop(0, i => i < inputNum, i => i + 1, i => this.inputDashesGrid.push([
                 this.pos[0],
-                this.pos[1] - this.buff + scl * i + scl / 2 + 0.5]));
-            loop(0, o => o < Math.max(outputNum, inputNum), o => o + 1, o => this.outputDashesCoords.push([
+                this.pos[1] + scl * i,
+                scl / 2 - this.buff + 0.5,
+                scl - 2 * this.buff
+            ]));
+            loop(0, o => o < outputNum, o => o + 1, o => this.outputDashesGrid.push([
                 this.pos[0] + this.size[0],
-                this.pos[1] - this.buff + scl * o + scl / 2 + 0.5,
-                this.pos[0] + this.size[0] + this.buff,
-                this.pos[1] - this.buff + scl * o + scl / 2 + 0.5]));
+                this.pos[1] + scl * o,
+                -(scl / 2 - this.buff) + 0.5,
+                scl - 2 * this.buff
+            ]));
         } else {
-            loop(0, o => o < Math.max(outputNum, inputNum), o => o + 1, o => this.inputDashesCoords.push([
-                this.pos[0] - this.buff + scl * o + scl / 2 + 0.5,
-                this.pos[1] - this.buff,
-                this.pos[0] - this.buff + scl * o + scl / 2 + 0.5,
-                this.pos[1]]));
-            loop(0, i => i < Math.max(inputNum, outputNum), i => i + 1, i => this.outputDashesCoords.push([
-                this.pos[0] - this.buff + scl * i + scl / 2 + 0.5,
-                this.pos[1] + this.size[1],
-                this.pos[0] - this.buff + scl * i + scl / 2 + 0.5,
-                this.pos[1] + this.size[1] + this.buff]));
+            loop(0, o => o < Math.max(outputNum, inputNum), o => o + 1, o => {
+                this.inputDashesCoords.push([
+                    this.pos[0] - this.buff + scl * o + scl / 2 + 0.5,
+                    this.pos[1] - this.buff,
+                    this.pos[0] - this.buff + scl * o + scl / 2 + 0.5,
+                    this.pos[1]]);
+                this.inputDashesGrid.push([
+                    this.pos[0] - this.buff + scl * o,
+                    this.pos[1],
+                    scl - 2 * this.buff + 0.5,
+                    scl / 2 - this.buff
+                ])
+            });
+            loop(0, i => i < Math.max(inputNum, outputNum), i => i + 1, i => {
+                this.outputDashesCoords.push([
+                    this.pos[0] - this.buff + scl * i + scl / 2 + 0.5,
+                    this.pos[1] + this.size[1],
+                    this.pos[0] - this.buff + scl * i + scl / 2 + 0.5,
+                    this.pos[1] + this.size[1] + this.buff]);
+                this.outputDashesGrid.push([
+                    this.pos[0] - this.buff + scl * i,
+                    this.pos[1] + this.size[1] - scl / 2,
+                    scl - 2 * this.buff,
+                    scl / 2 - this.buff + 0.5
+                ])
+            });
         }
 
         if (flip) {

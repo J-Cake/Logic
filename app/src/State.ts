@@ -3,15 +3,15 @@ import * as $ from 'jquery';
 
 import StateManager from "./sys/util/stateManager";
 import Board from "./sys/components/Board";
-import StatefulPreviewPane from "./UI/StatefulPreviewPane";
+import TooltipPane from "./UI/TooltipPane";
 import DragObject from "./sys/components/DragObject";
 import DropObject from "./sys/components/DropObject";
 import {Theme} from "./sys/util/Themes";
 import Cursor from "./UI/cursor";
-import debug, {Debug} from "./Logic/Debug";
 import CircuitManager from "./Logic/CircuitManager";
 import RenderComponent from "./UI/RenderComponent";
 import DialogManager, {Dialogs} from "./UI/DialogManager";
+import Debugger from "./Logic/Debugger";
 
 export enum Tool {
     Pointer,
@@ -24,16 +24,17 @@ export enum Tool {
 
 export interface State {
     board: Board,
-    componentMenu: StatefulPreviewPane,
+    debug: Debugger,
+    tooltipPane: TooltipPane,
     mouseDown: boolean,
     dragObjects: DragObject[],
     dropObjects: DropObject[],
     theme: Theme,
     font: _p5.Font,
+    iconFont: _p5.Font,
     switchFrame: number, // The frame on which the theme was last switched
     frame: number,
     cursor: Cursor,
-    debugger: StateManager<Debug>,
     circuit: CircuitManager,
     loading: boolean,
     tool: Tool,
@@ -72,13 +73,13 @@ export interface State {
 
 export const manager: StateManager<State> = new StateManager<State>({
     mouseDown: false,
+    debug: new Debugger(),
     dragObjects: [],
     dropObjects: [],
     mouse: {x: 0, y: 0, pressed: false},
     p_mouse: {x: 0, y: 0},
     dragStart: {x: 0, y: 0},
-    theme: Theme.White,
-    debugger: debug,
+    theme: Theme.Black,
     gridScale: 35,
     loading: true,
     sidebarIsLeft: true,

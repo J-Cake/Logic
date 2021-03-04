@@ -31,7 +31,6 @@ export default class CircuitManager {
             delete comp.component;
             comp.deleted = true;
             comp.wires = [];
-            
         }
 
         manager.setState(prev => ({

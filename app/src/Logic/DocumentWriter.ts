@@ -59,6 +59,7 @@ export async function prepareForSave(c_man: CircuitManager): Promise<CircuitObj>
 
         content[id] = {
             identifier: (component.component instanceof GenComponent && component.component.raw?.token) ? component.component.raw.token : component.component.name,
+            label: component.component.label,
             direction: component.props.direction,
             flip: component.props.flip,
             position: component.props.pos,

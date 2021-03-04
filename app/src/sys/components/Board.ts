@@ -45,7 +45,7 @@ export default class Board extends RenderObject {
 
     gridToPix(coords: [number, number], centre: boolean = false): [number, number] {
         const mgr = manager.setState()
-        const offset = (mgr.sidebarIsLeft && mgr.componentMenu.isVisible) ? (mgr.componentMenu.size[0] + this.padding) : 0;
+        const offset = (mgr.sidebarIsLeft && mgr.tooltipPane.isVisible) ? (mgr.tooltipPane.size[0] + this.padding) : 0;
 
         return [
             Math.floor(mgr.gridScale * coords[0] + this.padding + offset + (centre ? mgr.gridScale * 0.5 : 0)) + 1.5,
@@ -85,11 +85,11 @@ export default class Board extends RenderObject {
         const state = manager.setState();
 
         this.size = {
-            w: sketch.width - 2 * this.padding - state.componentMenu.outlineSize[0],
+            w: sketch.width - 2 * this.padding - state.tooltipPane.outlineSize[0],
             h: sketch.height - 2 * this.padding
         }
         this.pos = {
-            x: this.padding + (state.sidebarIsLeft ? state.componentMenu.outlineSize[0] : 0),
+            x: this.padding + (state.sidebarIsLeft ? state.tooltipPane.outlineSize[0] : 0),
             y: this.padding
         }
 

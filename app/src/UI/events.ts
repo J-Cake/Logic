@@ -46,9 +46,11 @@ export default function handleEvents(canvas: JQuery, sketch: p5, comps: RenderCo
         });
     });
 
-    $('#in').on('click', () => manager.setState(prev => ({ gridScale: prev.gridScale * 1.15 })));
-    $('#out').on('click', () => manager.setState(prev => ({ gridScale: prev.gridScale * 0.85 })));
-    $('#reset').on('click', () => manager.setState(prev => ({ gridScale: 35 })));
+    $('#in').on('click', () => manager.setState(prev => ({gridScale: prev.gridScale * 1.15})));
+    $('#out').on('click', () => manager.setState(prev => ({gridScale: prev.gridScale * 0.85})));
+    $('#reset').on('click', () => manager.setState(prev => ({gridScale: 35})));
+
+    $("#remove-component").on('click', () => manager.setState().circuit.deleteSelected());
 
     window.addEventListener("resize", function () {
         sketch.resizeCanvas(container.width() ?? window.innerWidth, container.height() ?? window.innerHeight);
@@ -60,30 +62,36 @@ export default function handleEvents(canvas: JQuery, sketch: p5, comps: RenderCo
     });
 
     canvas.on("click", function () {
-        const {dragStart, mouse, keys, tool} = manager.setState();
+        const {dragStart, mouse, keys, tool, debug} = manager.setState();
 
-        if (Math.sqrt((dragStart.x - mouse.x) ** 2 + (dragStart.y - mouse.y) ** 2) < 10) {
-            if (tool === Tool.Pointer)
-                manager.dispatch("click", prev => ({
-                    mouse: {
-                        x: sketch.mouseX + prev.board.translate[0],
-                        y: sketch.mouseY + prev.board.translate[1],
-                        pressed: true
-                    }
-                }));
-            else if (!keys.shift && tool === Tool.Select)
-                comps.forEach(i => i.isSelected = false);
-            else if (tool === Tool.Wire)
-                manager.broadcast('wire_click');
+        if (!debug.isStopped()) {
+            if (Math.sqrt((dragStart.x - mouse.x) ** 2 + (dragStart.y - mouse.y) ** 2) < 10) {
+                if (tool === Tool.Pointer)
+                    manager.dispatch("click", prev => ({
+                        mouse: {
+                            x: sketch.mouseX + prev.board.translate[0],
+                            y: sketch.mouseY + prev.board.translate[1],
+                            pressed: true
+                        }
+                    }));
+                else if (!keys.shift && tool === Tool.Select)
+                    comps.forEach(i => i.isSelected = false);
+                else if (tool === Tool.Wire)
+                    manager.broadcast('wire_click');
+                else if (tool === Tool.Label)
+                    manager.broadcast('label_click');
+                else if (tool === Tool.Debug)
+                    manager.broadcast('debug_click');
 
-            if (tool === Tool.Select)
-                manager.dispatch("select", prev => ({
-                    mouse: {
-                        x: sketch.mouseX + prev.board.translate[0],
-                        y: sketch.mouseY + prev.board.translate[1],
-                        pressed: true
-                    }
-                }));
+                if (tool === Tool.Select)
+                    manager.dispatch("select", prev => ({
+                        mouse: {
+                            x: sketch.mouseX + prev.board.translate[0],
+                            y: sketch.mouseY + prev.board.translate[1],
+                            pressed: true
+                        }
+                    }));
+            }
         }
     })
 
