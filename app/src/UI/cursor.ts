@@ -16,7 +16,7 @@ export default class Cursor extends RenderObject {
         this.size = [0, 0];
 
         manager.on('mouseUp', prev => prev.renderedComponents.forEach(i => {
-            if (prev.tool === Tool.Select) {
+            if (prev.tool === Tool.Select && this.getDistance() > 10) {
                 if (i.pos[0] + i.size[0] >= this.pos[0] && i.pos[0] <= this.pos[0] + this.size[0] &&
                     i.pos[1] + i.size[1] >= this.pos[1] && i.pos[1] <= this.pos[1] + this.size[1])
                     i.isSelected = true;
@@ -28,13 +28,14 @@ export default class Cursor extends RenderObject {
 
     getDistance(): number {
         const state = manager.setState();
+        // console.log('calculating distance');
         return Math.sqrt((state.dragStart.x - state.mouse.x) ** 2 + (state.dragStart.y - state.mouse.y) ** 2);
     }
 
     render(sketch: p5): void {
         const state = manager.setState();
         if (state.tool === Tool.Select)
-            if (state.mouseDown && state.dragObjects.length === 0 && this.getDistance() > 10) {
+            if (state.mouse.pressed && this.getDistance() > 10) { // we don't need to check for drag objects because the select tool does not drag objects
                 sketch.fill(transparent(Colour.Cursor, 60));
                 sketch.stroke(getColour(Colour.Cursor));
                 sketch.strokeWeight(1);

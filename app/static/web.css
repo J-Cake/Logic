@@ -34,38 +34,6 @@ h3 {
     font-family: "Raleway", sans-serif;
 }
 
-@media screen and (prefers-color-scheme: light) {
-    :root {
-        --primary: #efefef;
-        --danger: #F8CBAD;
-        --secondary: #FFE699;
-        --label: #C6E0B4;
-        --accent: #8EA9DB;
-        --active: #EFA6EF;
-        --secondaryaccent: rgb(255, 230, 153);
-        --cursor: rgb(142, 169, 219);
-        --panel: rgb(239, 239, 239);
-        --background: rgb(255, 255, 255);
-        --blank: rgb(60, 65, 70);
-    }
-}
-
-@media screen and (prefers-color-scheme: dark) {
-    :root {
-        --primary: #cec9c4;
-        --danger: #4c3a33;
-        --secondary: #a84401;
-        --label: #0cb3c9;
-        --accent: #28334c;
-        --active: #419b62;
-        --secondaryaccent: #ba0950;
-        --cursor: #454747;
-        --panel: #2f3334;
-        --background: #151b1c;
-        --blank: #c3c3c8;
-    }
-}
-
 body {
     color: var(--blank);
 }
@@ -181,7 +149,7 @@ a {
 }
 
 #tab-view #own .doc:hover, #tab-view #shared .doc:hover {
-    box-shadow: 0 0 12px 0 var(--background);
+    box-shadow: 0 0 7px 0 var(--dark);
 }
 
 #tab-view #own .doc .controls, #tab-view #shared .doc .controls {
@@ -201,7 +169,7 @@ a {
     background: transparent;
 }
 
-#tab-view #own .doc .controls button:hover, #tab-view #shared .doc .controls button:hover {
+#tab-view #own .doc .controls button:hover, #tab-view #shared .doc .controls button:hover, button:hover, input:hover {
     background: var(--background);
 }
 

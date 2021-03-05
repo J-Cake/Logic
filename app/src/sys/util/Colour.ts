@@ -1,6 +1,7 @@
+import * as parse from 'parse-css-color';
+
 import {manager} from "../../index";
-import {Interpolation, map, constrain} from "./interpolation";
-import interpolate from "./interpolation";
+import interpolate, {constrain, Interpolation, map} from "./interpolation";
 import Colour, {themes} from "./Themes";
 
 export type rgb = [number, number, number];
@@ -48,4 +49,8 @@ export function transparent(colour: Colour, amount: number): rgba {
 
 export function hex(colour: Colour): string {
     return `#${getColour(colour).map(i => i.toString(16)).join('')}`;
+}
+
+export function parseColour(colour: string): rgb {
+    return parse(colour.slice(1)).values;
 }

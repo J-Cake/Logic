@@ -37,7 +37,7 @@ app.use("/component", ComponentRouter);
 app.use(WebRouter);
 app.use(DocumentRouter);
 app.use(ApplicationRouter);
-app.use(ResourceRouter);
+app.use("/res", ResourceRouter);
 
 export const port = Number(process.argv[2]) || 3500;
 

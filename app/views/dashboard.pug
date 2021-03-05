@@ -5,21 +5,32 @@ block page
 
     h1 Welcome to your Dashboard
 
+    script(src="/res/eva.min.js")
     script.
-        window.addEventListener("load", function() {
-            document.querySelector("#mkDoc").addEventListener("click", function() {
+        window.addEventListener("load", function () {
+            document.querySelector("#mkDoc").addEventListener("click", function () {
                 const name = prompt("Enter a new Circuit name");
                 if (name && name.trim().length > 0)
                     window.location.href = `/make?name=${encodeURIComponent(name)}`;
             });
+
+            const colour = getComputedStyle(document.querySelector("nav.site a")).color.match(/^rgba?\((\d+), (\d+), (\d+)\)$/i);
+            if (colour)
+                eva.replace({
+                    fill: "#" + colour.slice(1, 4).map(i => Number(i).toString(16).padStart(2, i[0])).join("")
+                });
         });
 
     section#form
         #toolbar
             .left
                 a(href="/user/logout")
-                    input(type="button", value="")
-                input(type="button", value="")#mkDoc
+                    input(type="button")#logout
+                    label(for="logout")
+                        i(data-eva="log-out-outline")
+                input(type="button")#mkDoc
+                label(for="mkDoc")
+                    i(data-eva="plus-circle-outline")
 
         #doclist
             #tab-bar
@@ -35,9 +46,15 @@ block page
                                     span.title= doc.documentTitle
                                     span.edited Edited on #{new Date(doc.edited).toLocaleDateString()}
                                 .controls
-                                    button.addCollaborator 
-                                    button.editName 
-                                    button.deleteDoc 
+                                    button.addCollaborator
+                                        i(data-eva="person-add-outline")
+                                        //
+                                    button.editName
+                                        i(data-eva="edit-2-outline")
+                                        //
+                                    button.deleteDoc
+                                        i(data-eva="trash-outline")
+                                        //
                     else
                         span You own no documents.
 
@@ -48,6 +65,8 @@ block page
                                 span.title= doc.documentTitle
                                 span.edited= new Date(doc.edited).toLocaleDateString()
                                 .controls
-                                    button.leaveDoc 
+                                    button.leaveDoc
+                                        i(data-eva="close-circle-outline")
+                                        //
                     else
                         span No one has shared any documents with you.

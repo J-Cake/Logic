@@ -79,7 +79,7 @@ export const manager: StateManager<State> = new StateManager<State>({
     mouse: {x: 0, y: 0, pressed: false},
     p_mouse: {x: 0, y: 0},
     dragStart: {x: 0, y: 0},
-    theme: Theme.Black,
+    theme: Theme.System,
     gridScale: 35,
     loading: true,
     sidebarIsLeft: true,

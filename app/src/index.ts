@@ -1,17 +1,18 @@
 import * as $ from 'jquery';
 import * as _p5 from 'p5';
+import * as eva from 'eva-icons';
 
 import {manager, Tool} from './State';
 import RenderObject from './sys/components/RenderObject';
 import Board from './sys/components/Board';
 import {Interpolation} from './sys/util/interpolation';
-import {getColour, rgb} from "./sys/util/Colour";
+import {getColour, hex} from "./sys/util/Colour";
 import Cursor from "./UI/cursor";
 import CircuitManager from "./Logic/CircuitManager";
 import {renderComponents} from "./UI/RenderComponent";
 import handleEvents from "./UI/events";
 import TooltipPane from "./UI/TooltipPane";
-import Colour, {themes} from "./sys/util/Themes";
+import Colour from "./sys/util/Themes";
 import buildComponentPrompt from "./UI/ComponentMenu";
 import {mousetrap} from "../componentMenu";
 
@@ -32,17 +33,14 @@ new _p5(function (sketch: _p5) {
     let pan: [number, number] = [0, 0];
 
     sketch.setup = async function () {
-        const root = $(":root");
-        const colours: Record<Colour, rgb> = themes[manager.setState().theme]();
-        for (const i in colours)
-            root.css(`--${Colour[Number(i) as Colour].toLowerCase()}`, `rgb(${getColour(Number(i)).join(', ')})`);
+        // const root = $(":root");
+        // const colours: Record<Colour, rgb> = themes[manager.setState().theme]();
+        // for (const i in colours)
+        //     root.css(`--${Colour[Number(i) as Colour].toLowerCase()}`, `rgb(${getColour(Number(i)).join(', ')})`);
 
         const documentId: string = $("#circuitToken").text();
 
         const container = $('#canvas-container');
-        $("#status-bar")
-            // .css('background', `rgb(${getColour(Colour.SecondaryAccent)})`)
-            // .css('color', `rgb(${getColour(Colour.Background)})`);
 
         const p5Canvas = sketch.createCanvas(container.width() ?? window.innerWidth, container.height() ?? window.innerHeight);
         p5Canvas.parent(container[0]);
@@ -55,7 +53,8 @@ new _p5(function (sketch: _p5) {
         handleEvents(canvas, sketch, manager.setState(({
             renderedComponents: await renderComponents(manager.setState(() => ({
                 font: sketch.loadFont("/app/font-2.ttf"),
-                iconFont: sketch.loadFont("/app/remixicon.ttf"),
+                // iconFont: sketch.loadFont("/app/remixicon.ttf"),
+                iconFont: sketch.loadFont('/app/segoe-mdl2.ttf'),
                 board: new Board(),
                 tooltipPane: new TooltipPane(),
                 sidebarWidth: 6,
@@ -91,9 +90,12 @@ new _p5(function (sketch: _p5) {
         mousetrap.bind('alt+s', () => pan = [0, 0]);
 
         buildComponentPrompt();
+        eva.replace({
+            fill: hex(Colour.Blank)
+        })
     }
 
-    sketch.draw = function () {
+    sketch.draw = async function () {
         $("#debug-container input").prop("disabled", true);
 
         sketch.translate(pan[0], pan[1]);
@@ -124,13 +126,13 @@ new _p5(function (sketch: _p5) {
         RenderObject.tick(sketch);
         RenderObject.draw(sketch);
 
-        state.cursor.render(sketch);
-        state.cursor.update(sketch);
-
         state.tooltipPane.update(sketch);
         state.tooltipPane.render(sketch);
 
         if (state.renderedComponents)
             state.renderedComponents.forEach(i => i.component.updated = false);
+
+        state.cursor.render(sketch);
+        state.cursor.update(sketch);
     }
 });

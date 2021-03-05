@@ -29,17 +29,27 @@
 #body {
     display: grid;
 
-    grid-template-rows: auto 1fr;
+    grid-template-rows: auto 1fr 24pt;
+    grid-template-columns: auto 1fr  auto;
 
     width: 100vw;
+}
 
+#body #debug-bar {
+    grid-column: 3;
+    grid-row: 2;
 }
 
 #body #toolbar {
     grid-row: 1;
-    padding: 8px;
+    grid-column-start: 1;
+    grid-column-end: 4;
     display: flex;
     flex-direction: row;
+}
+
+#tool-box {
+    flex: 1;
 }
 
 #file-box, #controls, #tool-box {
@@ -49,26 +59,32 @@
 
 #body #canvas-container {
     grid-row: 2;
+    grid-column: 2;
     touch-action: none;
+    background: var(--panel);
+    padding: 12px;
+}
+
+#canvas-container canvas {
+    box-shadow: 0 0 6px var(--dark);
+    width: 100%;
+    height: 100%;
 }
 
 #status-bar {
-    height: 26px;
     font-size: 15px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     background: var(--secondaryaccent);
     color: var(--background);
+    grid-row: 3;
+    grid-column-start: 1;
+    grid-column-end: 4;
 }
 
 #status-bar.debug-stopped {
     background: var(--accent);
-}
-
-canvas {
-    width: 100%;
-    height: 100%;
 }
 
 #status-bar > * {
@@ -90,11 +106,103 @@ canvas {
 }
 
 hr {
-    border: 1px solid var(--active);
-    margin: 3px;
+    border: 1px dotted var(--active);
+    border-right: none;
+    border-bottom: none;
+    margin: 8px;
 }
 
 button:disabled, input:disabled {
     color: var(--blank);
     opacity: 0.4;
+}
+
+#tooltips {
+    pointer-events: none;
+    background: var(--panel);
+    border: 1px solid var(--primary);
+    padding: 4px;
+    position: fixed;
+    visibility: hidden;
+    margin: 2px 8px;
+}
+
+#tooltips.visible {
+    visibility: visible;
+}
+
+#tooltips > * {
+    display: block;
+    width: 100%;
+    font-size: 8pt;
+
+    color: var(--blank);
+}
+
+#tooltips span#component-label {
+    font-size: 12pt;
+    width: 100%;
+    text-align: center;
+    color: var(--secondaryaccent);
+}
+
+#debug + label:hover .select, .select-box:hover, .select:hover {
+    display: block;
+}
+
+#debug-type-selector {
+    counter-reset: breakMode;
+    counter-set: breakMode 0;
+}
+
+.select-box {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    align-items: flex-start;
+}
+
+.select {
+    display: none;
+    background: var(--panel);
+    z-index: 12;
+    border: none;
+    position: fixed;
+    top: 38px;
+    box-shadow: 0 0 4px var(--dark);
+}
+
+#debug-type-selector.select span.option:before {
+    content: counter(breakMode);
+    counter-increment: breakMode;
+    width: 1.5em;
+    color: var(--secondaryaccent);
+    display: inline-block;
+}
+
+.select span.option {
+    color: var(--blank);
+    width: 100%;
+    display: block;
+    line-height: 1em;
+    padding: 8px 12px;
+    min-width: 120px;
+    font-size: 11pt;
+    transition: 0.3s;
+}
+
+.select h3 {
+    font-size: 13pt;
+    font-weight: normal;
+    width: 100%;
+    text-align: center;
+    line-height: 2em;
+}
+
+.select span.option:hover {
+    background: var(--active);
+}
+
+.select span.option.selected {
+    background: var(--accent);
 }

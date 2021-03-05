@@ -1,4 +1,6 @@
 import RenderComponent from "../UI/RenderComponent";
+import {DebugMode} from "./Debugger";
+import {manager} from "../State";
 
 export const containsDuplicates = (list: string[]): boolean => new Set(list).size !== list.length;
 
@@ -23,7 +25,7 @@ export default abstract class Component {
     updated: boolean;
     isRecursive: boolean;
 
-    isBreakpoint: boolean;
+    isBreakpoint: DebugMode | null;
 
     protected constructor(inputs: string[], outputs: string[], name: string) {
         if (containsDuplicates(inputs) || containsDuplicates(outputs))
@@ -48,7 +50,7 @@ export default abstract class Component {
 
         this.updated = false;
         this.isRecursive = false;
-        this.isBreakpoint = false;
+        this.isBreakpoint = null;
     }
 
     abstract computeOutputs(inputs: boolean[]): boolean[];
@@ -95,38 +97,52 @@ export default abstract class Component {
         });
     }
 
+    meetsBreakCondition(input: boolean[], output: boolean[]): boolean {
+        if (this.isBreakpoint)
+            return ({
+                [DebugMode.Change]: () => this.prevInput[1].some((i, a) => input[a] !== i) ||
+                    this.out.some((i, a) => output[a] !== i),
+                [DebugMode.Input]: () => this.prevInput[1].some((i, a) => input[a] !== i),
+                [DebugMode.Output]: () => this.out.some((i, a) => output[a] !== i),
+                [DebugMode.Update]: () => true,
+            } as Record<DebugMode, () => boolean>)[this.isBreakpoint]()
+            else
+                return false;
+    }
+
     update() { // THIS FUCKING FUNCTION TOOK ME FOREVER TO WRITE
-        const inputs: boolean[] = this.getInputs();
+        if (!manager.setState().debug.isStopped()) {
+            const inputs: boolean[] = this.getInputs();
 
-        const update = function (this: Component, next: boolean[], noRipple: boolean = false) {
-            this.out = next;
-            if (this.isBreakpoint)
-                console.log("Updating", this.name);
-                // console.log(this.name, this.prevInput, inputs);
-            this.prevInput.shift();
-            this.prevInput.push(Array.from(inputs));
-            this.outCache = {};
+            const update = function (this: Component, next: boolean[], noRipple: boolean = false) {
+                this.out = next;
+                if (this.isBreakpoint)
+                    console.log("Updating", this.name);
 
-            for (const [a, i] of this.outputNames.entries())
-                this.outCache[i] = this.out[a] || false;
+                this.prevInput.shift();
+                this.prevInput.push(Array.from(inputs));
+                this.outCache = {};
 
-            if (!this.updated) { // wait for the next render tick, allowing the stack to reduce.
-                this.updated = true;
+                for (const [a, i] of this.outputNames.entries())
+                    this.outCache[i] = this.out[a] || false;
 
-                for (const a in this.outputs)
-                    for (const i of this.outputs[a])
-                        i[0].update();
-            }
-        }.bind(this);
+                if (!this.updated) { // wait for the next render tick, allowing the stack to reduce.
+                    this.updated = true;
 
-        const next = this.computeOutputs(inputs);
+                    if (!noRipple)
+                        for (const a in this.outputs)
+                            for (const i of this.outputs[a])
+                                i[0].update();
+                }
+            }.bind(this);
 
-        if (this.isBreakpoint &&
-            (next.some((i, a) => this.out[a] !== i) || this.prevInput[1].some((i, a) => this.prevInput[0][a] !== i)))
-            // check if outputs will change
-            this.preUpdate(() => update(next));
-        else
-            update(next);
+            const next = this.computeOutputs(inputs);
+
+            if (this.isBreakpoint && this.meetsBreakCondition(inputs, next))
+                this.preUpdate(() => update(next));
+            else
+                update(next);
+        }
     }
 
     activate(renderer: RenderComponent) {

@@ -35,68 +35,159 @@ block content
         });
 
     section#body
-        div#toolbar
+        div#manipulation-bar.bar
+            .group
+                button#cut
+                    i(data-eva="scissors-outline")
+                button#copy
+                    i(data-eva="copy-outline")
+                button#paste
+                    i(data-eva="clipboard-outline")
+            hr
+            .centre
+                button#flip
+                    i(data-eva="swap-outline")
+                button#rotate-left
+                    i(data-eva="corner-left-down-outline")
+                button#rotate-right
+                    i(data-eva="corner-right-down-outline")
+
+        div#toolbar.bar
             .left
-                button#close 
+                button#close
+                    i(data-eva="arrow-back-outline")
+                    //
+                    //
                 hr
                 #file-box
-                    button#save 
-                    button#open 
-                    button#new 
+                    button#save
+                        i(data-eva="save-outline")
+                        //
+                        //
+                    button#open
+                        i(data-eva="folder-outline")
+                        //
+                        //
+                    button#new
+                        i(data-eva="file-add-outline")
+                        //
+                        //
                 hr
                 #controls
-                    button#undo 
-                    button#redo 
-                hr
+                    button#undo
+                        i(data-eva="corner-up-left-outline")
+                        //
+                        //
+                    button#redo
+                        i(data-eva="corner-up-right-outline")
+                        //
+                        //
+
+            .centre
                 #tool-box
 
                     input(type="radio", name="tool", checked)#pointer
-                    label(for="pointer") 
+                    label(for="pointer")
+                        i(data-eva="navigation-2-outline")
+                        //
+                        //
 
                     input(type="radio", name="tool")#select
-                    label(for="select") 
+                    label(for="select")
+                        i(data-eva="crop-outline")
+                        //
+                        //
 
                     input(type="radio", name="tool")#move
-                    label(for="move") 
+                    label(for="move")
+                        i(data-eva="move-outline")
+                        //
+                        //
 
                     input(type="radio", name="tool")#wire
-                    label(for="wire") 
+                    label(for="wire")
+                        i(data-eva="edit-outline")
+                        //
+                        //
 
-                    input(type="radio", name="tool")#debug
-                    label(for="debug") 
+                    .select-box
+                        input(type="radio", name="tool")#debug
+                        label(for="debug")
+                            i(data-eva="stop-circle-outline")
+                            //
+                            //
+                            #debug-type-selector.select(for="debug")
+                                h3 Break Mode
+                                span.option.selected(data-enum=0) On Change
+                                span.option(data-enum=1) On Input Change
+                                span.option(data-enum=2) On Output Change
+                                span.option(data-enum=3) On Update
+                                //span.option(data-enum=4) On Component Change
 
                     input(type="radio", name="tool")#label
-                    label(for="label") 
+                    label(for="label")
+                        i(data-eva="pricetags-outline")
+                        //
+                        //
 
                     hr
 
                     input(type="checkbox")#add-component
-                    label(for="add-component") 
-                    button#remove-component 
-                    button#import-component 
-
-                    hr
-
-                    button(disabled)#resume 
-                    button(disabled)#set-inputs 
+                    label(for="add-component")
+                        i(data-eva="plus-outline")
+                        //
+                        //
+                    button#remove-component
+                        i(data-eva="trash-outline")
+                        //
+                        //
+                    button#import-component
+                        i(data-eva="cloud-download-outline")
+                        //
+                        //
 
             .right
                 #pref
-                    input(type="checkbox", name="panel-visibility")#panel-vis
-                    label(for="panel-vis") 
+                    //input(type="checkbox", name="panel-visibility")#panel-vis
+                    //label(for="panel-vis")
+                    //    //
 
-                    input(type="checkbox", name="pref")#show-labels
-                    label(for="show-labels") 
+                    //input(type="checkbox", name="pref")#show-labels
+                    //label(for="show-labels") 
 
-                    hr
+                    //hr
 
-                    button#in 
-                    button#reset 
-                    button#out 
+                    button#in
+                        i(data-eva="maximize-outline")
+                        //
+                        //
+                    button#reset
+                        i(data-eva="expand-outline")
+                        //
+                        //
+                    button#out
+                        i(data-eva="minimize-outline")
+                        //
+                        //
+
+                    //hr
+
+                    //button#refresh-ui 
 
         div#canvas-container
 
-        div#status-bar
+        div#debug-bar.bar
+            button(disabled)#resume
+                i(data-eva="play-circle-outline")
+                //
+                //
+            button(disabled)#step
+                i(data-eva="chevron-right-outline")
+                //
+                //
+            //button(disabled)#set-inputs 
+
+        div#status-bar.bar
             .left
                 span#grid-pos 0,0
                 span#document-title ...
@@ -104,3 +195,14 @@ block content
             .right
                 span#save-status saved
                 span#owner ...
+
+    #tooltips
+        span#component-label
+        #small
+            span#type
+            | ,
+            span#position
+                span#pos-x
+                | :
+                span#pos-y
+        span#breakpoint

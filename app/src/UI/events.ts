@@ -9,6 +9,7 @@ import {closeAll} from "./DialogManager";
 import saveDocument from "../Logic/DocumentWriter";
 import {buildWire} from "./Wire";
 import touch from "./touch";
+import {DebugMode} from "../Logic/Debugger";
 
 export default function handleEvents(canvas: JQuery, sketch: p5, comps: RenderComponent[]) {
     const container = $('#canvas-container');
@@ -45,12 +46,40 @@ export default function handleEvents(canvas: JQuery, sketch: p5, comps: RenderCo
             showLabels: $(this).prop("checked")
         });
     });
+    $("#refresh-ui").on('click', () => manager.broadcast("refresh-ui"));
 
     $('#in').on('click', () => manager.setState(prev => ({gridScale: prev.gridScale * 1.15})));
     $('#out').on('click', () => manager.setState(prev => ({gridScale: prev.gridScale * 0.85})));
     $('#reset').on('click', () => manager.setState(prev => ({gridScale: 35})));
 
     $("#remove-component").on('click', () => manager.setState().circuit.deleteSelected());
+
+    $("#flip").on('click', function () {
+        const prev = manager.setState();
+        for (const i of prev.renderedComponents.filter(i => i.isSelected))
+            i.props.flip = !i.props.flip;
+    });
+
+    $("#rotate-left").on('click', function () {
+        const prev = manager.setState();
+        for (const i of prev.renderedComponents.filter(i => i.isSelected))
+            i.props.direction = ({
+                [0]: 3,
+                [1]: 0,
+                [2]: 1,
+                [3]: 2,
+            } as Record<0 | 1 | 2 | 3, 0 | 1 | 2 | 3>)[i.props.direction];
+    });
+    $("#rotate-right").on('click', function () {
+        const prev = manager.setState();
+        for (const i of prev.renderedComponents.filter(i => i.isSelected))
+            i.props.direction = ({
+                [0]: 1,
+                [1]: 2,
+                [2]: 3,
+                [3]: 0,
+            } as Record<0 | 1 | 2 | 3, 0 | 1 | 2 | 3>)[i.props.direction];
+    });
 
     window.addEventListener("resize", function () {
         sketch.resizeCanvas(container.width() ?? window.innerWidth, container.height() ?? window.innerHeight);
@@ -64,8 +93,10 @@ export default function handleEvents(canvas: JQuery, sketch: p5, comps: RenderCo
     canvas.on("click", function () {
         const {dragStart, mouse, keys, tool, debug} = manager.setState();
 
-        if (!debug.isStopped()) {
-            if (Math.sqrt((dragStart.x - mouse.x) ** 2 + (dragStart.y - mouse.y) ** 2) < 10) {
+        if (Math.sqrt((dragStart.x - mouse.x) ** 2 + (dragStart.y - mouse.y) ** 2) < 10) {
+            if (tool === Tool.Debug)
+                manager.broadcast('debug_click');
+            else if (!debug.isStopped()) {
                 if (tool === Tool.Pointer)
                     manager.dispatch("click", prev => ({
                         mouse: {
@@ -80,8 +111,6 @@ export default function handleEvents(canvas: JQuery, sketch: p5, comps: RenderCo
                     manager.broadcast('wire_click');
                 else if (tool === Tool.Label)
                     manager.broadcast('label_click');
-                else if (tool === Tool.Debug)
-                    manager.broadcast('debug_click');
 
                 if (tool === Tool.Select)
                     manager.dispatch("select", prev => ({
@@ -110,7 +139,30 @@ export default function handleEvents(canvas: JQuery, sketch: p5, comps: RenderCo
         }));
     });
 
-    canvas.on("mousemove", function () { // Call MouseDown only after traveling a minimum distance
+    canvas.on("mousemove", async function (e) { // Call MouseDown only after traveling a minimum distance
+
+        const comps = manager.setState().renderedComponents.reverse().find(i => i.isWithinBounds(manager.setState()));
+
+        if (comps) {
+            $("span#component-label").text(comps.component.label);
+            $("span#breakpoint").text(comps.component.isBreakpoint ? DebugMode[comps.component.isBreakpoint] : '');
+            $("span#type").text(comps.component.name);
+            $("span#pos-x").text(comps.props.pos[0]);
+            $("span#pos-y").text(comps.props.pos[1]);
+
+            $("#tooltips")
+                .addClass("visible")
+                .css("left", e.pageX + "px")
+                .css("top", e.pageY + "px");
+        } else {
+            $("span#component-label").text("");
+            $("span#debug").text("");
+            $("span#type").text("");
+            $("span#pos-x").text("");
+            $("span#pos-y").text("");
+            $("#tooltips").removeClass("visible");
+        }
+
         const {dragStart, mouse} = manager.setState();
         if (Math.sqrt((dragStart.x - mouse.x) ** 2 + (dragStart.y - mouse.y) ** 2) > 5)
             if (!manager.setState().dragObjects.find(i => i.isDragging))
@@ -139,6 +191,8 @@ export default function handleEvents(canvas: JQuery, sketch: p5, comps: RenderCo
         RenderObject.print();
     });
 
+    // manager.on('refresh-ui', () => system = getSystemColours());
+
     mousetrap.bind("enter", () => manager.broadcast("enter"));
 
     // mousetrap.bind(['delete', 'backspace'], () => manager.broadcast('delete'));
@@ -158,6 +212,11 @@ export default function handleEvents(canvas: JQuery, sketch: p5, comps: RenderCo
     mousetrap.bind('ctrl+s', async function (e) {
         e.preventDefault();
         await saveDocument();
+    });
+
+    mousetrap.bind('esc', async function (e) {
+        e.preventDefault();
+        return window.location.href = "/dashboard";
     });
 
     touch();
