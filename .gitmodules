@@ -1,3 +1,6 @@
 [submodule "Logic-components"]
 	path = lib
 	url = https://github.com/J-Cake/Logic-components
+[submodule "lib"]
+	path = lib
+	url = https://github.com/J-Cake/Logic-components
