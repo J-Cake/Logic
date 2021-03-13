@@ -1,7 +1,0 @@
-{
-    "name": "Input",
-    "owner": null,
-    "inputLabels": [],
-    "outputLabels": ["i"],
-    "component": "/component/src/input.js"
-}

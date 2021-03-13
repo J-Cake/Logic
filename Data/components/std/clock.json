@@ -1,7 +1,0 @@
-{
-    "name": "Clock",
-    "owner": null,
-    "inputLabels": [],
-    "outputLabels": ["q"],
-    "component": "/component/src/clock.js"
-}
