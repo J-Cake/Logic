@@ -1,13 +1,12 @@
 import * as $ from 'jquery';
-import '../prompt';
+import './prompt';
 
-import Colour from "../../src/sys/util/Themes";
-import {rgb} from "../../src/sys/util/Colour";
-import StateManager from "../../src/sys/util/stateManager";
-import {connect} from "../prompt";
+import Colour from "../src/sys/util/Themes";
+import {rgb} from "../src/sys/util/Colour";
+import StateManager from "../src/sys/util/stateManager";
+import {connect} from "./prompt";
 
 export interface State {
-    theme: Record<Colour, rgb>,
     onSelect: (id: string) => void
 }
 

@@ -49,7 +49,7 @@ export default class CircuitManager {
     }
 
     private async loadCircuit(circuitId: string): Promise<{ [id: number]: [GenericComponent, GenComponent] }> {
-        const circuit = await fetch(`/circuit/raw/${circuitId}`);
+        const circuit = await fetch(`/circuit/${circuitId}`);
 
         if (circuit.ok) {
             const loaded: CircuitObj = await circuit.json();

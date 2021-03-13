@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectTasksOptions" suppressed-tasks="Pug/Jade">
     <TaskOptions isEnabled="true">
-      <option name="arguments" value="./bin/build_esbuild.js --static" />
+      <option name="arguments" value="./bin/build.js --static" />
       <option name="checkSyntaxErrors" value="true" />
       <option name="description" />
       <option name="exitCodeBehavior" value="ERROR" />
@@ -22,7 +22,7 @@
       <envs />
     </TaskOptions>
     <TaskOptions isEnabled="true">
-      <option name="arguments" value="./bin/build_esbuild.js --static" />
+      <option name="arguments" value="./bin/build.js --static" />
       <option name="checkSyntaxErrors" value="true" />
       <option name="description" />
       <option name="exitCodeBehavior" value="ERROR" />
@@ -42,7 +42,7 @@
       <envs />
     </TaskOptions>
     <TaskOptions isEnabled="true">
-      <option name="arguments" value=".\bin\build_esbuild.js --components=app,componentMenu" />
+      <option name="arguments" value=".\bin\build.js" />
       <option name="checkSyntaxErrors" value="true" />
       <option name="description" />
       <option name="exitCodeBehavior" value="ERROR" />

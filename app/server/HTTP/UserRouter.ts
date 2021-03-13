@@ -77,7 +77,7 @@ router.post("/signup", async function (req, res) {
         const userId: number = 1 + (await sql.sql_get<{userId: number}>(`SELECT max(userId) as userId from users`)).userId;
         const token = bcrypt.hashSync(`${name}:${email}:${getTimeString()}`, 1);
 
-        await sql.sql_query(`INSERT into users VALUES (?, ?, date('now'), ?, ?, ?)`, [userId, email, bcrypt.hashSync(password, 10), name, token]);
+        await sql.sql_query(`INSERT into users VALUES (?, ?, ?, date('now'), ?, ?)`, [userId, email, bcrypt.hashSync(password, 10), name, token]);
 
         // console.log("Done");
         res.cookie('userId', token);

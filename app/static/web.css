@@ -128,10 +128,6 @@ a {
     text-align: center;
 }
 
-.doc:focus {
-    background: var(--primary);
-}
-
 #tab-view #own .doc:before {
     content: '';
 }
@@ -158,6 +154,10 @@ a {
     color: var(--background);
     /*box-shadow: 0 0 3px var(--dark);*/
 }
+#tab-view .tab .doc a {
+    flex: 1;
+    color: inherit;
+}
 
 #tab-view .tab .doc .controls {
     display: flex;
@@ -178,7 +178,11 @@ a {
 }
 
 #tab-view .tab .doc .controls button:hover {
-    background: var(--background);
+    background: var(--secondaryaccent);
+}
+
+#tab-view .tab .doc .controls button:focus {
+    background: var(--active);
 }
 
 #tab-view .tab .doc {
@@ -199,4 +203,13 @@ a {
     border: none;
     width: fit-content;
     height: fit-content;
+}
+
+.collab {
+    color: var(--blank);
+}
+
+button {
+    font-size: 10pt;
+    line-height: 24pt;
 }

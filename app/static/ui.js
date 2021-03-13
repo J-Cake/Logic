@@ -20,12 +20,6 @@ window.addEventListener('load', function() {
         document.querySelector('#tab-view #my-components').classList.add('selected');
     });
 
-    for (const el of document.querySelectorAll('.controls > *'))
-        el.addEventListener('click', function(e) {
-            e.stopPropagation();
-            return false;
-        })
-
     for (const anchor of document.querySelectorAll('#own .doc, #shared .doc'))
         anchor.addEventListener('click', function() {
             window.location.href = '/edit/' + this.dataset.href;

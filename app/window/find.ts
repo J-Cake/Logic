@@ -1,5 +1,5 @@
 import * as $ from "jquery";
-import {connect} from "../prompt";
+import {connect} from "./prompt";
 
 // $(document).on('click', () => connect());
 

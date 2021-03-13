@@ -7,7 +7,7 @@ import RenderComponent from "../UI/RenderComponent";
 
 export default async function saveDocument(): Promise<void> {
     const mgr = manager.setState().circuit, file = await prepareForSave(mgr);
-    if (!(await fetch(`/circuit/raw/${mgr.circuitId}`, {
+    if (!(await fetch(`/circuit/${mgr.circuitId}`, {
         body: JSON.stringify(file, null, 4),
         method: 'PUT',
         headers: {

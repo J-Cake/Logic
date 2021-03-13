@@ -1,8 +1,6 @@
 extends site/page
 
 block page
-    //script(src="/app/ui.js")
-
     style.
         #dashboard {
             display: grid;
@@ -21,53 +19,59 @@ block page
             height: 100%;
         }
 
+    script(src="/app/dashboard.js", defer)
+
     section#dashboard
         section#tab-bar
             a(href="#own")#own-tab.tab-header Yours
             a(href="#shared")#shared-tab.tab-header Shared with you
             a(href="#my-components")#my-components-tab.tab-header Your Components
-
         section#form
             #doclist
                 #tab-view
                     #own.tab
-                        h3 Your documents
+                        .controls
+                            h3 Your documents
+                            button.icon#mkDoc 
                         if own.length > 0
                             for doc in own
-                                a(href=`/edit/${doc.documentToken}`, tab-index=1).doc
-                                    span.info
-                                        span.title= doc.documentTitle
-                                        span.edited Edited on #{new Date(doc.edited).toLocaleDateString()}
+                                .doc
+                                    a(href=`/edit/${doc.documentToken}`, tab-index=1)
+                                        span.info
+                                            span.title= doc.documentTitle
+                                            span.edited Edited on #{new Date(doc.edited).toLocaleDateString()}
                                     .controls
-                                        button.addCollaborator 
-
-                                        button.editName 
-
-                                        button.deleteDoc 
+                                        button(data-doc=doc.documentToken).collab 
+                                        button.editName(data-doc=doc.documentToken) 
+                                        button(data-url=`/circuit/${doc.documentToken}`).deleteDoc 
 
                         else
                             span You own no documents.
 
                     #shared.tab
-                        h3 Documents shared with you
+                        .controls
+                            h3 Documents shared with you
                         if shared.length > 0
                             for doc in shared
-                                a(href=`/edit/${doc.documentToken}`, tab-index=2).doc
-                                    span.title= doc.documentTitle
-                                    span.edited= new Date(doc.edited).toLocaleDateString()
+                                .doc
+                                    a(href=`/edit/${doc.documentToken}`, tab-index=2)
+                                        span.title= doc.documentTitle
+                                        span.edited= new Date(doc.edited).toLocaleDateString()
                                     .controls
-                                        button.leaveDoc 
+                                        button(data-doc=doc.documentToken).leaveDoc 
 
                         else
                             span No one has shared any documents with you.
 
                     #my-components.tab
-                        h3 Your components
+                        .controls
+                            h3 Your components
                         if comps.length > 0
                             for component in comps
-                                a(href=`/view/${component.componentToken}`, tab-index=3).doc
-                                    span.info
-                                        span.title= component.componentName
+                                .doc
+                                    a(href=`/view/${component.componentToken}`, tab-index=3)
+                                        span.info
+                                            span.title= component.componentName
                                     .controls
                                         button.deleteComp 
                                         button.changeVisibility 

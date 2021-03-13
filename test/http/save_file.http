@@ -1,121 +1,64 @@
-PUT http://localhost:2560 /circuit/raw/circuit1
+PUT http://localhost:2560 /circuit/34o7j1pf6ta0
 Content-Type: application/json
 
 {
-    "circuitName": "ALU",
+    "circuitName": "Test",
     "components": [
         "std/and",
-        "std/or",
-        "std/not",
+        "std/buffer",
+        "std/clock",
+        "std/input",
         "std/nand",
         "std/nor",
+        "std/not",
+        "std/or",
+        "std/output",
+        "std/splitter",
         "std/xnor",
-        "std/xor",
-        "std/buffer",
-        "std/input",
-        "std/output"
+        "std/xor"
     ],
     "content": {
         "0": {
+            "identifier": "std/input",
+            "label": "",
             "direction": 0,
-            "identifier": "And",
-            "outputs": [
-                6
-            ],
+            "flip": false,
             "position": [
                 0,
                 0
-            ]
+            ],
+            "outputs": {
+                "i": [
+                    [
+                        1,
+                        "o"
+                    ]
+                ]
+            },
+            "wires": {
+                "1": [
+                    {
+                        "coords": [],
+                        "inputIndex": 0,
+                        "outputIndex": 0
+                    }
+                ]
+            }
         },
         "1": {
+            "identifier": "std/output",
+            "label": "",
             "direction": 0,
-            "identifier": "Input",
-            "outputs": [
+            "flip": false,
+            "position": [
+                2,
                 0
             ],
-            "position": [
-                0,
-                0
-            ]
-        },
-        "2": {
-            "direction": 0,
-            "identifier": "Input",
-            "outputs": [
-                0
-            ],
-            "position": [
-                0,
-                0
-            ]
-        },
-        "3": {
-            "direction": 0,
-            "identifier": "Xor",
-            "outputs": [
-                6
-            ],
-            "position": [
-                0,
-                0
-            ]
-        },
-        "4": {
-            "direction": 0,
-            "identifier": "Input",
-            "outputs": [
-                3
-            ],
-            "position": [
-                0,
-                0
-            ]
-        },
-        "5": {
-            "direction": 0,
-            "identifier": "Input",
-            "outputs": [
-                3
-            ],
-            "position": [
-                0,
-                0
-            ]
-        },
-        "6": {
-            "direction": 0,
-            "identifier": "Or",
-            "outputs": [
-                7
-            ],
-            "position": [
-                0,
-                0
-            ]
-        },
-        "7": {
-            "direction": 0,
-            "identifier": "Not",
-            "outputs": [
-                8
-            ],
-            "position": [
-                0,
-                0
-            ]
-        },
-        "8": {
-            "direction": 0,
-            "identifier": "Output",
-            "outputs": [],
-            "position": [
-                0,
-                0
-            ]
+            "outputs": {},
+            "wires": {}
         }
     },
-    "ownerEmail": "a@b.c",
-    "wires": []
+    "ownerEmail": "a@b.c"
 }
 
 ###

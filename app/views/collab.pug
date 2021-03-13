@@ -1,0 +1,92 @@
+extends index
+
+block content
+    link(rel="stylesheet", href="/app/web.css")
+    link(rel="stylesheet", href="/app/site.css")
+    link(rel="stylesheet", href="/app/web.css")
+
+    style.
+        #users {
+            max-width: var(--max-width);
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            display: grid;
+            grid-template-rows: 1fr 1fr;
+            /*height: var(--max-width);*/
+        }
+
+        #search, #collaborators {
+            height: 100%;
+            width: 100%;
+            padding: 8px;
+        }
+
+        #collaborators {
+            border-top: 1px solid var(--secondary);
+        }
+
+        .user {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            width: 100%;
+            justify-content: space-between;
+
+            padding: 4px 8px;
+        }
+        .user span.info > * {
+            display: block;
+        }
+        .name {
+            font-size: 16pt;
+        }
+        .email {
+            font-size: 9pt;
+        }
+        .can-edit {
+            position: fixed;
+            visibility: hidden;
+        }
+        .can-edit + label {
+            font-family: "Remix";
+            display: block;
+            width: 38px;
+            height: 38px;
+            color: var(--blank);
+            text-align: center;
+            line-height: 38px;
+            transition: 0.3s;
+            border-radius: 4px;
+        }
+        .can-edit:checked + label {
+            background: var(--accent);
+        }
+        #searchField {
+            width: 100%;
+            background: none;
+            border: none;
+            border-bottom: 2px solid var(--primary);
+            color: var(--blank);
+            line-height: 24pt;
+            font-size: 10pt;
+            padding: 8px 4px;
+        }
+    section#users
+        section#search
+            input(type="search", placeholder="Search by email or user name")#searchField
+            div#results
+        section#collaborators
+            each collab in collabs
+                div.user
+                    span.info
+
+                        span.name=collab.identifier
+                        span.email=collab.email
+                    .controls
+                        input(type="checkbox", checked=!!collab.canEdit, id=collab.identifier, data-user-id=collab.userId).can-edit
+                        label(for=collab.identifier) 
+                        button(data-token=collab.userId).icon.rem-usr 
+    script(src="/app/collabs.js")

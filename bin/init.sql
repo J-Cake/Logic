@@ -3,7 +3,8 @@ create table access
 (
     documentId int not null,
     userId int not null,
-    dateGranted date not null
+    dateGranted date default current_timestamp,
+    canEdit boolean default false not null
 );
 
 create table components

@@ -16,7 +16,7 @@ import TooltipPane from "./UI/TooltipPane";
 import Colour from "./sys/util/Themes";
 import buildComponentPrompt from "./UI/ComponentMenu";
 import buildFinderPrompt from "./UI/ComponentFinder";
-// import {mousetrap} from "../prompt/componentMenu";
+// import {mousetrap} from "../window/componentMenu";
 
 declare global {
     interface Array<T> {

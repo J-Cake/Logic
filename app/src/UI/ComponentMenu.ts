@@ -3,7 +3,7 @@ import * as $ from 'jquery';
 import {manager, Tool} from "../index";
 import RenderComponent from "./RenderComponent";
 import {Dialog, setVisible} from "./DialogManager";
-import {State} from "../../prompt/componentMenu";
+import {State} from "../../window/components";
 import {themes} from "../sys/util/Themes";
 import StateManager from "../sys/util/stateManager";
 
@@ -21,7 +21,6 @@ export default function buildPrompt() {
             if (typeof e.detail === 'function')
                 e.detail({
                     onSelect: id => addComponent(id),
-                    theme: themes[manager.setState().theme]()
                 });
             else
                 console.error('no init function');
@@ -35,7 +34,7 @@ export function addComponent(componentId: string) {
         Component = availableComponents[componentId];
     if (Component) {
         window.focus();
-        // const name = prompt("Component Label");
+        // const name = window("Component Label");
         $("#move").prop("checked", true);
         const component = new Component(mgr.getNextAvailComponentId(), {
             direction: 1,
