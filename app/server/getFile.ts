@@ -1,9 +1,9 @@
 import Circuit from "./Circuit";
 import sql from "./sql";
 
-export type AccessTable = { documentId: number, userId: number, dateGranted: Date }[];
+export type AccessTable = { documentId: number, userId: number, dateGranted: Date };
 export type DBUser = { userId: number, email: string, password: string, joined: Date, identifier: string, userToken: string };
-export type DBDocument = { ownerId: number, physicalLocation: string, documentId: number, documentTitle: string, public: boolean, documentToken: string };
+export type DBDocument = { ownerId: number, physicalLocation: string, documentId: number, documentTitle: string, public: boolean, documentToken: string, source: string };
 
 export default async function getFile(userToken: string, documentToken: string): Promise<Circuit | null> {
     const user = await (sql.sql_get<DBUser>(`Select userId

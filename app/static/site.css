@@ -37,22 +37,30 @@ header nav a:hover {
     background: var(--blank);
 }
 
-a.icon {
+a.icon, #body button.icon, span.icon {
     font-family: Remix;
     font-size: 28pt;
+    padding: 4px;
 }
 
 header nav {
     display: flex;
     align-items: stretch;
 }
+header nav.user {
+    flex-direction: row-reverse;
+}
 
-header nav.site {
+header nav {
     flex: 1;
 }
 
-header nav.site a {
+header nav a {
     width: 180px;
+}
+
+header nav a:focus {
+    background: var(--active);
 }
 
 header #content {
@@ -107,7 +115,6 @@ header {
     width: 100%;
     flex: 1;
     padding: 24px;
-    /*min-height: 100vh;*/
 }
 
 h1, h2, h3, h4, h5 h6 {

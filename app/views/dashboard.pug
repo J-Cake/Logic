@@ -1,72 +1,76 @@
 extends site/page
 
 block page
-    script(src="/app/ui.js")
+    //script(src="/app/ui.js")
 
-    h1 Welcome to your Dashboard
+    style.
+        #dashboard {
+            display: grid;
+            grid-template-columns: auto 1fr;
+        }
 
-    script(src="/res/eva.min.js")
-    script.
-        window.addEventListener("load", function () {
-            document.querySelector("#mkDoc").addEventListener("click", function () {
-                const name = prompt("Enter a new Circuit name");
-                if (name && name.trim().length > 0)
-                    window.location.href = `/make?name=${encodeURIComponent(name)}`;
-            });
+        #tab-bar {
+            grid-column: 1;
+            height: 100%;
+        }
 
-            const colour = getComputedStyle(document.querySelector("nav.site a")).color.match(/^rgba?\((\d+), (\d+), (\d+)\)$/i);
-            if (colour)
-                eva.replace({
-                    fill: "#" + colour.slice(1, 4).map(i => Number(i).toString(16).padStart(2, i[0])).join("")
-                });
-        });
+        #form {
+            grid-column: 2;
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
 
-    section#form
-        #toolbar
-            .left
-                a(href="/user/logout")
-                    input(type="button")#logout
-                    label(for="logout")
-                        i(data-eva="log-out-outline")
-                input(type="button")#mkDoc
-                label(for="mkDoc")
-                    i(data-eva="plus-circle-outline")
+    section#dashboard
+        section#tab-bar
+            a(href="#own")#own-tab.tab-header Yours
+            a(href="#shared")#shared-tab.tab-header Shared with you
+            a(href="#my-components")#my-components-tab.tab-header Your Components
 
-        #doclist
-            #tab-bar
-                h4#own-tab.selected Yours
-                h4#shared-tab Shared with you
+        section#form
+            #doclist
+                #tab-view
+                    #own.tab
+                        h3 Your documents
+                        if own.length > 0
+                            for doc in own
+                                a(href=`/edit/${doc.documentToken}`, tab-index=1).doc
+                                    span.info
+                                        span.title= doc.documentTitle
+                                        span.edited Edited on #{new Date(doc.edited).toLocaleDateString()}
+                                    .controls
+                                        button.addCollaborator 
 
-            #tab-view
-                #own.selected
-                    if own.length > 0
-                        for doc in own
-                            div(data-href=doc.documentToken).doc
-                                span.info
+                                        button.editName 
+
+                                        button.deleteDoc 
+
+                        else
+                            span You own no documents.
+
+                    #shared.tab
+                        h3 Documents shared with you
+                        if shared.length > 0
+                            for doc in shared
+                                a(href=`/edit/${doc.documentToken}`, tab-index=2).doc
                                     span.title= doc.documentTitle
-                                    span.edited Edited on #{new Date(doc.edited).toLocaleDateString()}
-                                .controls
-                                    button.addCollaborator
-                                        i(data-eva="person-add-outline")
-                                        //
-                                    button.editName
-                                        i(data-eva="edit-2-outline")
-                                        //
-                                    button.deleteDoc
-                                        i(data-eva="trash-outline")
-                                        //
-                    else
-                        span You own no documents.
+                                    span.edited= new Date(doc.edited).toLocaleDateString()
+                                    .controls
+                                        button.leaveDoc 
 
-                #shared
-                    if shared.length > 0
-                        for doc in shared
-                            div(data-href=doc.documentToken).doc
-                                span.title= doc.documentTitle
-                                span.edited= new Date(doc.edited).toLocaleDateString()
-                                .controls
-                                    button.leaveDoc
-                                        i(data-eva="close-circle-outline")
-                                        //
-                    else
-                        span No one has shared any documents with you.
+                        else
+                            span No one has shared any documents with you.
+
+                    #my-components.tab
+                        h3 Your components
+                        if comps.length > 0
+                            for component in comps
+                                a(href=`/view/${component.componentToken}`, tab-index=3).doc
+                                    span.info
+                                        span.title= component.componentName
+                                    .controls
+                                        button.deleteComp 
+                                        button.changeVisibility 
+
+                        else
+                            span You have not published any components yet.

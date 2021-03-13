@@ -12,35 +12,29 @@ html
                 console.log("Enabling Live-Reload");
                 new WebSocket(`ws://${window.location.hostname}:#{devMode}`).addEventListener('message', _ => location.reload());
     body
-        #toolbar
-            button#find-component
-                i(data-eva="cloud-download-outline")
-                //
-            button#search
-                i(data-eva="funnel-outline")
-                //
+        form#toolbar
+            input#component-name(placeholder="enter-keyword", name="q")
+            button(type="submit")
+                i(data-eva="search-outline")
+
         section#components
-            each component in components
+            each result in foundComponents
                 div.component
-                    span.name= component
+                    span.name=result
                     .controls
                         button.info
                             i(data-eva="info-outline")
-                            //
-                        button.remove
-                            i(data-eva="trash-outline")
-                            //
 
         script.
             window.src = new Promise(function (resolve, reject) {
-                fetch('/app/comps.js', {
+                fetch('/app/find.js', {
                     method: "HEAD"
                 }).then(function (res) {
                     if (res.ok)
                         document.body.appendChild((function () {
                             const script = document.createElement('script');
                             script.id = "scr";
-                            script.setAttribute('src', '/app/comps.js');
+                            script.setAttribute('src', '/app/find.js');
                             resolve();
                             return script;
                         })());
@@ -55,5 +49,5 @@ html
         script(src = "/res/eva.min.js")
         script.
             eva.replace({
-                fill: getComputedStyle(document.querySelector(".name")).color
+                fill: getComputedStyle(document.body).color
             });

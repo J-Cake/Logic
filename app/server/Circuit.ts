@@ -1,10 +1,10 @@
-import * as fs from 'fs';
 import * as path from 'path';
 
 import sql from "./sql";
 import {DBDocument} from "./getFile";
 import {rootFn} from "./utils";
 import {GenericComponent} from "../src/Logic/ComponentFetcher";
+import * as FS from "./FS";
 
 export interface CircuitObj {
     circuitName: string,
@@ -41,25 +41,27 @@ export default class Circuit implements CircuitObj {
     }
 
     async fetchInfo() {
-        const {physicalLocation} = await sql.sql_get<Partial<DBDocument>>(`SELECT physicalLocation
-                                                                           from documents
-                                                                           where documentId == ?`, [this.docId]);
+        const {source} = await sql.sql_get<Partial<DBDocument>>(`SELECT source
+                                                                 from documents
+                                                                 where documentId == ?`, [this.docId]);
 
-        if (physicalLocation)
-            this.info = JSON.parse(fs.readFileSync(path.join(rootFn(process.cwd()), 'Data', 'documents', physicalLocation)).toString()) as CircuitObj;
+        if (source)
+            try {
+                this.info = JSON.parse(source)
+            } catch (err) {
+                throw {err: 'Document is corrupt and was not able to be read'}
+            }
         else
             throw {err: 'Unable to read file. Location was not found'};
     }
 
     async writeContents(circuit: CircuitObj): Promise<void> {
-        const {physicalLocation} = await sql.sql_get<Partial<DBDocument>>(`SELECT physicalLocation
-                                                                           from documents
-                                                                           where documentId == ?`, [this.docId]);
-
-        if (physicalLocation)
             try {
-                fs.writeFileSync(path.join(rootFn(process.cwd()), 'Data', 'documents', physicalLocation), JSON.stringify(circuit, null, 4));
-                sql.sql_query(`UPDATE documents SET edited = ? where documentToken == ?`, [new Date().getTime(), this.docId]);
+                await sql.sql_query(`UPDATE documents
+                                     SET edited = ?,
+                                         source = ?
+                                     where documentId == ?`, [new Date().getTime(), JSON.stringify(circuit), this.docId]);
+                console.log("Saving Completed", this.docId);
             } catch (err) {
                 throw {err: 'write failed'};
             }

@@ -24,7 +24,7 @@
 --     on users (userToken);
 --
 -- -- auto-generated definition
--- create table if not exists documents
+-- create table if not exists .documents
 -- (
 --     ownerId          int                   not null,
 --     physicalLocation text                  not null,
@@ -39,11 +39,11 @@
 --
 -- create
 -- unique index if not exists documents_documentId_uindex
---     on documents (documentId);
+--     on .documents (documentId);
 --
 -- create
 -- unique index if not exists documents_documentToken_uindex
---     on documents (documentToken);
+--     on .documents (documentToken);
 --
 -- -- auto-generated definition
 -- create table if not exists access

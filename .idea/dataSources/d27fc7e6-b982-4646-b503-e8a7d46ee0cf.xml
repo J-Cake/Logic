@@ -1335,22 +1335,22 @@
       <NotNull>1</NotNull>
       <DefaultExpression>&apos;&apos;</DefaultExpression>
     </column>
-    <column id="490" parent="169" name="location">
+    <column id="490" parent="169" name="componentToken">
       <Position>4</Position>
-      <DataType>text|0s</DataType>
-      <NotNull>1</NotNull>
-    </column>
-    <column id="491" parent="169" name="componentToken">
-      <Position>5</Position>
       <DataType>text|0s</DataType>
       <NotNull>1</NotNull>
       <DefaultExpression>&apos;&apos;</DefaultExpression>
     </column>
-    <column id="492" parent="169" name="public">
-      <Position>6</Position>
+    <column id="491" parent="169" name="public">
+      <Position>5</Position>
       <DataType>boolean|0s</DataType>
       <NotNull>1</NotNull>
       <DefaultExpression>false</DefaultExpression>
+    </column>
+    <column id="492" parent="169" name="source">
+      <Position>6</Position>
+      <DataType>text|0s</DataType>
+      <DefaultExpression>&apos;{}&apos;</DefaultExpression>
     </column>
     <index id="493" parent="169" name="components_componentId_uindex">
       <ColNames>componentId</ColNames>
@@ -1363,158 +1363,153 @@
       <ColumnCollations></ColumnCollations>
       <Unique>1</Unique>
     </index>
-    <index id="495" parent="169" name="components_location_uindex">
-      <ColNames>location</ColNames>
-      <ColumnCollations></ColumnCollations>
-      <Unique>1</Unique>
-    </index>
-    <index id="496" parent="169" name="components_componentToken_uindex">
+    <index id="495" parent="169" name="components_componentToken_uindex">
       <ColNames>componentToken</ColNames>
       <ColumnCollations></ColumnCollations>
       <Unique>1</Unique>
     </index>
-    <key id="497" parent="169" name="components_pk">
+    <key id="496" parent="169" name="components_pk">
       <ColNames>componentId</ColNames>
       <Primary>1</Primary>
       <UnderlyingIndexName>sqlite_autoindex_components_1</UnderlyingIndexName>
     </key>
-    <column id="498" parent="170" name="ownerId">
+    <column id="497" parent="170" name="ownerId">
       <Position>1</Position>
       <DataType>int|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="499" parent="170" name="physicalLocation">
+    <column id="498" parent="170" name="documentId">
       <Position>2</Position>
-      <DataType>text|0s</DataType>
-      <NotNull>1</NotNull>
-    </column>
-    <column id="500" parent="170" name="documentId">
-      <Position>3</Position>
       <DataType>int|0s</DataType>
       <NotNull>1</NotNull>
       <DefaultExpression>0</DefaultExpression>
     </column>
-    <column id="501" parent="170" name="documentTitle">
-      <Position>4</Position>
+    <column id="499" parent="170" name="documentTitle">
+      <Position>3</Position>
       <DataType>text|0s</DataType>
     </column>
-    <column id="502" parent="170" name="public">
-      <Position>5</Position>
+    <column id="500" parent="170" name="public">
+      <Position>4</Position>
       <DataType>boolean|0s</DataType>
       <NotNull>1</NotNull>
       <DefaultExpression>false</DefaultExpression>
     </column>
-    <column id="503" parent="170" name="documentToken">
-      <Position>6</Position>
+    <column id="501" parent="170" name="documentToken">
+      <Position>5</Position>
       <DataType>text|0s</DataType>
       <NotNull>1</NotNull>
       <DefaultExpression>&apos;&apos;</DefaultExpression>
     </column>
-    <column id="504" parent="170" name="created">
-      <Position>7</Position>
+    <column id="502" parent="170" name="created">
+      <Position>6</Position>
       <DataType>date|0s</DataType>
       <NotNull>1</NotNull>
       <DefaultExpression>0</DefaultExpression>
     </column>
-    <column id="505" parent="170" name="edited">
-      <Position>8</Position>
+    <column id="503" parent="170" name="edited">
+      <Position>7</Position>
       <DataType>daate|0s</DataType>
       <NotNull>1</NotNull>
       <DefaultExpression>0</DefaultExpression>
     </column>
-    <index id="506" parent="170" name="documents_documentId_uindex">
+    <column id="504" parent="170" name="source">
+      <Position>8</Position>
+      <DataType>text|0s</DataType>
+      <DefaultExpression>&apos;{}&apos;</DefaultExpression>
+    </column>
+    <index id="505" parent="170" name="documents_documentId_uindex">
       <ColNames>documentId</ColNames>
       <ColumnCollations></ColumnCollations>
       <Unique>1</Unique>
     </index>
-    <index id="507" parent="170" name="sqlite_autoindex_documents_1">
+    <index id="506" parent="170" name="sqlite_autoindex_documents_1">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>documentId</ColNames>
       <ColumnCollations></ColumnCollations>
       <Unique>1</Unique>
     </index>
-    <index id="508" parent="170" name="documents_documentToken_uindex">
+    <index id="507" parent="170" name="documents_documentToken_uindex">
       <ColNames>documentToken</ColNames>
       <ColumnCollations></ColumnCollations>
       <Unique>1</Unique>
     </index>
-    <key id="509" parent="170" name="documents_pk">
+    <key id="508" parent="170" name="documents_pk">
       <ColNames>documentId</ColNames>
       <Primary>1</Primary>
       <UnderlyingIndexName>sqlite_autoindex_documents_1</UnderlyingIndexName>
     </key>
-    <column id="510" parent="171" name="type">
+    <column id="509" parent="171" name="type">
       <Position>1</Position>
       <DataType>text|0s</DataType>
     </column>
-    <column id="511" parent="171" name="name">
+    <column id="510" parent="171" name="name">
       <Position>2</Position>
       <DataType>text|0s</DataType>
     </column>
-    <column id="512" parent="171" name="tbl_name">
+    <column id="511" parent="171" name="tbl_name">
       <Position>3</Position>
       <DataType>text|0s</DataType>
     </column>
-    <column id="513" parent="171" name="rootpage">
+    <column id="512" parent="171" name="rootpage">
       <Position>4</Position>
       <DataType>int|0s</DataType>
     </column>
-    <column id="514" parent="171" name="sql">
+    <column id="513" parent="171" name="sql">
       <Position>5</Position>
       <DataType>text|0s</DataType>
     </column>
-    <column id="515" parent="172" name="userId">
+    <column id="514" parent="172" name="userId">
       <Position>1</Position>
       <DataType>int|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="516" parent="172" name="email">
+    <column id="515" parent="172" name="email">
       <Position>2</Position>
       <DataType>text|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="517" parent="172" name="password">
+    <column id="516" parent="172" name="password">
       <Position>3</Position>
       <DataType>text|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="518" parent="172" name="joined">
+    <column id="517" parent="172" name="joined">
       <Position>4</Position>
       <DataType>date|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="519" parent="172" name="identifier">
+    <column id="518" parent="172" name="identifier">
       <Position>5</Position>
       <DataType>text|0s</DataType>
     </column>
-    <column id="520" parent="172" name="userToken">
+    <column id="519" parent="172" name="userToken">
       <Position>6</Position>
       <DataType>text|0s</DataType>
       <NotNull>1</NotNull>
       <DefaultExpression>&apos;&apos;</DefaultExpression>
     </column>
-    <index id="521" parent="172" name="sqlite_autoindex_users_1">
+    <index id="520" parent="172" name="sqlite_autoindex_users_1">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>userId</ColNames>
       <ColumnCollations></ColumnCollations>
       <Unique>1</Unique>
     </index>
-    <index id="522" parent="172" name="users_&quot;userId&quot;_uindex">
+    <index id="521" parent="172" name="users_&quot;userId&quot;_uindex">
       <ColNames>userId</ColNames>
       <ColumnCollations></ColumnCollations>
       <Unique>1</Unique>
     </index>
-    <index id="523" parent="172" name="users_&quot;email&quot;_uindex">
+    <index id="522" parent="172" name="users_&quot;email&quot;_uindex">
       <ColNames>email</ColNames>
       <ColumnCollations></ColumnCollations>
       <Unique>1</Unique>
     </index>
-    <index id="524" parent="172" name="users_userToken_uindex">
+    <index id="523" parent="172" name="users_userToken_uindex">
       <ColNames>userToken</ColNames>
       <ColumnCollations></ColumnCollations>
       <Unique>1</Unique>
     </index>
-    <key id="525" parent="172" name="users_pk">
+    <key id="524" parent="172" name="users_pk">
       <ColNames>userId</ColNames>
       <Primary>1</Primary>
       <UnderlyingIndexName>sqlite_autoindex_users_1</UnderlyingIndexName>

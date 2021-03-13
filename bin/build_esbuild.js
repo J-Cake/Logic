@@ -31,8 +31,20 @@ const components = {
         target: 'es6'
     }),
     componentMenu: () => build.build({
-        entryPoints: [path.join(dirs.tsOutput, 'componentMenu/index.js')],
+        entryPoints: [path.join(dirs.tsOutput, 'prompt/componentMenu/index.js')],
         outfile: path.join(dirs.finalOutput, 'comps.js'),
+        loader: {
+            '.js': 'js'
+        },
+        format: 'iife',
+        bundle: true,
+        minify: !devMode,
+        sourcemap: devMode,
+        target: 'es6'
+    }),
+    find: () => build.build({
+        entryPoints: [path.join(dirs.tsOutput, 'prompt/findComponents/index.js')],
+        outfile: path.join(dirs.finalOutput, 'find.js'),
         loader: {
             '.js': 'js'
         },

@@ -3,15 +3,22 @@ import * as bcrypt from 'bcrypt';
 import sql from "../sql";
 import {DBUser} from "../getFile";
 import {getTimeString} from "../utils";
+import {isLoggedIn} from "../User";
 
 const router = express.Router();
 
 router.get('/login', async function (req, res) { // These are pages
-    res.render("login", {err: req.cookies.error});
+    res.render("login", {
+        err: req.cookies.error,
+        isLoggedIn: isLoggedIn(req)
+    });
 });
 
 router.get('/signup', async function (req, res) { // These are pages
-    res.render("signup", {err: req.cookies.error});
+    res.render("signup", {
+        err: req.cookies.error,
+        isLoggedIn: isLoggedIn(req)
+    });
 });
 
 router.post("/login", async function (req, res) {
@@ -29,7 +36,7 @@ router.post("/login", async function (req, res) {
             res.redirect("/user/login");
         } else if (await bcrypt.compare(password, <string>db.password)) {
             res.cookie('userId', db.userToken);
-            res.redirect("/dashboard");
+            res.redirect("/dashboard#own");
         } else {
             res.status(403);
             res.cookie("error", 'the password is incorrect');
@@ -60,7 +67,7 @@ router.post("/signup", async function (req, res) {
             // Make token only last for 24 h
             res.cookie('userId', usr.userToken);
             res.status(202);
-            res.redirect("/dashboard");
+            res.redirect("/dashboard#own");
         } else {
             res.status(409);
             res.cookie("error", "email is already in use");
@@ -75,7 +82,7 @@ router.post("/signup", async function (req, res) {
         // console.log("Done");
         res.cookie('userId', token);
         res.status(201);
-        res.redirect('/dashboard');
+        res.redirect('/dashboard#own');
     }
 });
 

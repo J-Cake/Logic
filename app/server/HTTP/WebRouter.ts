@@ -1,9 +1,11 @@
-import * as fs from 'fs';
 import * as path from 'path';
 
 import * as express from 'express';
 import * as MarkdownIt from 'markdown-it';
+
 import {rootFn} from "../utils";
+import * as FS from '../FS';
+import {isLoggedIn} from "../User";
 
 const comp = new MarkdownIt({
     html: true,
@@ -14,28 +16,31 @@ const comp = new MarkdownIt({
 const router: express.Router = express.Router();
 
 router.get('/', function (req, res) {
-    res.render('site/home', {title: "LogicX"});
+    res.render('site/home', {
+        title: "LogicX",
+        isLoggedIn: isLoggedIn(req)
+    });
 });
 router.get('/license', function (req, res) {
-    res.render('site/license', {title: "LogicX License"});
-});
-router.get('/tryit', function (req, res) {
-    res.render('app', {circuit: null});
+    res.render('site/license', {
+        title: "LogicX License",
+        isLoggedIn: isLoggedIn(req)
+    });
 });
 
 type FS = {
     [item: string]: string | FS
 }
 
-const getPages = (function(root?: string): FS {
-    const docRoot = path.join(rootFn(process.cwd()), 'doc/wiki', root ? root : '');
+const getPages = async function(root?: string): Promise<FS> {
+    const docRoot = path.join(await rootFn(), 'lib/doc/wiki', root ? root : '');
 
-    const dir = (dirName: string): FS => {
+    const dir = async function (dirName: string): Promise<FS> {
         const docs: FS = {};
 
-        for (const i of fs.readdirSync(dirName))
-            if (fs.statSync(path.join(dirName, i)).isDirectory())
-                docs[i] = dir(path.join(dirName, i));
+        for (const i of await FS.readdir(dirName))
+            if ((await FS.stat(path.join(dirName, i))).isDirectory())
+                docs[i] = await dir(path.join(dirName, i));
             else if (i.split('.').pop() === 'md')
                 docs[i] = ''
 
@@ -43,29 +48,33 @@ const getPages = (function(root?: string): FS {
     }
 
     return dir(docRoot);
-});
+};
 
-router.get('/wiki/:page', function(req, res) {
-    const doc = path.join(rootFn(process.cwd()), 'doc/wiki', decodeURIComponent(req.params.page));
+router.get('/wiki/:page', async function(req, res) {
+    const doc = path.join(await rootFn(), 'lib/doc/wiki', decodeURIComponent(req.params.page));
 
-    console.log(doc);
-
-    if (fs.existsSync(doc) && fs.statSync(doc).isFile() && doc.split('.').pop() === 'md')
+    if (await FS.exists(doc) && (await FS.stat(doc)).isFile() && doc.split('.').pop() === 'md')
         res.render('site/wiki', {
-            content: comp.render(fs.readFileSync(doc).toString()),
-            pages: getPages()
+            content: comp.render(await FS.readFile(doc)),
+            pages: await getPages(),
+            isLoggedIn: isLoggedIn(req)
         });
-    else if (fs.existsSync(doc) && fs.statSync(doc).isDirectory())
-        res.render('site/wiki', {pages: getPages(req.params.page)});
+    else if (await FS.exists(doc) && (await FS.stat(doc)).isDirectory())
+        res.render('site/wiki', {
+            pages: await getPages(req.params.page),
+            isLoggedIn: isLoggedIn(req)
+        });
     else
-        res.render('site/404');
+        res.render('site/404', {
+            isLoggedIn: isLoggedIn(req)
+        });
 })
 
-router.get('/wiki', function(req, res) {
-    const doc = path.join(rootFn(process.cwd()), 'doc/wiki', 'index.md');
-    res.render('site/wiki', {pages: getPages()});
+router.get('/wiki', async function(req, res) {
+    res.render('site/wiki', {
+        pages: await getPages(),
+        isLoggedIn: isLoggedIn(req)
+    });
 });
-
-// router.get('/docs/:page')
 
 export default router;

@@ -2,16 +2,22 @@ extends ../web
 
 block content
     header
-        nav#content
-            nav.site
-                a(href="/") Home
-                a(href="/folio") Folio
-                a(href="/docs") Docs
-                a(href="/wiki") LogicX Wiki
-            nav.social
-                a(href="https://github.com/J-Cake/Logic").icon 
-            nav.user
-                a(href="/dashboard").icon 
+        if isLoggedIn
+            nav#content
+                nav.site
+                    a(href="/") Home
+                    a(href="/dashboard#own") Dashboard
+                    a(href="/wiki") LogicX Wiki
+                nav.user
+                    a(href="/user/logout") Log Out
+        else
+            nav#content
+                nav.site
+                    a(href="/") Home
+                    a(href="/folio") Folio
+                    a(href="/wiki") LogicX Wiki
+                nav.user
+                    a(href="/dashboard") Log In
 
     section#body
         //img(src="https://www.lifeofpix.com/wp-content/uploads/2018/05/308-name6012-ake-1-1600x1067.jpg")#bg-img
@@ -29,6 +35,6 @@ block content
                 div#copyright
                     a(href="https://jschneiderprojects.com.au") Jacob Schneider - 2021
                 div.res
-                    a(href="/dashboard") Dashboard
+                    a(href="/dashboard#own") Dashboard
                     a(href="https://github.com/J-Cake/Logic") GitHub
                     a(href="https://logic.jschneiderprojects.com.au") WebSite

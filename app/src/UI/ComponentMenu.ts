@@ -1,9 +1,9 @@
 import * as $ from 'jquery';
 
-import RenderComponent from "./RenderComponent";
 import {manager, Tool} from "../index";
+import RenderComponent from "./RenderComponent";
 import {Dialog, setVisible} from "./DialogManager";
-import {State} from "../../componentMenu";
+import {State} from "../../prompt/componentMenu";
 import {themes} from "../sys/util/Themes";
 import StateManager from "../sys/util/stateManager";
 

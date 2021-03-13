@@ -3,12 +3,12 @@ import {manager} from "../index";
 
 export enum Dialog {
     ComponentView,
-    ComponentLocator
+    ComponentFinder
 }
 
 export const dialogFiles: Record<Dialog, (docId: string) => string> = {
     [Dialog.ComponentView]: (doc: string) => `/components/${doc}`,
-    [Dialog.ComponentLocator]: (doc: string) => `/find/${doc}`
+    [Dialog.ComponentFinder]: (doc: string) => `/find/${doc}`
 }
 
 export type Dialogs = Record<Dialog, Window | null>;
@@ -26,12 +26,14 @@ export function setVisible(dialog: Dialog, visibility: boolean, onClose?: (isClo
                 .open(dialogFiles[dialog](manager.setState().documentIdentifier), '_blank', 'location=no,height=450,width=450,scrollbars=no,status=no')
 
             if (onClose && win)
-                win.addEventListener('load', () => win.window.addEventListener("beforeunload", () => {
-                    dialogManager.setState({
-                        [dialog]: null
+                win.addEventListener('load', function () {
+                    win.window.addEventListener("beforeunload", () => {
+                        dialogManager.setState({
+                            [dialog]: null
+                        });
+                        onClose(true);
                     });
-                    onClose(true);
-                }));
+                });
 
 
             dialogManager.dispatch('open', {[dialog]: win});

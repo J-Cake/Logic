@@ -6,18 +6,18 @@ import {rootFn} from "../utils";
 
 const router = express.Router();
 
-router.get('/icon/:icon', function (req, res) {
+router.get('/icon/:icon', async function (req, res) {
     res.contentType("image/svg+xml");
     res.end(eva);
 });
 
-router.get('/eva.min.js', function (req, res) {
+router.get('/eva.min.js', async function (req, res) {
     res.contentType('text/javascript');
-    res.sendFile(path.join(rootFn(__dirname), 'node_modules', 'eva-icons', 'eva.min.js'));
+    res.sendFile(path.join(await rootFn(), 'node_modules', 'eva-icons', 'eva.min.js'));
 });
-router.get('/eva.min.js.map', function (req, res) {
+router.get('/eva.min.js.map', async function (req, res) {
     res.contentType('text/javascript');
-    res.sendFile(path.join(rootFn(__dirname), 'node_modules', 'eva-icons', 'eva.min.js.map'));
+    res.sendFile(path.join(await rootFn(), 'node_modules', 'eva-icons', 'eva.min.js.map'));
 });
 
 export default router;

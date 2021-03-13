@@ -1,5 +1,3 @@
-import * as $ from 'jquery';
-
 import Component from "./Component";
 import {manager} from "../index";
 import RenderComponent from "../UI/RenderComponent";

@@ -44,18 +44,9 @@ a {
 }
 
 #form {
-    background: var(--panel);
-    min-width: 850px;
-    max-width: 1125px;
-    min-height: 580px;
-    max-height: 950px;
+    width: 100%;
+    height: 100%;
     padding: 24px;
-
-    position: fixed;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-
     display: flex;
     flex-direction: column;
 }
@@ -73,7 +64,7 @@ a {
 #form button {
     border: none;
 
-    background: var(--background);
+    /*background: var(--background);*/
     border-radius: 4px;
     min-width: 180px;
     font-family: Raleway, sans-serif;
@@ -86,82 +77,99 @@ a {
 
 #tab-bar {
     display: flex;
-    justify-content: space-evenly;
+    padding: 24px;
+    flex-direction: column;
     width: 100%;
 }
 
-#tab-bar h4 {
+#tab-bar a {
+    color: var(--blank);
     font-family: Raleway;
     min-width: 256px;
+    padding: 0 16px;
     font-weight: bold;
     letter-spacing: 2px;
     line-height: 2;
     font-size: 14pt;
-    text-align: center;
-    border-bottom: 3px solid var(--background);
-    transition: border 0.3s;
+    /*text-align: center;*/
+    /*border-bottom: 3px solid var(--background);*/
+    transition: background-color 0.3s;
 }
 
-#tab-bar h4.selected {
-    border-bottom-color: var(--secondary);
+#tab-bar a:focus {
+    background: var(--blank);
+    color: var(--background);
 }
 
-#tab-view #own, #tab-view #shared {
+#tab-bar a.selected {
+    background: var(--active);
+    color: var(--background);
+}
+
+#tab-view .tab {
     display: none;
     padding: 8px;
-
-    margin-top: 12px;
-
+    /* margin-top: 12px; */
     flex-wrap: wrap;
     flex-direction: column;
-
     overflow: auto;
 }
 
-#tab-view #own.selected, #tab-view #shared.selected {
+#tab-view .tab:target {
     display: flex;
 }
 
-#tab-view #own .doc:before, #tab-view #shared .doc:before {
+#tab-view .tab .doc:before {
     font-size: 15pt;
-    width: 4em;
-    height: 3em;
-    line-height: 3em;
-    content: '';
+    width: 2em;
+    line-height: 2em;
     font-family: Remix;
-    background: var(--background);
-    color: var(--blank);
     display: inline-block;
     text-align: center;
-    border-radius: 12px 0 0 12px;
 }
 
-#tab-view #own .doc .info, #tab-view #shared .doc .info {
+.doc:focus {
+    background: var(--primary);
+}
+
+#tab-view #own .doc:before {
+    content: '';
+}
+#tab-view #shared .doc:before {
+    content: '';
+}
+#tab-view #my-components .doc:before {
+    content: '';
+}
+
+#tab-view .tab .doc .info {
     padding-left: 15pt;
     flex: 1;
     display: flex;
     flex-direction: column;
 }
 
-#tab-view #own .doc .info .edited, #tab-view #shared .doc .info .edited {
+#tab-view .tab .doc .info .edited {
     font-size: 9.5pt;
-    color: var(--blank);
 }
 
-#tab-view #own .doc:hover, #tab-view #shared .doc:hover {
-    box-shadow: 0 0 7px 0 var(--dark);
+#tab-view .tab .doc:hover {
+    background: var(--blank);
+    color: var(--background);
+    /*box-shadow: 0 0 3px var(--dark);*/
 }
 
-#tab-view #own .doc .controls, #tab-view #shared .doc .controls {
+#tab-view .tab .doc .controls {
     display: flex;
     font-family: Remix;
     margin-right: 12px;
 }
 
-#tab-view #own .doc .controls button, #tab-view #shared .doc .controls button {
+#tab-view .tab .doc .controls button {
     font-family: Remix;
     width: 34px;
     height: 34px;
+    color: inherit;
 
     min-width: auto;
     min-height: auto;
@@ -169,21 +177,20 @@ a {
     background: transparent;
 }
 
-#tab-view #own .doc .controls button:hover, #tab-view #shared .doc .controls button:hover, button:hover, input:hover {
+#tab-view .tab .doc .controls button:hover {
     background: var(--background);
 }
 
-#tab-view #own .doc, #tab-view #shared .doc {
+#tab-view .tab .doc {
     font-family: 'Remix';
     display: flex;
     justify-content: space-between;
     align-items: center;
     width: 100%;
     font-size: 15pt;
+    transition: background 0.3s;
+    padding: 8px 0;
     color: var(--blank);
-    border-radius: 12px;
-    transition: box-shadow 0.3s;
-    margin: 4px 0;
 }
 
 #form #toolbar button, #form #toolbar input[type="button"] {

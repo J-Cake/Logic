@@ -13,40 +13,46 @@ import ApplicationRouter from './ApplicationRouter';
 import ResourceRouter from './ResourceRouter';
 import WebRouter from './WebRouter';
 
-import {getTimeString, rootFn} from "../utils";
+import {rootFn} from "../utils";
 import {liveReload} from "./util";
 
 sm.install();
 
 export const app = express();
 
-app.use(morgan('short'));
-
-app.set("view engine", "pug");
-app.set("views", path.join(rootFn(process.cwd()), 'app', 'views'));
-
-app.use(cookies());
-app.use(body.urlencoded({extended: true}));
-app.use(body.json({}));
-
-app.use("/app", express.static(path.join(rootFn(process.cwd()), "./build/final")));
-
-app.use("/user", UserRouter);
-app.use("/component", ComponentRouter);
-
-app.use(WebRouter);
-app.use(DocumentRouter);
-app.use(ApplicationRouter);
-app.use("/res", ResourceRouter);
-
-export const port = Number(process.argv[2]) || 3500;
-
+export const port: number = (function(): number {
+    const _p = process.argv.find(i => /^--port=\d+$/.test(i))?.match(/^--port=(\d+)$/);
+    return Number(_p ? _p[1] : '2560');
+})();
 export const reloadPort = liveReload();
 
-app.use(function (req, res, next) {
-    res.status(404).render('site/404');
-});
+export default async function init(port: number) {
+    app.use(morgan('short'));
 
-app.listen(port, function () {
-    console.log('listening on port', port);
-});
+    app.set("view engine", "pug");
+    app.set("views", path.join(await rootFn(), 'app', 'views'));
+
+    app.use(cookies());
+    app.use(body.urlencoded({extended: true}));
+    app.use(body.json({}));
+
+    app.use("/app", express.static(path.join(await rootFn(), "./build/final")));
+
+    app.use("/user", UserRouter);
+    app.use("/component", ComponentRouter);
+
+    app.use(WebRouter);
+    app.use(DocumentRouter);
+    app.use(ApplicationRouter);
+    app.use("/res", ResourceRouter);
+
+    app.use(function (req, res, next) {
+        res.status(404).render('site/404');
+    });
+
+    app.listen(port, function () {
+        console.log('listening on port', port);
+    });
+}
+
+init(port);

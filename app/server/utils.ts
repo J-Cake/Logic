@@ -1,12 +1,18 @@
-import * as fs from "fs";
+import * as path from "path";
+import * as FS from './FS';
 
-export function rootFn (dir: string): string {
-    const items = fs.readdirSync(dir);
+export async function rootFn (): Promise<string> {
+    let dir = __dirname;
+    let items = await FS.readdir(dir);
 
-    if (items.includes('package.json'))
-        return dir;
-    else
-        return rootFn(dir.split(/[\/\\]/g).slice(0, -1).join('/'));
+    while (!items.includes('package.json'))
+        items = await FS.readdir(dir = path.dirname(dir));
+
+    return dir;
+    // if (items.includes('package.json'))
+    //     return __dirname;
+    // else
+    //     return rootFn(path.dirname(__dirname));
 }
 
 export function getTimeString(): string {

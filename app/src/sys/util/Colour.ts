@@ -50,7 +50,3 @@ export function transparent(colour: Colour, amount: number): rgba {
 export function hex(colour: Colour): string {
     return `#${getColour(colour).map(i => i.toString(16)).join('')}`;
 }
-
-export function parseColour(colour: string): rgb {
-    return parse(colour.slice(1)).values;
-}

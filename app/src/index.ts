@@ -1,5 +1,6 @@
 import * as $ from 'jquery';
 import * as _p5 from 'p5';
+import * as mousetrap from 'mousetrap';
 import * as eva from 'eva-icons';
 
 import {manager, Tool} from './State';
@@ -14,7 +15,8 @@ import handleEvents from "./UI/events";
 import TooltipPane from "./UI/TooltipPane";
 import Colour from "./sys/util/Themes";
 import buildComponentPrompt from "./UI/ComponentMenu";
-import {mousetrap} from "../componentMenu";
+import buildFinderPrompt from "./UI/ComponentFinder";
+// import {mousetrap} from "../prompt/componentMenu";
 
 declare global {
     interface Array<T> {
@@ -90,6 +92,7 @@ new _p5(function (sketch: _p5) {
         mousetrap.bind('alt+s', () => pan = [0, 0]);
 
         buildComponentPrompt();
+        buildFinderPrompt();
         eva.replace({
             fill: hex(Colour.Blank)
         })

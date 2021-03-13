@@ -58,20 +58,10 @@ block content
                     i(data-eva="arrow-back-outline")
                     //
                     //
-                hr
-                #file-box
-                    button#save
-                        i(data-eva="save-outline")
-                        //
-                        //
-                    button#open
-                        i(data-eva="folder-outline")
-                        //
-                        //
-                    button#new
-                        i(data-eva="file-add-outline")
-                        //
-                        //
+                button#save
+                    i(data-eva="save-outline")
+                    //
+                    //
                 hr
                 #controls
                     button#undo
@@ -141,7 +131,8 @@ block content
                         i(data-eva="trash-outline")
                         //
                         //
-                    button#import-component
+                    input(type="checkbox")#import-component
+                    label(for="import-component")
                         i(data-eva="cloud-download-outline")
                         //
                         //

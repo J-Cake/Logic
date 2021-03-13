@@ -1,4 +1,3 @@
-import * as fs from "fs";
 import * as path from "path";
 
 import * as express from 'express';
@@ -9,6 +8,8 @@ import {verifyUser} from "../User";
 import {rootFn} from "../utils";
 import sql from "../sql";
 import Circuit, {CircuitObj} from "../Circuit";
+
+import * as FS from "../FS";
 
 const router = express.Router();
 
@@ -37,37 +38,24 @@ router.get("/make", async function (req, res) {
                                                     where userToken == ?`, [userId]);
 
     const fileName: string = `${user.email.split("@").shift()}${user.identifier.toLowerCase()}_${name}.json`;
-    const filePath = path.join(rootFn(process.cwd()), 'Data', 'documents', fileName);
-    fs.writeFileSync(filePath, JSON.stringify({
+    // const filePath = path.join(await rootFn(), 'Data', '.documents', fileName);
+
+    const document: CircuitObj = {
         circuitName: name,
         ownerEmail: (await sql.sql_get<{ email: string }>(`SELECT email
                                                            from users
                                                            where userToken == ?`, [userId])).email,
-        components: [
-            "std/and",
-            "std/or",
-            "std/not",
-            "std/nand",
-            "std/nor",
-            "std/xnor",
-            "std/xor",
-            "std/buffer",
-            "std/input",
-            "std/output",
-            "std/splitter",
-            "std/clock"
-        ],
+        components: await FS.readdir(path.join(await rootFn(), 'lib', 'components')),
         content: {}
-    }, null, 4));
+    };
 
     await sql.sql_query(`INSERT INTO documents
-                         VALUES ((SELECT userId from users where userToken == ?), ?, ?, ?, false, ?,
-                                 date('now'), date('now'))`, [userId, fileName, circuitId, name, circuitToken]);
+                         VALUES ((SELECT userId from users where userToken == ?), ?, ?, false, ?, date('now'),
+                                 date('now'),
+                                 ?)`, [userId, circuitId, name, circuitToken, JSON.stringify(document)]);
 
     res.redirect(`/edit/${circuitToken}`);
 });
-
-// TODO: When creating circuits URL encode the file name in case user enters '/' and error occurs attempting to write to a directory that doesn't exist.
 
 router.get('/circuit/raw/:circuit', async function (req, res) {
     const userId: string = req.userId || "";
@@ -128,7 +116,9 @@ router.get('/circuit/props/:circuit', async function (req, res) {
 
                 res.json({
                     name: file?.circuitName,
-                    dateCreated: new Date((await sql.sql_get<{created: string}>(`SELECT (created) FROM documents where documentToken == ?`, [req.params.circuit])).created).getTime()
+                    dateCreated: new Date((await sql.sql_get<{ created: string }>(`SELECT (created)
+                                                                                   FROM documents
+                                                                                   where documentToken == ?`, [req.params.circuit])).created).getTime()
                 });
             } else {
                 res.status(403);
@@ -140,5 +130,7 @@ router.get('/circuit/props/:circuit', async function (req, res) {
         }
     }
 });
+
+router.put('/circuit/props/:circuit')
 
 export default router;

@@ -1,0 +1,47 @@
+extends index
+
+block content
+    style.
+        section#body {
+            height: 100vh;
+            /*display: block;*/
+        }
+        #body #canvas-container {
+            grid-row-start: 1;
+            grid-row-end: 4;
+            grid-column-start: 1;
+            grid-column-end: 4;
+            padding: 0;
+            box-shadow: none;
+        }
+
+    if circuit
+        span.hidden#circuitToken= circuit
+
+    if devMode
+        script.
+            console.log("Enabling Live-Reload");
+            new WebSocket(`ws://${window.location.hostname}:#{devMode}`).addEventListener('message', _ => location.reload());
+
+    script.
+        fetch('./app.js', {
+            method: "HEAD"
+        }).then(function (res) {
+            if (res.ok)
+                document.body.appendChild((function () {
+                    const script = document.createElement('script');
+                    script.setAttribute('src', '/app/app.js');
+                    script.addEventListener('load', function () {
+                        if (window.init)
+                            window.init(); // This is provided by the script once it has successfully loaded.
+                    });
+                    return script;
+                })());
+            else {
+                alert('The build has not finished yet. Please wait until the build finishes.')
+                window.location.reload();
+            }
+        });
+
+    section#body
+        div#canvas-container

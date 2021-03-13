@@ -24,7 +24,7 @@ export default function handleEvents(canvas: JQuery, sketch: p5, comps: RenderCo
     }));
 
     $('button#save').on('click', () => saveDocument());
-    $('button#close').on('click', () => window.location.href = '/dashboard');
+    $('button#close').on('click', () => window.location.href = '/dashboard#own');
 
     const toolBtnId: { [key in 'debug' | 'move' | 'pointer' | 'select' | 'wire' | 'label']: Tool } = {
         'debug': Tool.Debug,
@@ -203,11 +203,12 @@ export default function handleEvents(canvas: JQuery, sketch: p5, comps: RenderCo
     mousetrap.bind("ctrl+a", () => manager.setState().renderedComponents.forEach(i => i.isSelected = true));
     mousetrap.bind("ctrl+alt+a", () => manager.setState().renderedComponents.forEach(i => i.isSelected = false));
 
-    mousetrap.bind("1", () => $("#pointer").prop('checked', true));
-    mousetrap.bind("2", () => $("#select").prop('checked', true));
-    mousetrap.bind("3", () => $("#move").prop('checked', true));
-    mousetrap.bind("4", () => $("#wire").prop('checked', true));
-    mousetrap.bind("5", () => $("#debug").prop('checked', true));
+    mousetrap.bind(["1", "p"], () => $("#pointer").prop('checked', true));
+    mousetrap.bind(["2", "b"], () => $("#select").prop('checked', true));
+    mousetrap.bind(["3", "g"], () => $("#move").prop('checked', true));
+    mousetrap.bind(["4", "w"], () => $("#wire").prop('checked', true));
+    mousetrap.bind(["5", "d"], () => $("#debug").prop('checked', true));
+    mousetrap.bind(["6", "l"], () => $("#label").prop('checked', true));
 
     mousetrap.bind('ctrl+s', async function (e) {
         e.preventDefault();
@@ -216,7 +217,7 @@ export default function handleEvents(canvas: JQuery, sketch: p5, comps: RenderCo
 
     mousetrap.bind('esc', async function (e) {
         e.preventDefault();
-        return window.location.href = "/dashboard";
+        return window.location.href = "/dashboard#own";
     });
 
     touch();
