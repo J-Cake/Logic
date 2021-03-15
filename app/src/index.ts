@@ -93,6 +93,7 @@ new _p5(function (sketch: _p5) {
 
         buildComponentPrompt();
         buildFinderPrompt();
+
         eva.replace({
             fill: hex(Colour.Blank)
         })

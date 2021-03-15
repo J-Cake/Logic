@@ -2,30 +2,30 @@ import * as $ from 'jquery';
 
 import {manager, Tool} from "../index";
 import RenderComponent from "./RenderComponent";
-import {Dialog, setVisible} from "./DialogManager";
-import {State} from "../../window/components";
-import {themes} from "../sys/util/Themes";
-import StateManager from "../sys/util/stateManager";
+import {Dialog, link} from "./DialogManager";
 
 export default function buildPrompt() {
-    $("#add-component").on("change", function () {
-        setVisible(Dialog.ComponentView, $(this).is(":checked"), (isClosed) => $(this).prop('checked', !isClosed));
-    });
+    link(Dialog.ComponentView, $("#add-component"), function() {
 
-    manager.setState().dialogManager.on('open', prev => {
-        (prev[Dialog.ComponentView] as (Window & {
-            init: (s: State) => void,
-            stateManager: StateManager<State>,
-            src: Promise<void>
-        })).addEventListener('connect', function (e: CustomEvent<(state: Partial<State>) => void>) {
-            if (typeof e.detail === 'function')
-                e.detail({
-                    onSelect: id => addComponent(id),
-                });
-            else
-                console.error('no init function');
-        } as EventListener);
     });
+    // $("#add-component").on("change", function () {
+    //     setVisible(Dialog.ComponentView, $(this).is(":checked"), (isClosed) => $(this).prop('checked', !isClosed));
+    // });
+    //
+    // manager.setState().dialogManager.on('open', prev => {
+    //     (prev[Dialog.ComponentView] as (Window & {
+    //         init: (s: State) => void,
+    //         stateManager: StateManager<State>,
+    //         src: Promise<void>
+    //     })).addEventListener('connect', function (e: CustomEvent<(state: Partial<State>) => void>) {
+    //         if (typeof e.detail === 'function')
+    //             e.detail({
+    //                 onSelect: id => addComponent(id),
+    //             });
+    //         else
+    //             console.error('no init function');
+    //     } as EventListener);
+    // });
 }
 
 export function addComponent(componentId: string) {

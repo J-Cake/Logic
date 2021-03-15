@@ -25,29 +25,4 @@ html
                         button.info
                             i(data-eva="info-outline")
 
-        script.
-            window.src = new Promise(function (resolve, reject) {
-                fetch('/app/find.js', {
-                    method: "HEAD"
-                }).then(function (res) {
-                    if (res.ok)
-                        document.body.appendChild((function () {
-                            const script = document.createElement('script');
-                            script.id = "scr";
-                            script.setAttribute('src', '/app/find.js');
-                            resolve();
-                            return script;
-                        })());
-                    else {
-                        reject();
-                        alert('The build has not finished yet. Please wait until the build finishes.')
-                        window.location.reload();
-                    }
-                });
-            });
-
-        script(src = "/res/eva.min.js")
-        script.
-            eva.replace({
-                fill: getComputedStyle(document.body).color
-            });
+        script(src="/app/find.js", defer)
