@@ -1,0 +1,116 @@
+doctype html
+html
+    head
+        link(rel="stylesheet", href="/app/ui.css")
+        link(rel="stylesheet", href="/app/web.css")
+        link(rel="stylesheet", href="/app/colours.css")
+
+        title Components
+
+        style.
+            .component > .info {
+                flex: 1;
+            }
+
+            .component > .info span {
+                display: block;
+                width: 100%;
+            }
+
+            button, input[type="button"], a.button {
+                background: var(--panel);
+                font-family: 'Raleway', sans-serif;
+                color: var(--blank);
+                margin: 8px;
+                min-width: 110px;
+                font-size: 10pt;
+                height: 38px;
+                line-height: 38px;
+                border-radius: 3px;
+                display: block;
+                text-align: center;
+            }
+
+            .icon {
+                font-family: 'Remix';
+            }
+
+            button:focus, input[type="button"]:focus {
+                background: var(--active);
+            }
+
+            button:hover, input[type="button"]:hover {
+                background: var(--accent);
+            }
+
+            input[type="radio"], input[type="checkbox"] {
+                position: fixed;
+                visibility: hidden;
+            }
+            input[type="radio"] + span.title {
+                width: 100%;
+                display: block;
+                margin: 4px;
+                padding: 8px 12px;
+                transition: 0.3s;
+            }
+
+            input[type="checkbox"] + span.option {
+                display: flex;
+                align-items: center;
+            }
+
+            input[type="checkbox"] + span.option:before {
+                width: 16pt;
+                height: 16pt;
+                content: '';
+                display: block;
+                transition: 0.3s;
+                margin: 4px;
+                border-radius: 4px;
+                background: var(--panel);
+            }
+
+            input[type="radio"]:checked + span.title, input[type="checkbox"]:checked + span.option:before {
+                background: var(--active);
+            }
+
+            #documents {
+                padding: 6px;
+            }
+
+            label.option {
+                display: flex;
+                width: 100%;
+            }
+
+
+        if devMode
+            script.
+                console.log("Enabling Live-Reload");
+                new WebSocket(`ws://${window.location.hostname}:#{devMode}`).addEventListener('message', _ => location.reload());
+    body
+        #toolbar
+            a(href=`/find/${doc}`)
+                button.icon 
+
+        form(action=`/doc-to-component/${doc}`, method="post")#documents
+            label.option
+                input(name="stateful", value=false, type="checkbox")#stateful
+                span.option Statefulopen
+                a(href="/wiki/statefull-vs-stateless.md", target="_blank").button What's this?
+            if own.length > 0
+                h3 Your Documents
+                for i in own
+                    .doc
+                        label
+                            input(name='document', type="radio", value=i.documentToken)
+                            span.title=i.documentTitle
+            if shared.length > 0
+                h3 Shared Documents
+                for i in shared
+                    .doc
+                        label
+                            input(name='document', type="radio", value=i.documentToken)
+                            span.title=i.documentTitle
+            button Import

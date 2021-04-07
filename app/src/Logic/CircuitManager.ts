@@ -22,6 +22,8 @@ export default class CircuitManager {
 
         this.loading = this.loadCircuit(circuitId);
         this.circuitId = circuitId;
+
+        manager.broadcast('tick');
     }
 
     deleteSelected() {
@@ -49,22 +51,22 @@ export default class CircuitManager {
     }
 
     private async loadCircuit(circuitId: string): Promise<{ [id: number]: [GenericComponent, GenComponent] }> {
-        const circuit = await fetch(`/circuit/${circuitId}`);
+        const circuit = await fetch(circuitId ? `/circuit/${circuitId}` : `/try-it.json`);
 
         if (circuit.ok) {
             const loaded: CircuitObj = await circuit.json();
 
             const availSync: { [componentId: string]: new(mapKey: number, base: GenericComponent) => GenComponent } = {};
 
-            for (const id of loaded.components)
-                availSync[id] = await fetchComponent(id);
+            for (const componentToken of loaded.components)
+                availSync[componentToken] = await fetchComponent(componentToken);
 
             const components: { [id: number]: [GenericComponent, GenComponent] } = {};
             for (const i in loaded.content)
                 if (loaded.content[i].identifier)
                     components[i] = [loaded.content[i], new availSync[loaded.content[i].identifier as string](Number(i), loaded.content[i])];
                 else
-                    throw {};
+                    throw 'invalid component identifier';
 
             for (const [comp, obj] of Object.values(components))
                 for (const i in comp.outputs)

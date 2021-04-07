@@ -1,5 +1,4 @@
 declare module 'parse-css-color' {
-
     enum Type {
         hsl,
         rgb,

@@ -1,5 +1,7 @@
-import * as $ from 'jquery'
-import './prompt';
+import * as $ from 'jquery';
+import * as mousetrap from 'mousetrap';
+
+mousetrap.bind('esc', () => window.close());
 
 $('.controls *').each(function () {
     $(this).on('click', function (e) {

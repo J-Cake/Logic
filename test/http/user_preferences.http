@@ -1,0 +1,4 @@
+GET http://localhost:2560/user/preferences
+Accept: application/json
+
+###

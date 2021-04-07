@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import RenderComponent from "../UI/RenderComponent";
 import {DebugMode} from "./Debugger";
 import {manager} from "../State";
@@ -26,10 +27,12 @@ export default abstract class Component {
     isRecursive: boolean;
 
     isBreakpoint: DebugMode | null;
+    public breakNext: boolean = false;
+    public halted: boolean = false;
 
     protected constructor(inputs: string[], outputs: string[], name: string) {
         if (containsDuplicates(inputs) || containsDuplicates(outputs))
-            throw {msg: 'The label lists must only contain unique entries.'}
+            throw 'The label lists must only contain unique entries.';
 
         this.inputNames = inputs;
         this.outputNames = outputs;
@@ -98,26 +101,25 @@ export default abstract class Component {
     }
 
     meetsBreakCondition(input: boolean[], output: boolean[]): boolean {
-        if (this.isBreakpoint)
+        console.log(this.prevInput[1].concat(this.out), input.concat(output));
+        if (this.isBreakpoint !== null)
             return ({
-                [DebugMode.Change]: () => this.prevInput[1].some((i, a) => input[a] !== i) ||
-                    this.out.some((i, a) => output[a] !== i),
-                [DebugMode.Input]: () => this.prevInput[1].some((i, a) => input[a] !== i),
-                [DebugMode.Output]: () => this.out.some((i, a) => output[a] !== i),
+                [DebugMode.Input]: () => !_.isEqual(this.prevInput[1], input), // this.prevInput[1].some((i, a) => input[a] !== i),
+                [DebugMode.Output]: () => !_.isEqual(this.out, output), // this.out.some((i, a) => output[a] !== i),
+                [DebugMode.Change]: () => !_.isEqual(this.prevInput[1].concat(this.out), input.concat(output)),
                 [DebugMode.Update]: () => true,
             } as Record<DebugMode, () => boolean>)[this.isBreakpoint]()
-            else
-                return false;
+        else
+            return false;
     }
 
     update() { // THIS FUCKING FUNCTION TOOK ME FOREVER TO WRITE
-        if (!manager.setState().debug.isStopped()) {
+        const update = function (this: Component) {
             const inputs: boolean[] = this.getInputs();
 
             const update = function (this: Component, next: boolean[], noRipple: boolean = false) {
                 this.out = next;
-                if (this.isBreakpoint)
-                    console.log("Updating", this.name);
+                this.halted = false;
 
                 this.prevInput.shift();
                 this.prevInput.push(Array.from(inputs));
@@ -131,19 +133,33 @@ export default abstract class Component {
 
                     if (!noRipple)
                         for (const a in this.outputs)
-                            for (const i of this.outputs[a])
+                            for (const i of this.outputs[a]) {
+                                if (this.breakNext)
+                                    i[0].breakNext = true;
                                 i[0].update();
+                            }
                 }
             }.bind(this);
 
             const next = this.computeOutputs(inputs);
 
-            if (this.isBreakpoint && this.meetsBreakCondition(inputs, next))
+            if (this.breakNext || (this.isBreakpoint !== null && this.meetsBreakCondition(inputs, next))) {
+                this.halted = true;
                 this.preUpdate(() => update(next));
-            else
+                // console.log("Breaking", this);
+            } else
                 update(next);
+        }.bind(this);
+        if (!manager.setState().debug.isStopped())
+            update();
+        else {
+            const listener = manager.setState().debug.on('continue', () => {
+                update();
+                manager.setState().debug.off(listener);
+            });
         }
     }
+
 
     activate(renderer: RenderComponent) {
         this.update();

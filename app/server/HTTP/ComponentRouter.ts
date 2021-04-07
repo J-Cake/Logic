@@ -51,7 +51,6 @@ router.get("/:componentToken", async function (req, res) {
 });
 
 router.get("/std/:name", async function (req, res) {
-    console.log(req.params.name);
     const file = path.join(await rootFn(), "lib", "components", req.params.name.toLowerCase() + ".json");
 
     if (await FS.exists(file)) {

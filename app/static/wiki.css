@@ -54,6 +54,14 @@ ul li:before, .page:before {
     margin: 0 0.75em;
 }
 
+ul ul {
+    margin: 0 14pt;
+}
+
+ul ul ul {
+    margin: 0 28pt;
+}
+
 ol {
     counter-reset: list;
 }
@@ -114,4 +122,15 @@ blockquote {
     border-left: var(--secondary) 4px solid;
 
     margin-right: 4px;
+}
+
+td {
+    /*border: 1px solid var(--primary);*/
+    border-collapse: collapse;
+    line-height: 2;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background: var(--primary);
 }

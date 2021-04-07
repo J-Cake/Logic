@@ -61,12 +61,12 @@ export abstract class GenComponent extends Component {
     }
 }
 
-export default async function fetchComponent(component: string): Promise<new(mapKey: number, base: GenericComponent) => GenComponent> {
-    const getComponent = await fetch(`/component/${component}`);
+export default async function fetchComponent(componentToken: string): Promise<new(mapKey: number, base: GenericComponent) => GenComponent> {
+    const getComponent = await fetch(`/component/${componentToken}`);
 
     if (getComponent.ok) {
         const apiComponent: ApiComponent = await getComponent.json();
-        apiComponent.token = component;
+        apiComponent.token = componentToken;
 
         if (apiComponent.component.constructor.name === "Array") { // it's a truth table
             return class StatelessComponent extends GenComponent {
@@ -178,5 +178,5 @@ export default async function fetchComponent(component: string): Promise<new(map
             }
         }
     } else // The Component doesn't exist
-        throw {};
+        throw 'Component doesn\'t exist';
 }

@@ -7,14 +7,17 @@ import RenderComponent from "../UI/RenderComponent";
 
 export default async function saveDocument(): Promise<void> {
     const mgr = manager.setState().circuit, file = await prepareForSave(mgr);
-    if (!(await fetch(`/circuit/${mgr.circuitId}`, {
-        body: JSON.stringify(file, null, 4),
-        method: 'PUT',
-        headers: {
-            'Content-type': 'application/json'
-        }
-    })).ok)
-        alert('There was an issue saving the file. Check the logs for more info');
+    if (mgr.circuitId) {
+        if (!(await fetch(`/circuit/${mgr.circuitId}`, {
+            body: JSON.stringify(file, null, 4),
+            method: 'PUT',
+            headers: {
+                'Content-type': 'application/json'
+            }
+        })).ok)
+            alert('There was an issue saving the file. Check the logs for more info');
+    } else if (confirm('You are not signed in. Create Account?'))
+        window.open('/user/signup', '_blank');
 }
 
 export async function prepareForSave(c_man: CircuitManager): Promise<CircuitObj> {
@@ -47,9 +50,11 @@ export async function prepareForSave(c_man: CircuitManager): Promise<CircuitObj>
                     outputIndex: wire.startIndex
                 });
             else
-                wires[id] = [{coords: wire.coords,
+                wires[id] = [{
+                    coords: wire.coords,
                     inputIndex: wire.endIndex,
-                    outputIndex: wire.startIndex}];
+                    outputIndex: wire.startIndex
+                }];
         }
 
         const outputs: { [terminal: string]: [number, string][] } = {};

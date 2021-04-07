@@ -14,62 +14,44 @@ block content
             console.log("Enabling Live-Reload");
             new WebSocket(`ws://${window.location.hostname}:#{devMode}`).addEventListener('message', _ => location.reload());
 
-    script.
-        fetch('./app.js', {
-            method: "HEAD"
-        }).then(function (res) {
-            if (res.ok)
-                document.body.appendChild((function () {
-                    const script = document.createElement('script');
-                    script.setAttribute('src', '/app/app.js');
-                    script.addEventListener('load', function () {
-                        if (window.init)
-                            window.init(); // This is provided by the script once it has successfully loaded.
-                    });
-                    return script;
-                })());
-            else {
-                alert('The build has not finished yet. Please wait until the build finishes.')
-                window.location.reload();
-            }
-        });
+    script(src="/app/app.js", defer=true)
 
     section#body
         div#manipulation-bar.bar
             .group
-                button#cut
-                    i(data-eva="scissors-outline")
-                button#copy
-                    i(data-eva="copy-outline")
-                button#paste
-                    i(data-eva="clipboard-outline")
+                button#cut 
+                    //i(data-eva="scissors-outline")
+                button#copy 
+                    //i(data-eva="copy-outline")
+                button#paste 
+                    //i(data-eva="clipboard-outline")
             hr
             .centre
-                button#flip
-                    i(data-eva="swap-outline")
-                button#rotate-left
-                    i(data-eva="corner-left-down-outline")
-                button#rotate-right
-                    i(data-eva="corner-right-down-outline")
+                button#flip 
+                    //i(data-eva="swap-outline")
+                button#rotate-left 
+                    //i(data-eva="corner-left-down-outline")
+                button#rotate-right 
+                    //i(data-eva="corner-right-down-outline")
 
         div#toolbar.bar
             .left
-                button#close
-                    i(data-eva="arrow-back-outline")
+                button#close 
+                    //i(data-eva="arrow-back-outline")
                     //
                     //
-                button#save
-                    i(data-eva="save-outline")
+                button#save 
+                    //i(data-eva="save-outline")
                     //
                     //
                 hr
                 #controls
-                    button#undo
-                        i(data-eva="corner-up-left-outline")
+                    button#undo 
+                        //i(data-eva="corner-up-left-outline")
                         //
                         //
-                    button#redo
-                        i(data-eva="corner-up-right-outline")
+                    button#redo 
+                        //i(data-eva="corner-up-right-outline")
                         //
                         //
 
@@ -77,33 +59,33 @@ block content
                 #tool-box
 
                     input(type="radio", name="tool", checked)#pointer
-                    label(for="pointer")
-                        i(data-eva="navigation-2-outline")
+                    label(for="pointer") 
+                        //i(data-eva="navigation-2-outline")
                         //
                         //
 
                     input(type="radio", name="tool")#select
-                    label(for="select")
-                        i(data-eva="crop-outline")
+                    label(for="select") 
+                        //i(data-eva="crop-outline")
                         //
                         //
 
                     input(type="radio", name="tool")#move
-                    label(for="move")
-                        i(data-eva="move-outline")
+                    label(for="move") 
+                        //i(data-eva="move-outline")
                         //
                         //
 
                     input(type="radio", name="tool")#wire
-                    label(for="wire")
-                        i(data-eva="edit-outline")
+                    label(for="wire") 
+                        //i(data-eva="edit-outline")
                         //
                         //
 
                     .select-box
                         input(type="radio", name="tool")#debug
-                        label(for="debug")
-                            i(data-eva="stop-circle-outline")
+                        label(for="debug") 
+                            //i(data-eva="stop-circle-outline")
                             //
                             //
                             #debug-type-selector.select(for="debug")
@@ -115,25 +97,25 @@ block content
                                 //span.option(data-enum=4) On Component Change
 
                     input(type="radio", name="tool")#label
-                    label(for="label")
-                        i(data-eva="pricetags-outline")
+                    label(for="label") 
+                        //i(data-eva="pricetags-outline")
                         //
                         //
 
                     hr
 
                     input(type="checkbox")#add-component
-                    label(for="add-component")
-                        i(data-eva="plus-outline")
+                    label(for="add-component") 
+                        //i(data-eva="plus-outline")
                         //
                         //
-                    button#remove-component
-                        i(data-eva="trash-outline")
+                    button#remove-component 
+                        //i(data-eva="trash-outline")
                         //
                         //
                     input(type="checkbox")#import-component
-                    label(for="import-component")
-                        i(data-eva="cloud-download-outline")
+                    label(for="import-component") 
+                        //i(data-eva="cloud-download-outline")
                         //
                         //
 
@@ -147,19 +129,22 @@ block content
                     //label(for="show-labels") 
 
                     //hr
-
-                    button#in
-                        i(data-eva="maximize-outline")
-                        //
-                        //
-                    button#reset
-                        i(data-eva="expand-outline")
-                        //
-                        //
-                    button#out
-                        i(data-eva="minimize-outline")
-                        //
-                        //
+                    a(href="/settings", target="_blank")
+                        button#settings 
+                    a(href="/view/" + circuit, target="_blank")
+                        button#view 
+                    //button#in 
+                    //    //i(data-eva="maximize-outline")
+                    //    //
+                    //    //
+                    //button#reset 
+                    //    //i(data-eva="expand-outline")
+                    //    //
+                    //    //
+                    //button#out 
+                    //    //i(data-eva="minimize-outline")
+                    //    //
+                    //    //
 
                     //hr
 
@@ -168,15 +153,14 @@ block content
         div#canvas-container
 
         div#debug-bar.bar
-            button(disabled)#resume
-                i(data-eva="play-circle-outline")
+            button(disabled)#resume 
+                //i(data-eva="play-circle-outline")
                 //
                 //
-            button(disabled)#step
-                i(data-eva="chevron-right-outline")
+            button(disabled)#step 
+                //i(data-eva="chevron-right-outline")
                 //
                 //
-            //button(disabled)#set-inputs 
 
         div#status-bar.bar
             .left

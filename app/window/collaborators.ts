@@ -1,5 +1,7 @@
 import * as $ from 'jquery';
-import './prompt';
+import * as mousetrap from 'mousetrap';
+
+mousetrap.bind('esc', () => window.close());
 
 const circuitId = window.location.href.split('/').pop();
 

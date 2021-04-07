@@ -2,28 +2,10 @@ import * as $ from "jquery";
 import * as parse from "parse-css-color";
 import type {rgb} from "./Colour";
 
-enum Colour {
-    Primary,
-    Danger,
-    Active,
-    Label,
-    Accent,
-    SecondaryAccent,
-    Cursor,
-    Panel,
-    Background,
-    Blank,
-    Dark
-}
+import {Colour, Theme} from '../../Enums';
 
+export {Theme} from '../../Enums';
 export default Colour;
-
-export enum Theme {
-    System,
-    DarkBlue,
-    DarkRed,
-    DarkOrange,
-}
 
 export function parseColour(colour: string): rgb {
     return parse((colour || "").slice(1)).values;

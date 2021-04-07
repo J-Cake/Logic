@@ -1,13 +1,13 @@
 import StateManager from "../sys/util/stateManager";
 import Component from "./Component";
 import * as $ from "jquery";
+import {manager} from "../State";
 
 export enum DebugMode {
     Change = 0,
     Input = 1,
     Output = 2,
     Update = 3,
-    // Component = 4
 }
 
 export default class Debugger extends StateManager<{
@@ -23,13 +23,19 @@ export default class Debugger extends StateManager<{
         });
 
         $("#resume").on('click', () => {
-            const resume = this.setState().onResume;
-            if (resume)
-                resume();
+            const state = this.setState();
+
+            if (state.debugComponent)
+                state.debugComponent.breakNext = false;
+            state.onResume?.();
+
+            this.broadcast('continue');
+            manager.broadcast('tick');
         });
         $("#step").on('click', () => {
             if (this.setState().debugComponent)
                 this.step();
+            manager.broadcast("tick");
         });
 
         $("#debug-type-selector span.option").on("click", (that => function (this: HTMLElement) {
@@ -46,17 +52,18 @@ export default class Debugger extends StateManager<{
     }
 
     isBreakComponent(component: Component): boolean {
+        console.log(component, this.setState().debugComponent)
         return this.setState().debugComponent === component;
     }
 
     inspectComponent(component: Component, onResume: () => void) {
-        $("#resume, #set-inputs").prop('disabled', false);
+        $("#resume, #set-inputs, #step, #stop").prop('disabled', false);
         $("#status-bar").addClass("debug-stopped");
 
         this.setState({
             debugComponent: component,
             onResume: function (this: Debugger) {
-                $("#resume, #set-inputs").prop('disabled', true);
+                $("#resume, #set-inputs, #step, #stop").prop('disabled', true);
                 $("#status-bar").removeClass("debug-stopped");
 
                 onResume();
@@ -70,6 +77,13 @@ export default class Debugger extends StateManager<{
     }
 
     step() {
+        const {debugComponent, onResume} = this.setState();
+        if (debugComponent)
+            debugComponent.breakNext = true;
 
+        if (onResume) // should always be true, but just in case.
+            onResume();
+
+        this.broadcast('continue');
     }
 }

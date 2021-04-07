@@ -219,7 +219,7 @@ router.delete('/circuit/:circuit/leave', async function (req, res) {
         await file.removeCollaborator(await userTokenToId(userToken), await userTokenToId(userToken));
         res.status(200);
         res.end('success')
-    }))  {
+    })) {
         res.status(403);
         res.end('You do not have access to this document');
     }

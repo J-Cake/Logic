@@ -15,6 +15,7 @@ import WebRouter from './WebRouter';
 
 import {rootFn} from "../utils";
 import {liveReload} from "./util";
+import configureFiles from '../configureFile';
 
 sm.install();
 
@@ -27,7 +28,7 @@ export const port: number = (function(): number {
 export const reloadPort = liveReload();
 
 export default async function init(port: number) {
-    app.use(morgan('short'));
+    app.use(morgan('dev'));
 
     app.set("view engine", "pug");
     app.set("views", path.join(await rootFn(), 'app', 'views'));
@@ -35,6 +36,8 @@ export default async function init(port: number) {
     app.use(cookies());
     app.use(body.urlencoded({extended: true}));
     app.use(body.json({}));
+
+    await configureFiles();
 
     app.use("/app", express.static(path.join(await rootFn(), "./build/final")));
 

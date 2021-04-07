@@ -7,7 +7,7 @@ import {manager, Tool} from './State';
 import RenderObject from './sys/components/RenderObject';
 import Board from './sys/components/Board';
 import {Interpolation} from './sys/util/interpolation';
-import {getColour, hex} from "./sys/util/Colour";
+import {getColour, hex, transparent} from "./sys/util/Colour";
 import Cursor from "./UI/cursor";
 import CircuitManager from "./Logic/CircuitManager";
 import {renderComponents} from "./UI/RenderComponent";
@@ -30,16 +30,7 @@ Array.prototype.last = function (i: number = 0) {
 export * from './State';
 
 new _p5(function (sketch: _p5) {
-
-    let scl: number;
-    let pan: [number, number] = [0, 0];
-
     sketch.setup = async function () {
-        // const root = $(":root");
-        // const colours: Record<Colour, rgb> = themes[manager.setState().theme]();
-        // for (const i in colours)
-        //     root.css(`--${Colour[Number(i) as Colour].toLowerCase()}`, `rgb(${getColour(Number(i)).join(', ')})`);
-
         const documentId: string = $("#circuitToken").text();
 
         const container = $('#canvas-container');
@@ -55,8 +46,7 @@ new _p5(function (sketch: _p5) {
         handleEvents(canvas, sketch, manager.setState(({
             renderedComponents: await renderComponents(manager.setState(() => ({
                 font: sketch.loadFont("/app/font-2.ttf"),
-                // iconFont: sketch.loadFont("/app/remixicon.ttf"),
-                iconFont: sketch.loadFont('/app/segoe-mdl2.ttf'),
+                iconFont: sketch.loadFont("/app/remixicon.ttf"),
                 board: new Board(),
                 tooltipPane: new TooltipPane(),
                 sidebarWidth: 6,
@@ -76,34 +66,49 @@ new _p5(function (sketch: _p5) {
 
         sketch.textFont(manager.setState().font);
 
+        manager.on('tick', async () => sketch.loop());
+
         $("#canvas-container").on('wheel', function (e) {
             const event: WheelEvent = e.originalEvent as WheelEvent;
 
-            if (manager.setState().keys.shift) {
-                pan[0] -= event.deltaY;
-                pan[1] -= event.deltaX;
-            } else {
-                pan[0] -= event.deltaX;
-                pan[1] -= event.deltaY;
-            }
+            if (manager.setState().keys.shift)
+                manager.setState(prev => ({pan: [prev.pan[0] - event.deltaY, prev.pan[1] - event.deltaX]}));
+            else
+                manager.setState(prev => ({pan: [prev.pan[0] - event.deltaX, prev.pan[1] - event.deltaY]}));
+
             e.preventDefault();
         });
 
-        mousetrap.bind('alt+s', () => pan = [0, 0]);
+        mousetrap.bind('alt+s', () => manager.setState(({pan: [0, 0], scale: 1})));
 
         buildComponentPrompt();
         buildFinderPrompt();
 
         eva.replace({
             fill: hex(Colour.Blank)
-        })
+        });
+        
+        const {pan, scale} = manager.setState();
+
+        sketch.translate(pan[0], pan[1]);
+        sketch.scale(scale);
+
+        sketch.background(getColour(Colour.Background, {duration: 30, type: Interpolation.linear}));
+
+        manager.broadcast('tick');
     }
 
     sketch.draw = async function () {
         $("#debug-container input").prop("disabled", true);
 
+        const {pan, scale} = manager.setState();
+
         sketch.translate(pan[0], pan[1]);
+        sketch.scale(scale);
+
         sketch.background(getColour(Colour.Background, {duration: 30, type: Interpolation.linear}));
+        // if (manager.setState().debug.isStopped())
+        //     sketch.background(transparent(Colour.SecondaryAccent, 25));
 
         const state = manager.setState(prev => ({
             mouse: {
@@ -138,5 +143,7 @@ new _p5(function (sketch: _p5) {
 
         state.cursor.render(sketch);
         state.cursor.update(sketch);
+
+        sketch.noLoop();
     }
 });

@@ -39,7 +39,7 @@ export default class Board extends RenderObject {
     }
 
     coordsToGrid(mouse: [number, number]): [number, number] {
-        const scl = manager.setState().gridScale;
+        const scl = manager.setState().pref.setState().gridSize;
         return [Math.floor((mouse[0] - this.pos.x) / scl), Math.floor((mouse[1] - this.pos.y) / scl)];
     }
 
@@ -48,8 +48,8 @@ export default class Board extends RenderObject {
         const offset = (mgr.sidebarIsLeft && mgr.tooltipPane.isVisible) ? (mgr.tooltipPane.size[0] + this.padding) : 0;
 
         return [
-            Math.floor(mgr.gridScale * coords[0] + this.padding + offset + (centre ? mgr.gridScale * 0.5 : 0)) + 1.5,
-            Math.floor(mgr.gridScale * coords[1] + this.padding + (centre ? mgr.gridScale * 0.5 : 0)) + 1.5
+            Math.floor(mgr.pref.setState().gridSize * coords[0] + this.padding + offset + (centre ? mgr.pref.setState().gridSize * 0.5 : 0)) + 1.5,
+            Math.floor(mgr.pref.setState().gridSize * coords[1] + this.padding + (centre ? mgr.pref.setState().gridSize * 0.5 : 0)) + 1.5
         ];
     }
 
@@ -61,23 +61,25 @@ export default class Board extends RenderObject {
         sketch.noStroke();
         // sketch.fill(getColour(Colour.Panel, {duration: 30, type: Interpolation.linear}));
 
-        const scl = manager.setState().gridScale;
+        const {gridSize: scl, showGrid} = manager.setState().pref.setState();
 
         // sketch.rect(this.boxPos[0], this.boxPos[1], this.size.w, this.size.h);
 
         // this.drawRulers(sketch);
 
-        sketch.strokeWeight(1);
-        sketch.stroke(getColour(Colour.Panel));
+        if (showGrid) {
+            sketch.strokeWeight(1);
+            sketch.stroke(getColour(Colour.Panel));
 
-        for (let i = 0; i <= sketch.width; i += scl) {
-            const x = (this.translate[0] + i + 0.5) - (this.translate[0] - this.pos.x) % scl;
-            sketch.line(x, this.translate[1], x, sketch.height + this.translate[1]);
-        }
+            for (let i = 0; i <= sketch.width; i += scl) {
+                const x = (this.translate[0] + i + 0.5) - (this.translate[0] - this.pos.x) % scl;
+                sketch.line(x, this.translate[1], x, sketch.height + this.translate[1]);
+            }
 
-        for (let j = 0; j <= sketch.height; j += scl) {
-            const y = (this.translate[1] + j + 0.5) - (this.translate[1] - this.pos.y) % scl;
-            sketch.line(this.translate[0], y, sketch.width + this.translate[0], y);
+            for (let j = 0; j <= sketch.height; j += scl) {
+                const y = (this.translate[1] + j + 0.5) - (this.translate[1] - this.pos.y) % scl;
+                sketch.line(this.translate[0], y, sketch.width + this.translate[0], y);
+            }
         }
     }
 

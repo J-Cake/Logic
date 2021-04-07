@@ -17,15 +17,29 @@ export function getTimeString(): string {
     return `${time.getDate().toString().padStart(2, '0')}.${time.getMonth().toString().padStart(2, '0')}.${time.getFullYear()} ${time.getHours().toString().padStart(2, '0')}:${time.getMinutes().toString().padStart(2, '0')}:${time.getSeconds().toString().padStart(2, '0')}`;
 }
 
-export function attempt(fn: () => Promise<any>): Promise<boolean> {
-    return new Promise(resolve => fn().then(res => resolve(false)).catch(err => resolve(true)))
+export function attempt(fn: () => Promise<any>, fail?: (err: any) => void): Promise<boolean> {
+    return new Promise(function (resolve) {
+        try {
+            fn().then(res => resolve(false)).catch(err => {
+                if (fail)
+                    fail(err);
+                resolve(true);
+            });
+        } catch (err) {
+            if (fail)
+                fail(err);
+            resolve(true);
+        }
+    });
 }
 
-export function attemptSync(fn: () => any): boolean {
+export function attemptSync(fn: () => any, fail?: (err: any) => void): boolean {
     try {
         fn();
         return false
     } catch (err) {
+        if (fail)
+            fail(err);
         return true;
     }
 }

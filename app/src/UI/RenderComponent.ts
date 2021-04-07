@@ -3,11 +3,12 @@ import * as p5 from "p5";
 import RenderObject from "../sys/components/RenderObject";
 import Component from "../Logic/Component";
 import CircuitManager from "../Logic/CircuitManager";
-import {getColour, transparent} from "../sys/util/Colour";
+import {getColour, rgb, transparent} from "../sys/util/Colour";
 import {manager, State, Tool} from "../index";
 import Colour from "../sys/util/Themes";
 import {renderWire, Wire, WireHandle} from "./Wire";
 import {GenComponent} from "../Logic/ComponentFetcher";
+import getColourForComponent from "./getColourForComponent";
 
 export interface RenderProps {
     pos: [number, number],
@@ -16,6 +17,7 @@ export interface RenderProps {
     label: string,
     isStateful: boolean,
     isMoving: boolean,
+    colour: rgb
 }
 
 export const midpoint = (line: [number, number, number, number]): [number, number] => [line[0] + (line[2] - line[0]) / 2, line[1] + (line[3] - line[1]) / 2];
@@ -39,6 +41,7 @@ export default class RenderComponent extends RenderObject {
 
     inputDashesGrid: [number, number, number, number][];
     outputDashesGrid: [number, number, number, number][];
+
 
     wires: Wire[];
 
@@ -93,7 +96,7 @@ export default class RenderComponent extends RenderObject {
 
     // returns: isOutput: boolean, terminalIndex: number
     getTouchingTerminal(mouse: [number, number]): [boolean, number] | null {
-        const scl = manager.setState().gridScale;
+        const scl = manager.setState().pref.setState().gridSize;
         const touchingOutputs: number = this.outputDashesCoords.findIndex(i => getDist([i[0], i[1]], mouse) < scl / 4);
         const touchingInputs: number = this.inputDashesCoords.findIndex(i => getDist([i[0], i[1]], mouse) < scl / 4);
 
@@ -108,12 +111,26 @@ export default class RenderComponent extends RenderObject {
     }
 
     render(sketch: p5): void {
-        const {gridScale: scl, tool, pref, mouse, debug, iconFont, font} = manager.setState();
+        const mgr = manager.setState();
+        const {gridSize: scl, colouriseComponents} = manager.setState().pref.setState();
+        const {tool, pref, mouse, debug, iconFont, font} = mgr;
+
         this.wires = this.wires.filter(i => !i.endComponent.deleted);
         for (const i of this.wires)
             renderWire.bind(sketch)(i, this.component.out[i.startIndex]);
 
-        if (!this.isSelected) sketch.stroke(getColour(this.component.isBreakpoint && debug.isBreakComponent(this.component) ? Colour.SecondaryAccent : Colour.Blank));
+        const colour = colouriseComponents ? this.props.colour : getColour(Colour.Blank);
+
+        if (this.component.isBreakpoint && this.component.halted) {
+            const [inputNum, outputNum] = this.getConnections(false);
+            const pos = mgr.board.gridToPix(mgr.board.coordsToGrid(this.pos));
+            sketch.fill(transparent(Colour.Danger, 95));
+            sketch.noStroke();
+            sketch.rect(pos[0] - 0.5, pos[1] - 0.5, Math.max(1, Math.min(inputNum, outputNum)) * scl - 1, Math.max(inputNum, outputNum, 1) * scl - 1);
+        }
+
+        if (!this.isSelected)
+            sketch.stroke(getColour(Colour.Blank));
         else sketch.stroke(getColour(Colour.Cursor))
 
         sketch.fill(getColour(Colour.Background));
@@ -121,7 +138,7 @@ export default class RenderComponent extends RenderObject {
 
         sketch.strokeWeight(1);
         if (!this.isSelected)
-            sketch.stroke(getColour(this.isSelected ? Colour.Cursor : (this.component.out.includes(true) ? Colour.Active : Colour.Blank)));
+            sketch.stroke(this.component.out.includes(true) ? getColour(Colour.Active) : getColour(Colour.Blank));
         else
             sketch.stroke(getColour(Colour.Cursor));
 
@@ -135,7 +152,7 @@ export default class RenderComponent extends RenderObject {
         for (const [a, i] of this.inputDashesCoords.concat(this.outputDashesCoords).entries()) {
             sketch.strokeWeight(1);
             if (!this.isSelected)
-                sketch.stroke(getColour(terminals[a] ? Colour.Active : (this.component.isBreakpoint && debug.isBreakComponent(this.component) ? Colour.SecondaryAccent : Colour.Blank)));
+                sketch.stroke(getColour(terminals[a] ? Colour.Active : Colour.Blank));
             else sketch.stroke(getColour(Colour.Cursor));
             if (grid[a])
                 sketch.rect(...grid[a]);
@@ -154,17 +171,25 @@ export default class RenderComponent extends RenderObject {
         sketch.fill(getColour(Colour.Background));
         sketch.rect(this.pos[0] + 0.5, this.pos[1] + 0.5, this.size[0] - 1, this.size[1] - 1);
 
-        sketch.fill(transparent(this.isSelected ? Colour.Cursor : Colour.Blank, 50))
+        sketch.fill(transparent(this.isSelected ? Colour.Cursor : colour, 50))
         sketch.rect(this.pos[0], this.pos[1], this.size[0], this.size[1]);
 
-        sketch.stroke(getColour(this.isSelected ? Colour.Cursor : (this.component.out.includes(true) ? Colour.Active : (this.component.isBreakpoint && debug.isBreakComponent(this.component) ? Colour.SecondaryAccent : Colour.Blank))));
+        if (this.isSelected)
+            if (this.component.out.includes(true))
+                sketch.stroke(getColour(Colour.Active));
+            else
+                sketch.stroke(getColour(Colour.Blank));
         sketch.strokeWeight(1);
 
         if (this.component.isBreakpoint !== null) {
-            sketch.fill(getColour(debug.isBreakComponent(this.component) ? Colour.SecondaryAccent : Colour.Blank));
-
+            sketch.fill(getColour(Colour.Blank));
+            sketch.ellipse(this.pos[0] + this.size[0] / 2, this.pos[1] + this.size[1] / 2, 13 + this.buff);
+            sketch.fill(getColour(Colour.Background));
             sketch.noStroke();
-            sketch.ellipse(this.pos[0] + this.size[0] / 2, this.pos[1] + this.size[1] / 2, this.buff);
+            sketch.textFont(manager.setState().iconFont);
+            sketch.textSize(13);
+            sketch.textAlign(sketch.CENTER, sketch.CENTER);
+            sketch.text('', this.pos[0], this.pos[1], this.size[0], this.size[1]);
         }
 
         // if ((pref.setState().showLabels && !this.isWithinBounds(manager.setState())) || (!pref.setState().showLabels && this.isWithinBounds(manager.setState()))) {
@@ -189,11 +214,14 @@ export default class RenderComponent extends RenderObject {
 
     onClick() {
         this.component.activate(this);
+        manager.broadcast('tick')
     }
 
     protected update(sketch: p5): void {
         this.component.updated = false;
-        const {gridScale: scl, board, mouse, p_mouse} = manager.setState();
+        const mgr = manager.setState();
+        const scl = mgr.pref.setState().gridSize;
+        const {board, mouse, p_mouse} = mgr;
 
         this.buff = Math.floor(scl / 6);
 
@@ -323,6 +351,7 @@ export async function renderComponents(circuitManager: CircuitManager): Promise<
             direction: state.componentMap[i.documentComponentKey][0].direction,
             flip: state.componentMap[i.documentComponentKey][0].flip,
             isMoving: false,
+            colour: getColourForComponent(i.raw?.token)
         })).map(function (i, a, comps) {
             const raw = (i.component as GenComponent).base;
             if (raw)

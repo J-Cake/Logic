@@ -45,6 +45,23 @@ create unique index documents_documentId_uindex
 create unique index documents_documentToken_uindex
 	on documents (documentToken);
 
+create table user_preferences
+(
+    userId int not null
+        constraint user_preferences_pk
+            primary key,
+    showGrid boolean default false not null,
+    gridSize int default 35 not null,
+    colouriseComponents boolean default true not null,
+    useSystemTheme boolean default true not null,
+    fallbackTheme int default 0 not null,
+    enableTooltips boolean default true not null,
+    enableTrackpadGestures boolean default true not null
+);
+
+create unique index user_preferences_userId_uindex
+	on user_preferences (userId);
+
 create table users
 (
     userId int not null

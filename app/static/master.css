@@ -1,8 +1,3 @@
-@font-face {
-    font-family: Remix;
-    src: url('/app/remixicon.woff2');
-}
-
 :root, * {
     padding: 0;
     margin: 0;
@@ -205,4 +200,9 @@ button:disabled, input:disabled {
 
 .select span.option.selected {
     background: var(--accent);
+}
+
+span#breakpoint {
+    font-size: 7pt;
+    color: var(--secondaryaccent);
 }

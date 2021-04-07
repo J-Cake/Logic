@@ -13,13 +13,13 @@ export const dialogFiles: Record<Dialog, (docId: string) => string> = {
     [Dialog.ComponentFinder]: (doc: string) => `/find/${doc}`
 }
 
-export type Dialogs = Record<Dialog, [JQuery, Window | null]>;
+export type Dialogs = Record<Dialog, [JQuery, Window | null, (msg: string) => void]>;
 
 const dialogManager: StateManager<Dialogs> = new StateManager<Dialogs>({});
 
 declare global {
     interface Window {
-        connect: () => void;
+        connect: () => (msg: string) => void;
     }
 }
 
@@ -35,8 +35,9 @@ export function setVisible(dialog: Dialog, visibility: boolean): Window | null {
 
             if (win) // Thanks SO
                 window.connect = function () {
-                    dialogManager.dispatch('windowChange', () => ({[dialog]: [button, win]}));
-                    $(win).on("beforeunload", () => dialogManager.dispatch('windowChange', () => ({[dialog]: [button, null]})));
+                    dialogManager.dispatch('windowChange', prev => ({[dialog]: [button, win, prev[dialog][2]]}));
+                    $(win).on("beforeunload", () => dialogManager.dispatch('windowChange', prev => ({[dialog]: [button, null, prev[dialog][2]]})));
+                    return (message: string) => dialogManager.setState()[dialog][2](message);
                 };
         }
     else if (dialogObj) {
@@ -60,23 +61,22 @@ export function closeAll() {
 dialogManager.on('toggleDialog', function (state) { // This event is called when the buttons change
     for (const [dialog, [button]] of Object.entries(state))
         if (button.prop('checked'))
-            setVisible(Number(dialog), true)
+            setVisible(Number(dialog), true);
         else
-            setVisible(Number(dialog), false)
+            setVisible(Number(dialog), false);
 });
 
 dialogManager.on('windowChange', function (state) { // This event is called when the windows change
-    console.log("Updating Buttons");
     for (const [button, win] of Object.values(state))
         button.prop('checked', !!win);
 })
 
-export function link(dialog: Dialog, el: JQuery, onOpen: (window: Window) => void) {
+export function link(dialog: Dialog, el: JQuery, onMsg: (msg: string) => void) {
     if (!el.is(`input[type="checkbox"]`))
-        throw {err: "Please link a checkbox"};
+        throw "Please link a checkbox";
 
     dialogManager.setState((prev: Dialogs) => ({
-        [dialog]: prev[dialog] ? [el, prev[dialog][1]] : [el, null]
+        [dialog]: prev[dialog] ? [el, prev[dialog][1]] : [el, null, onMsg]
     }));
 
     el.on('change', () => dialogManager.broadcast('toggleDialog'));

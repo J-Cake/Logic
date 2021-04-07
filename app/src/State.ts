@@ -1,17 +1,17 @@
 import * as _p5 from "p5";
-import * as $ from 'jquery';
 
 import StateManager from "./sys/util/stateManager";
 import Board from "./sys/components/Board";
 import TooltipPane from "./UI/TooltipPane";
 import DragObject from "./sys/components/DragObject";
 import DropObject from "./sys/components/DropObject";
-import {Theme} from "./sys/util/Themes";
 import Cursor from "./UI/cursor";
 import CircuitManager from "./Logic/CircuitManager";
 import RenderComponent from "./UI/RenderComponent";
 import DialogManager, {Dialogs} from "./UI/DialogManager";
 import Debugger from "./Logic/Debugger";
+import PreferenceManager from "./PreferenceManager";
+import {defaultPreferences, Theme} from "./Enums";
 
 export enum Tool {
     Pointer,
@@ -43,7 +43,8 @@ export interface State {
     p5Canvas: _p5.Renderer,
     sidebarWidth: number,
     sidebarIsLeft: boolean,
-    gridScale: number,
+    pan: [number, number],
+    scale: number,
     actionChain: Partial<State>[],
     dialogManager: StateManager<Dialogs>,
     documentIdentifier: string,
@@ -66,9 +67,7 @@ export interface State {
         ctrl: boolean,
         meta: boolean
     },
-    pref: StateManager<{
-        showLabels: boolean
-    }>
+    pref: PreferenceManager
 }
 
 export const manager: StateManager<State> = new StateManager<State>({
@@ -80,12 +79,11 @@ export const manager: StateManager<State> = new StateManager<State>({
     p_mouse: {x: 0, y: 0},
     dragStart: {x: 0, y: 0},
     theme: Theme.System,
-    gridScale: 35,
+    pan: [0, 0],
+    scale: 1,
     loading: true,
     sidebarIsLeft: true,
     actionChain: [],
     dialogManager: DialogManager,
-    pref: new StateManager<{showLabels: boolean}>({
-        showLabels: $("#show-labels").prop("checked")
-    })
+    pref: new PreferenceManager(defaultPreferences)
 });

@@ -1,0 +1,176 @@
+#container {
+    display: block;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    min-width: 650px;
+}
+
+.preference {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    margin: 12px 3px;
+}
+
+.preference h2 {
+    font-size: 13pt;
+    color: var(--blank);
+    width: 100%;
+    font-weight: normal;
+}
+
+.preference .description {
+    font-size: 7.5pt;
+    color: var(--primary);
+}
+
+
+.preference label {
+    display: flex;
+    width: 100%;
+    padding: 8px;
+    flex-direction: column;
+}
+
+.info {
+    flex: 1;
+}
+
+.preference .toggle, .preference .checkbox, .preference .int {
+    flex-direction: row;
+}
+
+button {
+    background: var(--panel);
+    min-width: 95px;
+    font-family: inherit;
+    color: var(--blank);
+    font-size: 9pt;
+}
+
+button#close {
+    font-family: Remix;
+    width: 24pt;
+    height: 24pt;
+    position: fixed;
+    font-size: 8pt;
+    right: 8px;
+    top: 8px;
+    min-width: auto;
+    background: var(--secondaryaccent);
+    color: var(--background);
+}
+
+.toggle-outer {
+    width: 32pt;
+    padding: 4px;
+    background: var(--panel);
+    border-radius: 32px;
+    position: relative;
+    display: flex;
+    transition: background-color 0.3s;
+    box-sizing: content-box;
+    /*justify-content: flex-start;*/
+}
+
+.toggle-inner {
+    background: var(--blank);
+    width: 14pt;
+    height: 14pt;
+    margin-left: 0;
+    border-radius: 32px;
+    box-sizing: content-box;
+    display: block;
+    position: relative;
+    transition: margin-left 0.3s, background-color 0.3s;
+}
+
+.toggle input[type="checkbox"].hidden:checked + .toggle-outer {
+    background: var(--active);
+}
+
+.toggle input[type="checkbox"].hidden:checked + .toggle-outer .toggle-inner {
+    margin-left: calc(18pt - 8px);
+    background: var(--panel);
+}
+
+.checkbox .checker {
+    --size: 18pt;
+    background: var(--panel);
+    display: block;
+    width: var(--size);
+    height: var(--size);
+    border-radius: 4px;
+    transition-property: background-color, color;
+    font-family: Remix;
+    text-align: center;
+    line-height: var(--size);
+    font-weight: bold;
+    transition-duration: 0.3s;
+    color: var(--blank);
+}
+.checkbox input[type="checkbox"].hidden:checked + .checker {
+    background: var(--active);
+    color: var(--panel);
+}
+
+input[type=range] {
+    -webkit-appearance: none;
+    width: 100%;
+    --thumb-height: 9pt;
+    --track-height: 4px;
+    --reverse-offset: calc(0px - (var(--thumb-height) / 2) + (var(--track-height) / 2));
+    outline: none;
+    background: transparent;
+    display: flex;
+    align-items: center;
+}
+
+input[type=range]:before {
+    content: attr(min);
+    font-size: 8pt;
+    color: var(--blank);
+    width: 45px;
+    text-align: center;
+}
+input[type=range]:after {
+    content: attr(max);
+    font-size: 8pt;
+    color: var(--blank);
+    width: 45px;
+    text-align: center;
+}
+
+input::-webkit-slider-runnable-track {
+    width: 100%;
+    cursor: pointer;
+    background: var(--panel);
+    height: var(--track-height);
+    overflow: visible;
+    margin: var(--thumb-height) 0;
+    border-radius: var(--track-height);
+}
+
+input[type=range]::-webkit-slider-thumb, input[type=range]:focus::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    background: var(--active);
+    height: var(--thumb-height);
+    width: var(--thumb-height);
+    border-radius: var(--thumb-height);
+    cursor: pointer;
+    margin-top: var(--reverse-offset);
+}
+
+select {
+    margin: 6px;
+    background: var(--panel);
+    border: none;
+    color: var(--blank);
+    font-size: 9pt;
+    text-align: center;
+    width: 100%;
+    padding: 8px;
+    border-radius: 3px;
+}

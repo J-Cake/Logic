@@ -12,5 +12,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="eva-icons" level="application" />
+    <orderEntry type="library" name="@types/ts-nameof" level="application" />
   </component>
 </module>

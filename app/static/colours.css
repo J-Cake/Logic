@@ -14,6 +14,10 @@
 /*        --blank: rgb(60, 65, 70);*/
 /*    }*/
 /*}*/
+@font-face {
+    font-family: Remix;
+    src: url('/app/remixicon.woff2');
+}
 
 @media screen and (prefers-color-scheme: light) {
     /* Folio theme */

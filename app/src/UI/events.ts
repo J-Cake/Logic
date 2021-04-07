@@ -14,6 +14,8 @@ import {DebugMode} from "../Logic/Debugger";
 export default function handleEvents(canvas: JQuery, sketch: p5, comps: RenderComponent[]) {
     const container = $('#canvas-container');
 
+    $(document).on('keyup keydown mousedown mouseup mousemove mouseenter mouseleave mousewheel', () => sketch.loop());
+
     $(document).on('keyup keydown', e => manager.setState({
         keys: {
             shift: e.shiftKey ?? false,
@@ -43,14 +45,17 @@ export default function handleEvents(canvas: JQuery, sketch: p5, comps: RenderCo
 
     $("#show-labels").on('change', function () {
         return manager.setState().pref.setState({
-            showLabels: $(this).prop("checked")
+            enableTooltips: $(this).prop("checked")
         });
     });
     $("#refresh-ui").on('click', () => manager.broadcast("refresh-ui"));
 
-    $('#in').on('click', () => manager.setState(prev => ({gridScale: prev.gridScale * 1.15})));
-    $('#out').on('click', () => manager.setState(prev => ({gridScale: prev.gridScale * 0.85})));
-    $('#reset').on('click', () => manager.setState(prev => ({gridScale: 35})));
+    // $('#in').on('click', () => manager.setState(prev => ({gridScale: Math.min(Math.max(prev.gridScale * 1.15, 1.5), 150)})));
+    // $('#out').on('click', () => manager.setState(prev => ({gridScale: Math.min(Math.max(prev.gridScale * 0.85, 1.5), 150)})));
+    $('#in').on('click', () => manager.setState(prev => ({scale: Math.min(Math.max(prev.scale * 1.15, 1.5), 150)})));
+    $('#out').on('click', () => manager.setState(prev => ({scale: Math.min(Math.max(prev.scale * 0.85, 1.5), 150)})));
+
+    $('#reset').on('click', () => manager.setState(prev => ({scale: 1})));
 
     $("#remove-component").on('click', () => manager.setState().circuit.deleteSelected());
 
@@ -94,8 +99,10 @@ export default function handleEvents(canvas: JQuery, sketch: p5, comps: RenderCo
         const {dragStart, mouse, keys, tool, debug} = manager.setState();
 
         if (Math.sqrt((dragStart.x - mouse.x) ** 2 + (dragStart.y - mouse.y) ** 2) < 10) {
-            if (tool === Tool.Debug)
+            if (tool === Tool.Debug) {
                 manager.broadcast('debug_click');
+                new Promise(k => k(manager.broadcast('tick')));
+            }
             else if (!debug.isStopped()) {
                 if (tool === Tool.Pointer)
                     manager.dispatch("click", prev => ({
@@ -141,34 +148,39 @@ export default function handleEvents(canvas: JQuery, sketch: p5, comps: RenderCo
 
     canvas.on("mousemove", async function (e) { // Call MouseDown only after traveling a minimum distance
 
-        const comps = manager.setState().renderedComponents.reverse().find(i => i.isWithinBounds(manager.setState()));
+        const tooltips: boolean = manager.setState().pref.setState().enableTooltips;
 
-        if (comps) {
-            $("span#component-label").text(comps.component.label);
-            $("span#breakpoint").text(comps.component.isBreakpoint ? DebugMode[comps.component.isBreakpoint] : '');
-            $("span#type").text(comps.component.name);
-            $("span#pos-x").text(comps.props.pos[0]);
-            $("span#pos-y").text(comps.props.pos[1]);
+        if (tooltips) {
+            const comps = manager.setState().renderedComponents.reverse().find(i => i.isWithinBounds(manager.setState()));
 
-            $("#tooltips")
-                .addClass("visible")
-                .css("left", e.pageX + "px")
-                .css("top", e.pageY + "px");
-        } else {
-            $("span#component-label").text("");
-            $("span#debug").text("");
-            $("span#type").text("");
-            $("span#pos-x").text("");
-            $("span#pos-y").text("");
-            $("#tooltips").removeClass("visible");
-        }
+            if (comps) {
+                $("span#component-label").text(comps.component.label);
+                $("span#breakpoint").text(comps.component.isBreakpoint !== null ? DebugMode[comps.component.isBreakpoint] : '');
+                $("span#type").text(comps.component.name);
+                $("span#pos-x").text(comps.props.pos[0]);
+                $("span#pos-y").text(comps.props.pos[1]);
 
-        const {dragStart, mouse} = manager.setState();
-        if (Math.sqrt((dragStart.x - mouse.x) ** 2 + (dragStart.y - mouse.y) ** 2) > 5)
-            if (!manager.setState().dragObjects.find(i => i.isDragging))
-                manager.dispatch("mouseDown", {
-                    mouse
-                });
+                $("#tooltips")
+                    .addClass("visible")
+                    .css("left", e.pageX + "px")
+                    .css("top", e.pageY + "px");
+            } else {
+                $("span#component-label").text("");
+                $("span#debug").text("");
+                $("span#type").text("");
+                $("span#pos-x").text("");
+                $("span#pos-y").text("");
+                $("#tooltips").removeClass("visible");
+            }
+
+            const {dragStart, mouse} = manager.setState();
+            if (Math.sqrt((dragStart.x - mouse.x) ** 2 + (dragStart.y - mouse.y) ** 2) > 5)
+                if (!manager.setState().dragObjects.find(i => i.isDragging))
+                    manager.dispatch("mouseDown", {
+                        mouse
+                    });
+        } else
+            $("#tooltips").hide();
     });
 
     canvas.on("mouseup", function () {

@@ -1,0 +1,78 @@
+extends index
+
+mixin Toggle(identifier, value, descriptor)
+    input(type="hidden", value="off", name=identifier).hidden
+    label.toggle
+        .info
+            h2.label= descriptor.label
+            span.description= descriptor.description
+        .el
+            input(type="checkbox", value="on", checked=value, name=identifier).hidden
+            span.toggle-outer
+                span.toggle-inner
+
+mixin Checkbox(identifier, value, descriptor)
+    input(type="hidden", value="off", name=identifier).hidden
+    label.checkbox
+        .info
+            h2.label= descriptor.label
+            span.description= descriptor.description
+        .el
+            input(type="checkbox", value="on", checked=value, name=identifier).hidden
+            span.checker 
+
+mixin Slider(identifier, value, descriptor)
+    label.slider
+        .info
+            h2.label= descriptor.label
+            span.description= descriptor.description
+        .el
+            input(type="range", min=descriptor.details[0], max=descriptor.details[1], value=value, step=descriptor.details[2] || 1, name=identifier)
+
+mixin Int(identifier, value, descriptor)
+    label.int
+        .info
+            h2.label= descriptor.label
+            span.description= descriptor.description
+        .el
+            input(type="number", min=descriptor.details[0], max=descriptor.details[1], value=value, name=identifier)
+
+mixin Text(identifier, value, descriptor)
+    label.text
+        .info
+            h2.label= descriptor.label
+            span.description= descriptor.description
+        .el
+            input(type="text", value=value, name=identifier)
+
+mixin Dropdown(identifier, value, descriptor)
+    label.dropdown
+        .info
+            h2.label= descriptor.label
+            span.description= descriptor.description
+        .el
+            select(value=value, name=identifier)
+                each val, key in descriptor.details
+                    option(data-key=key, selected=(val===value ? "selected" : ""))= val
+
+block content
+    link(rel="stylesheet", href="/app/preferences.css")
+    button#close 
+    script document.querySelector("#close").addEventListener("click", () => window.close());
+    form(action="/settings", method="post")#container
+        button(type="submit") Save
+        each i, a in preferences
+            .preference
+                case PreferenceDescriptor[a].type
+                    when Type.Toggle
+                        +Toggle(a, i, PreferenceDescriptor[a])
+                    when Type.Checkbox
+                        +Checkbox(a, i, PreferenceDescriptor[a])
+                    when Type.Slider
+                        +Slider(a, i, PreferenceDescriptor[a])
+                    when Type.Int
+                        +Int(a, i, PreferenceDescriptor[a])
+                    when Type.Text
+                        +Text(a, i, PreferenceDescriptor[a])
+                    when Type.Dropdown
+                        +Dropdown(a, i, PreferenceDescriptor[a])

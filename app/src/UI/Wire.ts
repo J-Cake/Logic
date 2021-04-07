@@ -218,7 +218,9 @@ export class WireHandle extends DragObject {
     }
 
     draw(sketch: p5): void {
-        const {gridScale: scl, mouse, board, keys} = manager.setState();
+        const mgr = manager.setState();
+        const gridScale = mgr.pref.setState().gridSize
+        const {mouse, board, keys} = mgr;
 
         sketch.strokeWeight(1.5);
         sketch.stroke(getColour((keys.shift && this.isHover(mouse)) ? Colour.Active : Colour.Cursor));

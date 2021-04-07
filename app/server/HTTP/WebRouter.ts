@@ -38,7 +38,7 @@ const getPages = async function(root?: string): Promise<FS> {
     const dir = async function (dirName: string): Promise<FS> {
         const docs: FS = {};
 
-        for (const i of await FS.readdir(dirName))
+        for (const i of (await FS.readdir(dirName)).filter(i => !i.startsWith('~$')))
             if ((await FS.stat(path.join(dirName, i))).isDirectory())
                 docs[i] = await dir(path.join(dirName, i));
             else if (i.split('.').pop() === 'md')
