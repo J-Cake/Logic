@@ -97,9 +97,8 @@ html
             if yourComponents.length > 0
                 h3 Your components
                 each i in yourComponents
-                    - console.log(i)
                     div.component
-                        .info
+                        .info(data-token=i.componentToken)
                             span.name=i.componentName || i.componentToken
                             span.token=i.componentToken
                         .controls

@@ -91,6 +91,7 @@ router.put('/circuit/:circuit', async function (req, res) { // File Save
         res.end('Access to the requested document was denied');
     }
 });
+
 router.delete('/circuit/:circuit', async function (req, res) {
     const userToken: string = req.userId || "";
     const usr = await verifyUser(userToken);
@@ -165,6 +166,40 @@ router.delete('/circuit/:circuit/collaborator', async function (req, res) {
         res.end('You do not have access to this document');
     }
 });
+
+router.put('/circuit/:circuit/add-component', async function (req, res) {
+    const userToken: string = req.userId || "";
+    const usr = await verifyUser(userToken);
+
+    if (!usr) {
+        res.status(401);
+        res.end('Unverified request');
+    } else if (await attempt(async function () {
+        const file = await getFile(userToken, req.params.circuit);
+        await file.fetchInfo();
+
+        if (await attempt(async function () {
+            if (req.query.component && typeof req.query.component === 'string')
+                if (await sql.sql_get(`SELECT exists(select componentId
+                                                     from components
+                                                     where componentToken == $tok)`, {
+                    $tok: req.query.component
+                })) {
+                    file.info.components.push(req.query.component);
+                    await file.writeContents(file.info);
+
+                    res.status(200);
+                    res.end('Success');
+                }
+        })) {
+            res.status(500);
+            res.end('An error occurred writing the change');
+        }
+    })) {
+        res.status(403);
+        res.end('You do not have access to this document');
+    }
+})
 
 router.post('/circuit/:circuit/', async function (req, res) {
     const userToken: string = req.userId || "";

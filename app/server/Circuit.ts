@@ -48,15 +48,10 @@ export default class Circuit implements CircuitObj {
     async componentIdStringToNames(): Promise<{ [token: string]: string }> {
         const comps: ApiComponent[] = (await Promise.all(this.components.map(async i => JSON.parse(i.startsWith('std/') ?
             await readFile(path.join(await rootFn(), 'lib', 'components', i.split('/').pop() + ".json")) : // Standard Component
-            await sql.sql_get(`SELECT source
+            (await sql.sql_get<{source: string}>(`SELECT source
                                from components
-                               where componentToken == ?`, [i]))))).map((i, a) => ({...i, token: this.components[a]}));
+                               where componentToken == ?`, [i])).source)))).map((i, a) => ({...i, token: this.components[a]}));
         return _.mapValues(_.keyBy(comps, 'token'), i => i.name);
-
-        // return _.mapValues(_.keyBy(await Promise.all(this.components.map(async (i) => [i,
-        //     await sql.sql_get(`SELECT componentName
-        //                        from components
-        //                        where componentId == ?`, [i]) ?? i])), '0'), i => i[1]) as { [token: string]: string };
     }
 
     async isOwner(userId: number): Promise<boolean> {

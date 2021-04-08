@@ -15,7 +15,8 @@ export interface DBComponent {
     ownerId: number,
     componentName: string,
     location: string,
-    componentToken: string
+    componentToken: string,
+    source: string
 }
 
 router.get('/find', async function (req, res) {
@@ -43,10 +44,11 @@ router.get("/:componentToken", async function (req, res) {
         res.status(404);
         res.end("component was not found or you do not have access to it");
     } else {
-        const file = path.join(await rootFn(), "Data", "components", component.location);
+        res.end(component.source);
+        // const file = path.join(await rootFn(), "Data", "components", component.location);
 
-        res.header("Content-type", "application/json");
-        FS.readStream(file).pipe(res);
+        // res.header("Content-type", "application/json");
+        // FS.readStream(file).pipe(res);
     }
 });
 

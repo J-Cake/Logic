@@ -8,5 +8,10 @@ if (!window.opener)
 
 new Promise<BroadcastChannel>((ok) => ok(window.opener.connect())).then(function(bc: BroadcastChannel) {
     console.log(bc);
-    $("");
+    $(".info").on('click', function() {
+        fetch(`/circuit/${window.location.href.split('/').pop()}/add-component?component=${$(this).data('token')}`, {method: 'put'}).then(res => {
+            if (res.ok)
+                window.close();
+        });
+    });
 });

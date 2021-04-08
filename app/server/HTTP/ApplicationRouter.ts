@@ -105,7 +105,7 @@ router.get('/components/:circuit/', async function (req, res) {
             title: `Components`,
             isLoggedIn: isLoggedIn(req)
         });
-    })) {
+    }, err => console.error(err))) {
         res.status(403);
         res.end('Access to the requested document was denied');
     }
