@@ -28,7 +28,7 @@ export const port: number = (function(): number {
 export const reloadPort = liveReload();
 
 export default async function init(port: number) {
-    app.use(morgan('dev'));
+    app.use(morgan(process.argv.includes('--dev') ? 'dev' : 'combined'));
 
     app.set("view engine", "pug");
     app.set("views", path.join(await rootFn(), 'app', 'views'));
