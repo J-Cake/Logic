@@ -80,10 +80,16 @@ router.post("/signup", async function (req, res) {
                                                                            from users`)).userId;
         const token = bcrypt.hashSync(`${name}:${email}:${getTimeString()}`, 1);
 
-        await sql.sql_query(`INSERT into users
-                             VALUES (?, ?, ?, date('now'), ?, ?);
+        await sql.sql_query(`INSERT into users (userId, email, password, joined, identifier, userToken)
+                             VALUES ($userId, $email, $password, date('now'), $identifier, $userToken);
         INSERT INTO user_preferences (userId)
-        values (?)`, [userId, email, bcrypt.hashSync(password, 10), name, token, userId]);
+        values ($userToken)`, {
+            $userId: userId,
+            $email: email,
+            $password: bcrypt.hashSync(password, 10),
+            $identifier: name,
+            $userToken: token
+        });
 
         // console.log("Done");
         res.cookie('userId', token);
