@@ -1,4 +1,6 @@
-import {TruthTable} from "../src/Logic/ComponentFetcher";
+import * as _ from 'lodash';
+import {GenericComponent, TruthTable} from "../src/Logic/ComponentFetcher";
+import {attemptSync} from "./utils";
 
 const compareArray: <T>(arr1: T[], arr2: T[]) => boolean = function <T>(arr1: T[], arr2: T[]): boolean {
     if (arr1.length !== arr2.length)
@@ -13,21 +15,28 @@ export default class StatelessComponent {
     out: boolean[];
     terminals: [string[], string[]];
 
-    constructor(truthTable: TruthTable, labels: [string[], string[]]) {
+    raw?: GenericComponent;
+
+    override: (null | boolean)[] = [];
+
+    constructor(truthTable: TruthTable, labels: [string[], string[]], raw?: GenericComponent) {
         this.truthTable = truthTable;
         this.inputs = {};
-        this.outputs = {};
-        this.out = [];
+        this.outputs = _.mapValues(_.mapKeys(labels[1], i => i), i => []);
+        this.out = this.compute(labels[0].map(i => false));
+        console.log("Out", this.out);
         this.terminals = labels;
+        this.raw = raw;
+    }
+
+    addOverride(value: boolean, index: number) {
+        this.override = new Array(Math.max(index, this.override.length)).fill(null).map((i, a) => typeof this.override[a] === "boolean" ? this.override[a] : null);
+        this.override[index] = value;
     }
 
     getInputs(): boolean[] {
-        return this.terminals[0].map((i: string): boolean => {
-            if (i in this.inputs)
-                return this.inputs[i][0].out[this.inputs[i][0].terminals[0].indexOf(this.inputs[i][1])];
-            else
-                return false;
-        });
+        const inputs = _.map(this.inputs, ([comp, terminal]) => comp.out[comp.terminals[1].indexOf(terminal)]);
+        return _.merge(new Array(Math.max(this.override.length, inputs.length)).fill(0), this.override).map((i, a) => typeof i !== "boolean" ? inputs[a] : i);
     }
 
     compute(inputs: boolean[]): boolean[] {
@@ -35,7 +44,7 @@ export default class StatelessComponent {
             for (const inputSet of this.truthTable as TruthTable)
                 if (compareArray<boolean>(inputSet[0], inputs))
                     return inputSet[1];
-            return [];
+            throw null;
         })(inputs);
     }
 
@@ -49,12 +58,10 @@ export default class StatelessComponent {
             throw `Invalid connection - no input terminal '${toTerminal}'`;
     }
 
-    update(doNotFetchInputs: boolean = true) {
-        if (!doNotFetchInputs)
-            this.out = this.compute(this.getInputs());
+    update() {
+        attemptSync(() => this.out = this.compute(this.getInputs()));
         for (const a in this.outputs)
             for (const i of this.outputs[a])
                 i[0].update();
-        // console.log(this.out);
     }
 }

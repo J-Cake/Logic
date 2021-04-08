@@ -8,8 +8,7 @@ import type {ApiComponent, GenericComponent, TruthTable} from "../src/Logic/Comp
 import {CircuitObj} from "./Circuit";
 import StatelessComponent from "./StatelessComponent";
 import {readFile} from "./FS";
-import {rootFn} from "./utils";
-import * as util from "util";
+import {attemptSync, rootFn} from "./utils";
 
 export default async function docToComponent(documentToken: string, userToken: string, stateful: boolean): Promise<string> {
     const document = await sql.sql_get<{ source: string }>(`SELECT source
@@ -57,68 +56,66 @@ export async function getTruthTable(info: CircuitObj): Promise<TruthTable> {
         if (isRecursive([Number(a)], i))
             throw 'Conversion failed: Contains recursively connected components';
 
-    const components = _.mapValues(_.keyBy(await Promise.all(Object.entries(info.content).map(async ([a, i]) => [a, await fetchComponent(i.identifier)])), '0'), i => i && i[1]?.[1]);
+    const components = _.mapValues(_.keyBy(await Promise.all(Object.entries(info.content).map(async ([a, i]) => [a, await fetchComponent(i)])), '0'), i => i && i[1]?.[1]);
 
-    for (const [a, i] of Object.entries(components)) {
-        if (i instanceof StatelessComponent)
-            for (const [from, connections] of Object.entries(info.content[Number(a)].outputs))
-                for (const [comp, to] of connections) {
-                    const source: null | string | StatelessComponent = i ?? null;
-                    const dest: null | string | StatelessComponent = components[comp] ?? null;
-                    try {
-                        if (source && dest)
-                            if (typeof dest === "string")
-                                outputLocations.push([Number(a), from]);
-                            else if (dest)
-                                dest?.addInput(source, from, to);
-                            else console.log("Unable to connect to", dest);
-                        else
-                            console.log("Unable to connect from", source);
-                    } catch (err) {
-                        console.error(err);
-                        console.log("Comp", comp, "From", from, "To", to);
-                        console.log(source);
-                    }
-                }
+    // Connect components
+    for (const [a, i] of Object.entries(info.content)) {
+        const comp_at_i = components[a];
+
+        for (const [from, outputs] of Object.entries(i.outputs))
+            for (const [comp, to] of outputs) {
+                const destinationComponent = components[comp];
+
+                if (destinationComponent instanceof StatelessComponent && comp_at_i instanceof StatelessComponent)
+                    destinationComponent.addInput(comp_at_i, from, to);
+                else if (info.content[comp].identifier === "std/output")
+                    outputLocations.push([Number(a), from]);
+            }
     }
 
+    // Generate different combinations
     const combinations = parseInt(new Array(inputLocations.length).fill('1').join(''), 2);
     for (let i = 0; i <= combinations; i++) {
         const inputs: boolean[] = Array.from(i.toString(2).padStart(inputLocations.length, '0')).map(i => i === '1');
-
-        // for (const i of Object.values(components))
-        //     if (i instanceof StatelessComponent)
-        //
 
         for (const [a, i] of inputLocations.entries())
             for (const j of info.content[i].outputs['i'] /* these will be inputs */) {
                 const comp = components[j[0]];
                 if (comp instanceof StatelessComponent) {
-                    comp.out = comp.compute(comp.getInputs());
-                    comp.out[comp.terminals[0].indexOf(j[1])] = inputs[a];
-                    comp.update(true);
+                    comp.addOverride(inputs[a], comp.terminals[0].indexOf(j[1]));
+                    // comp.update();
                 }
             }
 
-        console.log(util.inspect(components, false, null, true));
+        for (const i of inputLocations.map(i => info.content[i].outputs['i'].map(i => components[i[0]])).flat(Infinity) as (StatelessComponent | string)[])
+            if (i instanceof StatelessComponent)
+                i.update();
+
+        attemptSync(() => console.log(
+            inputs,
+            // _.mapValues(components, i => i instanceof StatelessComponent ? i.out : []),
+            "->",
+            // outputLocations.map(([comp, terminal]) => (components[comp] as StatelessComponent).terminals[1].indexOf(terminal)),
+            outputLocations.map(([comp, terminal]) => (components[comp] as StatelessComponent).out[(components[comp] as StatelessComponent).terminals[1].indexOf(terminal)])
+        ), err => console.error(err)); //print the index of the output terminal)
     }
 
     return [];
 }
 
-export async function fetchComponent(componentToken?: string): Promise<[string, StatelessComponent | string] | null> {
-    if (!componentToken)
+export async function fetchComponent(raw?: GenericComponent): Promise<[string, StatelessComponent | string] | null> {
+    if (!raw?.identifier)
         return null;
 
-    const source: ApiComponent = JSON.parse(componentToken.startsWith('std/') ?
-        await readFile(path.join(await rootFn(), 'lib', 'components', componentToken.split('/').pop() + ".json")) : // Standard Component
+    const source: ApiComponent = JSON.parse(raw?.identifier.startsWith('std/') ?
+        await readFile(path.join(await rootFn(), 'lib', 'components', raw?.identifier.split('/').pop() + ".json")) : // Standard Component
         await sql.sql_get(`SELECT source
                            from components
-                           where componentToken == ?`, [componentToken])); // Custom Component
+                           where componentToken == ?`, [raw?.identifier])); // Custom Component
 
     if (Object.prototype.toString.call(source.component) === "[object Array]")
-        return [componentToken, new StatelessComponent(source.component as TruthTable, [source.inputLabels, source.outputLabels])];
+        return [raw?.identifier, new StatelessComponent(source.component as TruthTable, [source.inputLabels, source.outputLabels], raw)];
     else if (typeof source.component === "string")
-        return [componentToken, source.component];
+        return [raw?.identifier, source.component];
     return null;
 }
