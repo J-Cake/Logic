@@ -1,8 +1,12 @@
+import * as path from "path";
+
 import * as _ from 'lodash';
 
 import sql from "./sql";
 import {DBDocument} from "./getFile";
-import {GenericComponent} from "../src/Logic/ComponentFetcher";
+import {ApiComponent, GenericComponent} from "../src/Logic/ComponentFetcher";
+import {readFile} from "./FS";
+import {rootFn} from "./utils";
 
 export interface CircuitObj {
     circuitName: string,
@@ -42,10 +46,17 @@ export default class Circuit implements CircuitObj {
     }
 
     async componentIdStringToNames(): Promise<{ [token: string]: string }> {
-        return _.mapValues(_.keyBy(await Promise.all(this.components.map(async (i) => [i,
-            await sql.sql_get(`SELECT componentName
+        const comps: ApiComponent[] = (await Promise.all(this.components.map(async i => JSON.parse(i.startsWith('std/') ?
+            await readFile(path.join(await rootFn(), 'lib', 'components', i.split('/').pop() + ".json")) : // Standard Component
+            await sql.sql_get(`SELECT source
                                from components
-                               where componentId == ?`, [i]) ?? i])), '0'), i => i[1]) as { [token: string]: string };
+                               where componentToken == ?`, [i]))))).map((i, a) => ({...i, token: this.components[a]}));
+        return _.mapValues(_.keyBy(comps, 'token'), i => i.name);
+
+        // return _.mapValues(_.keyBy(await Promise.all(this.components.map(async (i) => [i,
+        //     await sql.sql_get(`SELECT componentName
+        //                        from components
+        //                        where componentId == ?`, [i]) ?? i])), '0'), i => i[1]) as { [token: string]: string };
     }
 
     async isOwner(userId: number): Promise<boolean> {

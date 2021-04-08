@@ -1,5 +1,5 @@
 import * as WebSocket from "ws";
-import {app, port} from "./index";
+import {app, port} from "./HTTP";
 
 export function liveReload(): number | null {
     if (process.argv.includes('--dev')) {

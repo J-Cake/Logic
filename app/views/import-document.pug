@@ -61,9 +61,15 @@ html
             }
 
             input[type="checkbox"] + span.option:before {
-                width: 16pt;
-                height: 16pt;
-                content: '';
+                --size: 18pt;
+                width: var(--size);
+                height: var(--size);
+                font-size: 16px;
+                line-height: var(--size);
+                text-align: center;
+                font-weight: bold;
+                content: '';
+                font-family: "Remix";
                 display: block;
                 transition: 0.3s;
                 margin: 4px;
@@ -73,6 +79,7 @@ html
 
             input[type="radio"]:checked + span.title, input[type="checkbox"]:checked + span.option:before {
                 background: var(--active);
+                color: var(--background);
             }
 
             #documents {
@@ -82,6 +89,7 @@ html
             label.option {
                 display: flex;
                 width: 100%;
+                justify-content: space-between;
             }
 
 
@@ -97,8 +105,8 @@ html
         form(action=`/doc-to-component/${doc}`, method="post")#documents
             label.option
                 input(name="stateful", value=false, type="checkbox")#stateful
-                span.option Statefulopen
-                a(href="/wiki/statefull-vs-stateless.md", target="_blank").button What's this?
+                span.option Make Stateful
+                a(href="/wiki/LogicX%2Fstatefull-vs-stateless.md", target="_blank").button What's this?
             if own.length > 0
                 h3 Your Documents
                 for i in own

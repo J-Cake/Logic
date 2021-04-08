@@ -37,9 +37,7 @@ export async function getPreferencesForUser(userToken: string): Promise<DBPrefer
             pref[a as keyof DBPreferenceMap] =
                 converters[typeof i](pref[a as keyof DBPreferenceMap]) as DBPreferenceMap[keyof DBPreferenceMap];
 
-    const out = _.pick(pref, Object.keys(defaultPreferences)) as DBPreferenceMap;
-    console.log(out);
-    return out;
+    return _.pick(pref, Object.keys(defaultPreferences)) as DBPreferenceMap;
 }
 
 export function convertFromHTMLForm(pref: Record<keyof DBPreferenceMap, string>): DBPreferenceMap {

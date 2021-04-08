@@ -2,6 +2,7 @@ extends page
 
 mixin renderPages(pages, root)
     -
+        console.log(pages, root);
         const nonCapitalised = ['and', 'or', 'is', 'but', 'not', 'because', 'of', 'from', 'to', 'in', 'at', 'vs']
         const capitalise = function (i) {
             if (i.endsWith('.md'))
@@ -21,7 +22,7 @@ mixin renderPages(pages, root)
         else
             span= capitalise(page)
             .indent
-                +renderPages(pages[page], page + '/')
+                +renderPages(pages[page], '/' + root + page + '/')
 
 block page
     link(rel="stylesheet", href="/app/wiki.css")

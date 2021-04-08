@@ -8,27 +8,54 @@ import type {ApiComponent, GenericComponent, TruthTable} from "../src/Logic/Comp
 import {CircuitObj} from "./Circuit";
 import StatelessComponent from "./StatelessComponent";
 import {readFile} from "./FS";
-import {attemptSync, rootFn} from "./utils";
+import {attempt, rootFn} from "./utils";
+
+type TruthTableGenerator = {
+    table: TruthTable,
+    inputNames: string[],
+    outputNames: string[]
+}
 
 export default async function docToComponent(documentToken: string, userToken: string, stateful: boolean): Promise<string> {
-    const document = await sql.sql_get<{ source: string }>(`SELECT source
-                                                            from documents
-                                                            where documentToken == ?`, [documentToken]);
+    await attempt(async function () {
+        const document = await sql.sql_get<{ source: string, documentTitle: string }>(`SELECT source, documentTitle
+                                                                                       from documents
+                                                                                       where documentToken == ?`, [documentToken]);
+        const user = await sql.sql_get<{ email: string, userId: number }>(`SELECT email, userId
+                                                                           from users
+                                                                           where userToken == ?`, [userToken]);
 
-    const file = await getFile(userToken, documentToken);
-    if (!file)
-        throw 'File access was denied';
+        const file = await getFile(userToken, documentToken);
+        if (!file)
+            throw 'File access was denied';
 
-    await file.fetchInfo();
+        await file.fetchInfo();
 
-    if (!stateful) { // Set up a truth table
-        const truthTable: TruthTable = await getTruthTable(file.info);
-    }
-
+        if (!stateful) { // Set up a truth table
+            const truthTable: TruthTableGenerator = await getTruthTable(file.info);
+            const componentDocument: ApiComponent = {
+                component: truthTable.table,
+                inputLabels: truthTable.inputNames,
+                name: document.documentTitle,
+                outputLabels: truthTable.outputNames,
+                owner: user.email,
+                token: Math.floor(Math.random() * 11e17).toString(36), // pick a token that isn't in use,
+                wires: []
+            }
+            await sql.sql_query(`INSERT INTO components (ownerId, componentToken, componentName, source, componentId)
+                                 values ($ownerId, $compToken,
+                                         $compName, $source, coalesce((SELECT max(componentId) as componentId from components) + 1, 0))`, {
+                $ownerId: user.userId,
+                $compToken: componentDocument.token,
+                $compName: componentDocument.name,
+                $source: JSON.stringify(componentDocument)
+            });
+        }
+    }, err => console.error(err));
     return '';
 }
 
-export async function getTruthTable(info: CircuitObj): Promise<TruthTable> {
+export async function getTruthTable(info: CircuitObj): Promise<TruthTableGenerator> {
     const inputLocations: number[] = [];
     const outputLocations: [number, string][] = [];
 
@@ -37,6 +64,8 @@ export async function getTruthTable(info: CircuitObj): Promise<TruthTable> {
             inputLocations.push(Number(a));
 
     type connectMap = (number | connectMap)[];
+
+    const truthTable: TruthTable = [];
 
     // Check for recursive connections
     const getOutputs = (i: GenericComponent): number[] => Object.values(i.outputs).map(i => i.map(i => i[0])).flat();
@@ -81,26 +110,23 @@ export async function getTruthTable(info: CircuitObj): Promise<TruthTable> {
         for (const [a, i] of inputLocations.entries())
             for (const j of info.content[i].outputs['i'] /* these will be inputs */) {
                 const comp = components[j[0]];
-                if (comp instanceof StatelessComponent) {
+                if (comp instanceof StatelessComponent)
                     comp.addOverride(inputs[a], comp.terminals[0].indexOf(j[1]));
-                    // comp.update();
-                }
             }
 
         for (const i of inputLocations.map(i => info.content[i].outputs['i'].map(i => components[i[0]])).flat(Infinity) as (StatelessComponent | string)[])
             if (i instanceof StatelessComponent)
                 i.update();
 
-        attemptSync(() => console.log(
-            inputs,
-            // _.mapValues(components, i => i instanceof StatelessComponent ? i.out : []),
-            "->",
-            // outputLocations.map(([comp, terminal]) => (components[comp] as StatelessComponent).terminals[1].indexOf(terminal)),
-            outputLocations.map(([comp, terminal]) => (components[comp] as StatelessComponent).out[(components[comp] as StatelessComponent).terminals[1].indexOf(terminal)])
-        ), err => console.error(err)); //print the index of the output terminal)
+        // Fetch outputs
+        truthTable.push([inputs, outputLocations.map(([comp, terminal]) => (components[comp] as StatelessComponent).out[(components[comp] as StatelessComponent).terminals[1].indexOf(terminal)])]);
     }
 
-    return [];
+    return {
+        table: truthTable,
+        inputNames: inputLocations.map((i, a) => info.content[i].label ?? 'i' + a.toString(16)),
+        outputNames: _.filter(info.content, i => i.identifier === 'std/output').map((i, a) => i.label ?? 'o' + a.toString(16)),
+    };
 }
 
 export async function fetchComponent(raw?: GenericComponent): Promise<[string, StatelessComponent | string] | null> {

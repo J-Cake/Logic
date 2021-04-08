@@ -47,11 +47,12 @@ html
                 i(data-eva="funnel-outline")
                 //
         section#components
-            each i in Object.entries(components)
+            - console.log(components)
+            each i, a in components
                 div.component
                     .info
-                        span.name= i[1]
-                        span.token= i[0]
+                        span.name= i
+                        span.token= a
                     .controls
                         button.info 
                         button.remove 

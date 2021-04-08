@@ -29,7 +29,7 @@ router.get("/make", async function (req, res) {
 
     const name = (req.query.name || "").toString() || Math.floor(Math.random() * 11e17).toString(36);
 
-    const circuitToken: string = Math.floor(Math.random() * 11e17).toString(36);
+    const circuitToken: string = Math.floor(Math.random() * 11e17).toString(36); // pick a token that isn't in use
     const circuitId: number = 1 + (await sql.sql_get<{ documentId: number }>(`SELECT max(documentId) as documentId
                                                                               from documents`)).documentId;
 

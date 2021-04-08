@@ -14,7 +14,7 @@ import ResourceRouter from './ResourceRouter';
 import WebRouter from './WebRouter';
 
 import {rootFn} from "../utils";
-import {liveReload} from "./util";
+import {liveReload} from "../util";
 import configureFiles from '../configureFile';
 
 sm.install();
