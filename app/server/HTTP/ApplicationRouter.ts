@@ -5,9 +5,9 @@ import sql from "../sql";
 
 import {reloadPort} from "./index";
 import getFile, {DBPreferenceMap} from "../getFile";
-import searchComponents from "../searchComponents";
+import searchComponents from "../App/searchComponents";
 import {attempt} from "../utils";
-import docToComponent from "../Component";
+import docToComponent from "../App/Component";
 import {PreferenceDescriptor, PreferenceType} from "../../src/Enums";
 import * as _ from "lodash";
 

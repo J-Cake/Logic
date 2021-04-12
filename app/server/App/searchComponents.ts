@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import sql from "./sql";
+import sql from "../sql";
 
 export type tokenMap = { [token: string]: string };
 

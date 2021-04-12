@@ -1,9 +1,9 @@
 import CircuitManager from "./CircuitManager";
-import {CircuitObj} from "../../server/Circuit";
-import {manager} from "../State";
+import {CircuitObj} from "../../../server/App/Circuit";
+import {manager} from "../../State";
 import {GenComponent, GenericComponent, wires} from "./ComponentFetcher";
-import Component from "./Component";
-import RenderComponent from "../UI/RenderComponent";
+import Component from "../Component";
+import RenderComponent from "../../ui/RenderComponent";
 
 export default async function saveDocument(): Promise<void> {
     const mgr = manager.setState().circuit, file = await prepareForSave(mgr);

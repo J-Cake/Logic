@@ -1,4 +1,4 @@
-import Circuit from "./Circuit";
+import Circuit from "./App/Circuit";
 import sql from "./sql";
 import {Preferences} from "../src/Enums";
 

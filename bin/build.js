@@ -1,4 +1,5 @@
 import path from 'path';
+import fs from 'fs';
 import build from 'esbuild';
 
 import {copy, rootFn} from "./build_utils.js";
@@ -17,17 +18,19 @@ dirs.build = path.join(dirs.root, 'build');
 dirs.tsOutput = path.join(dirs.build, 'app');
 dirs.finalOutput = path.join(dirs.build, 'final');
 
-const buildComponent = (app, out) => build.build({
+const buildComponent = (app, out, platform = 'browser') => build.build({
     entryPoints: [path.join(dirs.tsOutput, app)],
     outfile: path.join(dirs.finalOutput, out),
     loader: {
         '.js': 'js'
     },
+    platform: platform,
     format: 'iife',
     bundle: true,
     minify: !devMode,
     sourcemap: devMode,
-    target: 'es6'
+    target: 'es6',
+    logLevel: process.argv.includes('--err') ? 'error' : 'silent'
 })
 
 const components = {
@@ -36,13 +39,19 @@ const components = {
     dashboard: () => buildComponent('window/dashboard.js', 'dashboard.js'),
     componentMenu: () => buildComponent('window/components.js', 'comps.js'),
     collaborators: () => buildComponent('window/collaborators.js', 'collabs.js'),
+    server: () => buildComponent('server/HTTP/index.js', 'server.js', 'node')
 }
 
 if (!process.argv.find(i => i.trim() === '--static')) {
     const comps = process.argv.find(i => /^--components=.+$/.test(i));
     for (const i of comps ? comps.split('=').pop().split(',') : Object.keys(components)) {
         const start = new Date();
-        components[i]().then(() => console.log(`${i} - Done in ${new Date(new Date().getTime() - start.getTime()).getSeconds()}s`));
+        components[i]()
+            .then(() => console.log(`${i} - Done in ${new Date(new Date().getTime() - start.getTime()).getSeconds()}s`))
+            .catch(async function (err) {
+                console.error(`${i} - Failed`);
+                fs.writeFile(path.join(await rootFn(), 'errs.json'), JSON.stringify(err, null, 4), () => process.exit(-1));
+            });
     }
 }
 

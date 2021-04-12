@@ -45,6 +45,22 @@
 
 #tool-box {
     flex: 1;
+    counter-set: toolbox-enum 0;
+    counter-reset: toolbox-enum;
+}
+
+#tool-box label:after, #tool-box button:after {
+    content: counter(toolbox-enum);
+    counter-increment: toolbox-enum;
+
+    color: var(--secondaryaccent);
+    font-size: 8pt;
+    /*opacity: 0.9;*/
+    line-height: 12pt;
+    vertical-align: bottom;
+    align-self: flex-end;
+    text-align: right;
+    float: right;
 }
 
 #file-box, #controls, #tool-box {
@@ -141,13 +157,13 @@ button:disabled, input:disabled {
     color: var(--secondaryaccent);
 }
 
-#debug + label:hover .select, .select-box:hover, .select:hover {
+input + label:hover .select, .select-box:hover, .select:hover {
     display: block;
 }
 
-#debug-type-selector {
-    counter-reset: breakMode;
-    counter-set: breakMode 0;
+#debug-type-selector, #wire-mode-selector {
+    counter-reset: breakMode wireMode;
+    counter-set: breakMode wireMode 0;
 }
 
 .select-box {
@@ -170,6 +186,13 @@ button:disabled, input:disabled {
 #debug-type-selector.select span.option:before {
     content: counter(breakMode);
     counter-increment: breakMode;
+}
+#wire-mode-selector.select span.option:before {
+    content: counter(wireMode);
+    counter-increment: wireMode;
+}
+
+.select span.option:before {
     width: 1.5em;
     color: var(--secondaryaccent);
     display: inline-block;

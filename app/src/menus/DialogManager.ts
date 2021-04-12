@@ -26,6 +26,9 @@ declare global {
 export function setVisible(dialog: Dialog, visibility: boolean): Window | null {
     const [button, dialogObj] = dialogManager.setState()[dialog];
 
+    if (visibility !== button.prop('checked'))
+        button.prop('checked', visibility);
+
     if (visibility)
         if (dialogObj)
             dialogObj.focus();

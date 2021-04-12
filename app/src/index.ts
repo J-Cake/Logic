@@ -7,16 +7,15 @@ import {manager, Tool} from './State';
 import RenderObject from './sys/components/RenderObject';
 import Board from './sys/components/Board';
 import {Interpolation} from './sys/util/interpolation';
-import {getColour, hex, transparent} from "./sys/util/Colour";
-import Cursor from "./UI/cursor";
-import CircuitManager from "./Logic/CircuitManager";
-import {renderComponents} from "./UI/RenderComponent";
-import handleEvents from "./UI/events";
-import TooltipPane from "./UI/TooltipPane";
+import {getColour, hex} from "./sys/util/Colour";
+import Cursor from "./ui/output/cursor";
+import CircuitManager from "./Logic/io/CircuitManager";
+import {renderComponents} from "./ui/RenderComponent";
+import handleEvents from "./ui/input/events";
+import TooltipPane from "./ui/output/TooltipPane";
 import Colour from "./sys/util/Themes";
-import buildComponentPrompt from "./UI/ComponentMenu";
-import buildFinderPrompt from "./UI/ComponentFinder";
-// import {mousetrap} from "../window/componentMenu";
+import buildComponentPrompt from "./menus/ComponentMenu";
+import buildFinderPrompt from "./menus/ComponentFinder";
 
 declare global {
     interface Array<T> {
@@ -43,7 +42,7 @@ new _p5(function (sketch: _p5) {
             canvas: $(p5Canvas.elt)
         });
 
-        handleEvents(canvas, sketch, manager.setState(({
+        manager.setState(({
             renderedComponents: await renderComponents(manager.setState(() => ({
                 font: sketch.loadFont("/app/font-2.ttf"),
                 iconFont: sketch.loadFont("/app/remixicon.ttf"),
@@ -62,7 +61,9 @@ new _p5(function (sketch: _p5) {
                     meta: false
                 }
             })).circuit)
-        })).renderedComponents);
+        }));
+
+        handleEvents(canvas, sketch);
 
         sketch.textFont(manager.setState().font);
 
@@ -143,6 +144,9 @@ new _p5(function (sketch: _p5) {
 
         state.cursor.render(sketch);
         state.cursor.update(sketch);
+
+        if (state.wirePreview)
+            state.wirePreview(sketch);
 
         sketch.noLoop();
     }

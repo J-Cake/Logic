@@ -1,7 +1,18 @@
-// import type {Theme} from "./sys/util/Themes";
+import * as _ from 'lodash';
 
-import _ = require("lodash");
+export enum WireEditMode {
+    Move = 0,
+    Place = 1,
+    Remove = 2,
+    Select = 3
+}
 
+export enum DebugMode {
+    Change = 0,
+    Input = 1,
+    Output = 2,
+    Update = 3,
+}
 
 export enum Colour {
     Primary,

@@ -1,8 +1,9 @@
 import * as p5 from "p5";
-import RenderObject from "../sys/components/RenderObject";
-import {manager, Tool} from "../index";
-import {getColour, transparent} from "../sys/util/Colour";
-import Colour from "../sys/util/Themes";
+
+import RenderObject from "../../sys/components/RenderObject";
+import {manager, Tool} from "../../index";
+import {getColour, transparent} from "../../sys/util/Colour";
+import Colour from "../../sys/util/Themes";
 
 export default class Cursor extends RenderObject {
 
@@ -22,13 +23,19 @@ export default class Cursor extends RenderObject {
                     i.isSelected = true;
                 else if (!prev.keys.shift)
                     i.isSelected = false;
+
+                i.wires.forEach(i => i.handles?.forEach(i => {
+                    if (i.pos.x >= this.pos[0] && i.pos.x <= this.pos[0] + this.size[0] && i.pos.y >= this.pos[1] && i.pos.y <= this.pos[1] + this.size[1])
+                        console.log(i.isSelected = true, i);
+                    else if (!prev.keys.shift)
+                        i.isSelected = false;
+                }));
             }
         }));
     }
 
     getDistance(): number {
         const state = manager.setState();
-        // console.log('calculating distance');
         return Math.sqrt((state.dragStart.x - state.mouse.x) ** 2 + (state.dragStart.y - state.mouse.y) ** 2);
     }
 

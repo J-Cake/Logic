@@ -2,11 +2,11 @@ import * as path from "path";
 
 import * as _ from 'lodash';
 
-import sql from "./sql";
-import {DBDocument} from "./getFile";
-import {ApiComponent, GenericComponent} from "../src/Logic/ComponentFetcher";
-import {readFile} from "./FS";
-import {rootFn} from "./utils";
+import sql from "../sql";
+import {DBDocument} from "../getFile";
+import {ApiComponent, GenericComponent} from "../../src/Logic/io/ComponentFetcher";
+import {readFile} from "../FS";
+import {rootFn} from "../utils";
 
 export interface CircuitObj {
     circuitName: string,

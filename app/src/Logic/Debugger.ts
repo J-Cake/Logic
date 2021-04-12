@@ -1,14 +1,9 @@
+import * as $ from "jquery";
+
 import StateManager from "../sys/util/stateManager";
 import Component from "./Component";
-import * as $ from "jquery";
 import {manager} from "../State";
-
-export enum DebugMode {
-    Change = 0,
-    Input = 1,
-    Output = 2,
-    Update = 3,
-}
+import {DebugMode} from "../Enums";
 
 export default class Debugger extends StateManager<{
     debugComponent: Component | null,
@@ -22,29 +17,42 @@ export default class Debugger extends StateManager<{
             debugMode: DebugMode.Change
         });
 
-        $("#resume").on('click', () => {
-            const state = this.setState();
-
-            if (state.debugComponent)
-                state.debugComponent.breakNext = false;
-            state.onResume?.();
-
-            this.broadcast('continue');
-            manager.broadcast('tick');
-        });
-        $("#step").on('click', () => {
-            if (this.setState().debugComponent)
-                this.step();
-            manager.broadcast("tick");
-        });
-
         $("#debug-type-selector span.option").on("click", (that => function (this: HTMLElement) {
-            const enumIndex = $(this).data('enum')
-            that.setState({debugMode: enumIndex});
+            const enumIndex = Number($(this).data('enum'))
+
+            if (enumIndex in DebugMode)
+                that.setState({debugMode: enumIndex});
 
             $(`#debug-type-selector span.option.selected`).removeClass('selected');
             $(`#debug-type-selector span.option[data-enum=${enumIndex}]`).addClass('selected');
         })(this));
+    }
+
+    static setDebugMode(mode: DebugMode) {
+        console.log('setting debug mode', DebugMode[mode]);
+        manager.setState().debug.setState({
+            debugMode: mode
+        });
+
+        $(`#debug-type-selector span.option.selected`).removeClass('selected');
+        $(`#debug-type-selector span.option[data-enum=${mode}]`).addClass('selected');
+    }
+
+    stepAction() {
+        if (this.setState().debugComponent)
+            this.step();
+        manager.broadcast("tick");
+    }
+
+    resumeAction() {
+        const state = this.setState();
+
+        if (state.debugComponent)
+            state.debugComponent.breakNext = false;
+        state.onResume?.();
+
+        this.broadcast('continue');
+        manager.broadcast('tick');
     }
 
     isStopped(): boolean {

@@ -1,6 +1,4 @@
 import * as $ from 'jquery';
-import {manager} from "../State";
-import {map} from '../sys/util/interpolation';
 
 export default function touch() {
     const canvas = $("#canvas-container");

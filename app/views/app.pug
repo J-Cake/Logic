@@ -76,11 +76,18 @@ block content
                         //
                         //
 
-                    input(type="radio", name="tool")#wire
-                    label(for="wire") 
-                        //i(data-eva="edit-outline")
-                        //
-                        //
+                    .select-box
+                        input(type="radio", name="tool")#wire
+                        label(for="wire") 
+                            //i(data-eva="edit-outline")
+                            //
+                            //
+                            #wire-mode-selector.select(for="wire")
+                                h3 Wire Mode
+                                span.option.selected(data-enum=0) Move
+                                span.option(data-enum=1) Place
+                                span.option(data-enum=2) Remove
+                                span.option(data-enum=3) Select
 
                     .select-box
                         input(type="radio", name="tool")#debug

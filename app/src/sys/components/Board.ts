@@ -1,8 +1,7 @@
 import * as p5 from 'p5';
 
 import RenderObject from './RenderObject';
-import {getColour, transparent} from "../util/Colour";
-import {Interpolation} from "../util/interpolation";
+import {getColour} from "../util/Colour";
 import {manager} from '../../index';
 import Colour from "../util/Themes";
 
@@ -32,10 +31,6 @@ export default class Board extends RenderObject {
 
         this.translate = [0, 0];
         this.boxPos = [0, 0];
-
-        manager.on("click", async ({mouse}) => {
-
-        });
     }
 
     coordsToGrid(mouse: [number, number]): [number, number] {
@@ -111,7 +106,7 @@ export default class Board extends RenderObject {
     //     const rulerSize = 7;
     //
     //     const offset = this.padding + (manager.setState().sidebarIsLeft ? manager.setState().sidebarWidth : 0);
-    //     const scl = manager.setState().gridScale;
+    //     const scl = manager.setState().pref.setState().gridSize;
     //
     //     sketch.fill(getColour(Colour.Panel));
     //     sketch.noStroke();

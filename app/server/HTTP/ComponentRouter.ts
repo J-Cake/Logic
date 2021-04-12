@@ -6,7 +6,7 @@ import sql from "../sql";
 import {rootFn} from "../utils";
 import ScriptRouter from "./ScriptRouter";
 import * as FS from "../FS";
-import searchComponents from "../searchComponents";
+import searchComponents from "../App/searchComponents";
 
 const router = Router();
 

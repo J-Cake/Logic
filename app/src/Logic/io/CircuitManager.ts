@@ -1,8 +1,8 @@
-import type {CircuitObj} from "../../server/Circuit";
-import StateManager from "../sys/util/stateManager";
-import Component from "./Component";
+import type {CircuitObj} from "../../../server/App/Circuit";
+import StateManager from "../../sys/util/stateManager";
+import Component from "../Component";
 import fetchComponent, {GenComponent, GenericComponent} from "./ComponentFetcher";
-import {manager} from "../State";
+import {manager} from "../../State";
 
 export interface CircuitManagerState {
     components: GenComponent[],
@@ -27,6 +27,16 @@ export default class CircuitManager {
     }
 
     deleteSelected() {
+
+        for (const i of manager.setState().renderedComponents)
+            for (const j of i.wires)
+                for (const k of j.handles ?? [])
+                    if (k.isSelected) {
+                        k.onDelete();
+                        j.handles?.splice(j?.handles.indexOf(k), 1);
+                    }
+
+
         const selected = manager.setState().renderedComponents.filter(i => i.isSelected);
         for (const comp of selected) {
             comp.component.dropAll();

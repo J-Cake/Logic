@@ -7,7 +7,7 @@ import getFile, {userTokenToId} from "../getFile";
 import {verifyUser} from "../User";
 import {attempt, attemptSync, rootFn} from "../utils";
 import sql from "../sql";
-import Circuit, {CircuitObj} from "../Circuit";
+import Circuit, {CircuitObj} from "../App/Circuit";
 
 import * as FS from "../FS";
 

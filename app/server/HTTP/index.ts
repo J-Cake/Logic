@@ -13,8 +13,7 @@ import ApplicationRouter from './ApplicationRouter';
 import ResourceRouter from './ResourceRouter';
 import WebRouter from './WebRouter';
 
-import {rootFn} from "../utils";
-import {liveReload} from "../util";
+import {rootFn, liveReload} from "../utils";
 import configureFiles from '../configureFile';
 
 sm.install();
@@ -49,7 +48,7 @@ export default async function init(port: number) {
     app.use(ApplicationRouter);
     app.use("/res", ResourceRouter);
 
-    app.use(function (req, res, next) {
+    app.use(function (req, res) {
         res.status(404).render('site/404');
     });
 

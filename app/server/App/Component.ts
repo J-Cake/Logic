@@ -2,13 +2,13 @@ import * as path from "path";
 
 import * as _ from 'lodash';
 
-import sql from "./sql";
-import getFile from "./getFile";
-import type {ApiComponent, GenericComponent, TruthTable} from "../src/Logic/ComponentFetcher";
+import sql from "../sql";
+import getFile from "../getFile";
+import type {ApiComponent, GenericComponent, TruthTable} from "../../src/Logic/io/ComponentFetcher";
 import {CircuitObj} from "./Circuit";
 import StatelessComponent from "./StatelessComponent";
-import {readFile} from "./FS";
-import {attempt, rootFn} from "./utils";
+import {readFile} from "../FS";
+import {attempt, rootFn} from "../utils";
 
 type TruthTableGenerator = {
     table: TruthTable,

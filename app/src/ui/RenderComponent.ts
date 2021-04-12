@@ -2,13 +2,13 @@ import * as p5 from "p5";
 
 import RenderObject from "../sys/components/RenderObject";
 import Component from "../Logic/Component";
-import CircuitManager from "../Logic/CircuitManager";
+import CircuitManager from "../Logic/io/CircuitManager";
 import {getColour, rgb, transparent} from "../sys/util/Colour";
 import {manager, State, Tool} from "../index";
 import Colour from "../sys/util/Themes";
-import {renderWire, Wire, WireHandle} from "./Wire";
-import {GenComponent} from "../Logic/ComponentFetcher";
-import getColourForComponent from "./getColourForComponent";
+import Wire from "./output/wire/Wire";
+import {GenComponent} from "../Logic/io/ComponentFetcher";
+import getColourForComponent from "./output/getColourForComponent";
 
 export interface RenderProps {
     pos: [number, number],
@@ -42,7 +42,7 @@ export default class RenderComponent extends RenderObject {
     inputDashesGrid: [number, number, number, number][];
     outputDashesGrid: [number, number, number, number][];
 
-
+    // wires: ApiWire[];
     wires: Wire[];
 
     constructor(component: Component, props: RenderProps) {
@@ -71,9 +71,14 @@ export default class RenderComponent extends RenderObject {
         });
         manager.on("select", prev => {
             if (this.isWithinBounds(prev))
-                this.isSelected = true;
+                if (prev.keys.shift)
+                    this.isSelected = !this.isSelected;
+                else
+                    this.isSelected = true;
+            else if (!prev.keys.shift)
+                this.isSelected = false;
         });
-        manager.on('mouse-drop', prev => {
+        manager.on('mouse-drop', () => {
             this.props.isMoving = false;
         });
         manager.on('mouse-grab', prev => {
@@ -94,7 +99,11 @@ export default class RenderComponent extends RenderObject {
         return prev.mouse.x > this.pos[0] && prev.mouse.x < this.pos[0] + this.size[0] && prev.mouse.y > this.pos[1] && prev.mouse.y < this.pos[1] + this.size[1];
     }
 
-    // returns: isOutput: boolean, terminalIndex: number
+    /**
+     * Get the terminal touching the mouse
+     * @param mouse The X and Y coordinates of the mouse
+     * @returns [isOutput, terminalIndex]
+     */
     getTouchingTerminal(mouse: [number, number]): [boolean, number] | null {
         const scl = manager.setState().pref.setState().gridSize;
         const touchingOutputs: number = this.outputDashesCoords.findIndex(i => getDist([i[0], i[1]], mouse) < scl / 4);
@@ -113,11 +122,11 @@ export default class RenderComponent extends RenderObject {
     render(sketch: p5): void {
         const mgr = manager.setState();
         const {gridSize: scl, colouriseComponents} = manager.setState().pref.setState();
-        const {tool, pref, mouse, debug, iconFont, font} = mgr;
+        const {tool, mouse} = mgr;
 
         this.wires = this.wires.filter(i => !i.endComponent.deleted);
         for (const i of this.wires)
-            renderWire.bind(sketch)(i, this.component.out[i.startIndex]);
+            i.render(sketch);
 
         const colour = colouriseComponents ? this.props.colour : getColour(Colour.Blank);
 
@@ -191,25 +200,6 @@ export default class RenderComponent extends RenderObject {
             sketch.textAlign(sketch.CENTER, sketch.CENTER);
             sketch.text('', this.pos[0], this.pos[1], this.size[0], this.size[1]);
         }
-
-        // if ((pref.setState().showLabels && !this.isWithinBounds(manager.setState())) || (!pref.setState().showLabels && this.isWithinBounds(manager.setState()))) {
-        //     sketch.noStroke();
-        //     sketch.textAlign(sketch.CENTER);
-        //     const fontSize = 14;
-        //     sketch.textSize(fontSize);
-        //
-        //     // const name = this.props.label || this.component.name;
-        //     const name = this.component.name;
-        //     const strWidth = sketch.textWidth(name) + 12;
-        //     const strHeight = fontSize * 1.25;
-        //     const coords: [number, number, number, number] = [this.pos[0] + this.size[0] / 2 - strWidth / 2, this.pos[1] + this.size[1] / 2 - (strHeight / 2) + 0.5, strWidth, strHeight];
-        //
-        //     sketch.fill(getColour(Colour.Background));
-        //     sketch.rect(...coords);
-        //
-        //     sketch.fill(getColour(Colour.Label));
-        //     sketch.text(name, ...coords);
-        // }
     }
 
     onClick() {
@@ -341,10 +331,9 @@ export default class RenderComponent extends RenderObject {
 export async function renderComponents(circuitManager: CircuitManager): Promise<RenderComponent[]> {
     await circuitManager.loading;
     const state = circuitManager.state.setState();
-    const board = manager.setState().board;
 
     if (state)
-        return state.components.map((i, a) => new RenderComponent(i, {
+        return state.components.map(i => new RenderComponent(i, {
             isStateful: false,
             label: i.name,
             pos: state.componentMap[i.documentComponentKey][0].position,
@@ -356,9 +345,8 @@ export async function renderComponents(circuitManager: CircuitManager): Promise<
             const raw = (i.component as GenComponent).base;
             if (raw)
                 for (const [w_key, w] of Object.entries(raw.wires))
-                    i.wires.push(...w.map(w => ({
+                    i.wires.push(...w.map(w => new Wire({
                         coords: w.coords,
-                        handles: w.coords.map((i, a) => new WireHandle((coords) => w.coords[a] = coords, board.gridToPix(i, true))),
                         startComponent: i,
                         startIndex: w.outputIndex,
                         endComponent: comps.find(i => (i.component as GenComponent).documentComponentKey === Number(w_key)) as never as RenderComponent,

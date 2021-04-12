@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
-import RenderComponent from "../UI/RenderComponent";
-import {DebugMode} from "./Debugger";
+import RenderComponent from "../ui/RenderComponent";
+import {DebugMode} from "../Enums";
 import {manager} from "../State";
 
 export const containsDuplicates = (list: string[]): boolean => new Set(list).size !== list.length;
@@ -172,5 +172,18 @@ export default abstract class Component {
         for (const a in this.outputs)
             for (const b in this.outputs[a])
                 delete this.outputs[a][b][0].inputs[this.outputs[a][b][1]];
+    }
+
+    dropInput(input: string) {
+        const [comp, terminal] = this.inputs[input];
+        const index = comp.outputs[terminal].findIndex(i => i[0] === this);
+
+        if (index > -1)
+            comp.outputs[terminal].splice(index, 1);
+        delete this.inputs[input];
+    }
+
+    dropOutput(output: string, comp: Component) {
+
     }
 }

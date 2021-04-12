@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
-import {GenericComponent, TruthTable} from "../src/Logic/ComponentFetcher";
-import {attemptSync} from "./utils";
+import {GenericComponent, TruthTable} from "../../src/Logic/io/ComponentFetcher";
+import {attemptSync} from "../utils";
 
 const compareArray: <T>(arr1: T[], arr2: T[]) => boolean = function <T>(arr1: T[], arr2: T[]): boolean {
     if (arr1.length !== arr2.length)
@@ -22,8 +22,8 @@ export default class StatelessComponent {
     constructor(truthTable: TruthTable, labels: [string[], string[]], raw?: GenericComponent) {
         this.truthTable = truthTable;
         this.inputs = {};
-        this.outputs = _.mapValues(_.mapKeys(labels[1], i => i), i => []);
-        this.out = this.compute(labels[0].map(i => false));
+        this.outputs = _.mapValues(_.mapKeys(labels[1], i => i), () => []);
+        this.out = this.compute(labels[0].map(() => false));
         console.log("Out", this.out);
         this.terminals = labels;
         this.raw = raw;

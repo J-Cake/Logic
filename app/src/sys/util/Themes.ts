@@ -3,6 +3,7 @@ import * as parse from "parse-css-color";
 import type {rgb} from "./Colour";
 
 import {Colour, Theme} from '../../Enums';
+import {manager} from "../../State";
 
 export {Theme} from '../../Enums';
 export default Colour;
@@ -30,6 +31,8 @@ export function getSystemColours(): Record<Colour, rgb> {
 }
 
 export let system = getSystemColours();
+window.matchMedia(`(prefers-color-scheme: dark)`)
+    .addEventListener('change', () => new Promise(k => k(system = getSystemColours())).then(() => manager.broadcast('tick')));
 
 export const themes: Record<Theme, () => Record<Colour, rgb>> = { // Here is a set of predefined colours.
     [Theme.System]: () => {

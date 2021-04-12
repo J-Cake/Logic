@@ -1,14 +1,12 @@
 import * as $ from 'jquery';
 
 import {manager, Tool} from "../index";
-import RenderComponent from "./RenderComponent";
+import RenderComponent from "../ui/RenderComponent";
 import {Dialog, link} from "./DialogManager";
-import Colour from "../sys/util/Themes";
-import {getColour} from "../sys/util/Colour";
-import getColourForComponent from './getColourForComponent';
+import getColourForComponent from '../ui/output/getColourForComponent';
 
 export default function buildPrompt() {
-    link(Dialog.ComponentView, $("#add-component"), function(componentToken: string) {
+    link(Dialog.ComponentView, $("#add-component"), function (componentToken: string) {
         const {circuit: mgr, board, mouse} = manager.setState(),
             {availableComponents} = mgr.state.setState(),
             Component = availableComponents[componentToken];
@@ -23,7 +21,7 @@ export default function buildPrompt() {
                 flip: false,
                 wires: {}
             });
-            
+
             mgr.addComponent(component);
 
             manager.setState(function (prev) {

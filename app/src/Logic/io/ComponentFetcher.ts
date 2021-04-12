@@ -1,6 +1,6 @@
-import Component from "./Component";
-import {manager} from "../index";
-import RenderComponent from "../UI/RenderComponent";
+import Component from "../Component";
+import {manager} from "../../index";
+import RenderComponent from "../../ui/RenderComponent";
 
 export type TruthTable = [boolean[], boolean[]][];
 export type Body = TruthTable | { [componentId: number]: GenericComponent } | string;

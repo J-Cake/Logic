@@ -2,16 +2,16 @@ import * as _p5 from "p5";
 
 import StateManager from "./sys/util/stateManager";
 import Board from "./sys/components/Board";
-import TooltipPane from "./UI/TooltipPane";
+import TooltipPane from "./ui/output/TooltipPane";
 import DragObject from "./sys/components/DragObject";
 import DropObject from "./sys/components/DropObject";
-import Cursor from "./UI/cursor";
-import CircuitManager from "./Logic/CircuitManager";
-import RenderComponent from "./UI/RenderComponent";
-import DialogManager, {Dialogs} from "./UI/DialogManager";
+import Cursor from "./ui/output/cursor";
+import CircuitManager from "./Logic/io/CircuitManager";
+import RenderComponent from "./ui/RenderComponent";
+import DialogManager, {Dialogs} from "./menus/DialogManager";
 import Debugger from "./Logic/Debugger";
 import PreferenceManager from "./PreferenceManager";
-import {defaultPreferences, Theme} from "./Enums";
+import {defaultPreferences, Theme, WireEditMode} from "./Enums";
 
 export enum Tool {
     Pointer,
@@ -48,6 +48,8 @@ export interface State {
     actionChain: Partial<State>[],
     dialogManager: StateManager<Dialogs>,
     documentIdentifier: string,
+    wireEditMode: WireEditMode,
+    wirePreview: (sketch: import('p5')) => void,
     mouse: {
         x: number,
         y: number,
@@ -85,5 +87,6 @@ export const manager: StateManager<State> = new StateManager<State>({
     sidebarIsLeft: true,
     actionChain: [],
     dialogManager: DialogManager,
-    pref: new PreferenceManager(defaultPreferences)
+    pref: new PreferenceManager(defaultPreferences),
+    wireEditMode: WireEditMode.Move
 });

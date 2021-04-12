@@ -64,20 +64,20 @@ button, #toolbar input, #toolbar .icon, #toolbar label {
 .component {
     display: flex;
     flex-direction: row;
-    width: 100%;
     justify-content: space-between;
     color: var(--blank);
     align-items: center;
     min-width: 180px;
     max-width: 100%;
-    padding: 0 6px;
+    /*margin: 0 6px;*/
     background: var(--background);
     transition: 0.3s;
     cursor: pointer;
+    padding: 12px 24px;
 }
 
 .component:hover, .component:focus {
-    background: var(--background);
+    background: var(--panel);
 }
 
 .controls {
@@ -118,7 +118,7 @@ button, #toolbar input, #toolbar .icon, #toolbar label {
 }
 
 #toolbar label:hover, button:hover {
-    background: var(--background);
+    background: var(--accent);
 }
 
 #toolbar input[type="radio"], #toolbar input[type="checkbox"] {
