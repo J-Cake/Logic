@@ -1,8 +1,20 @@
 import * as path from 'path';
+import * as os from "os";
+
 import * as sqlite3 from 'sqlite3';
+
 import {rootFn} from "./utils";
 
-export const Users = (async res => new (sqlite3.verbose().Database)(path.join(await rootFn(), 'Data/Users')))();
+export const Users = (async function () {
+    const dirMatcher = /^--db-dir=([.~]?.[^\/]+)+$/;
+
+    let dbDir = process.argv.find(i => dirMatcher.test(i))?.match(dirMatcher)?.[0]?.split('=')?.pop() || path.join(await rootFn(), './data/LogicX/users.db');
+
+    if (dbDir.startsWith('~/'))
+        dbDir = path.join(os.homedir(), dbDir.slice(2));
+
+    return new (sqlite3.verbose().Database)(dbDir);
+})();
 
 export type SQLValue = string | number | boolean | Date;
 export type SQLInjectType = {[key: string]: SQLValue} | SQLValue[];
