@@ -4,4 +4,7 @@ block page
     h1 Error 404
     h3 That page doesn't exist.
 
-    p It appears you've made a request to a page that doesn't exist. #[a(href="/") Here's a link home for your convenience]
+    if isLoggedIn
+        p It appears you've made a request to a page that doesn't exist. #[a(href="/dashboard#own") Here's a shortcut to your dashboard]
+    else
+        p It appears you've made a request to a page that doesn't exist. #[a(href="/") Here's a link home for your convenience]

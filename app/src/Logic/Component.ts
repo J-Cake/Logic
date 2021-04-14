@@ -14,7 +14,7 @@ export default abstract class Component {
 
     public label: string;
 
-    value: boolean[];
+    // value: boolean[];
 
     readonly inputs: { [terminal: string]: [Component, string] };
     readonly outputs: { [terminal: string]: [Component, string][] }
@@ -48,7 +48,7 @@ export default abstract class Component {
         for (const [a, i] of this.outputNames.entries())
             this.outCache[i] = this.out[a] || false;
 
-        this.value = new Array(outputs.length).fill(false);
+        // this.value = new Array(outputs.length).fill(false);
         this.label = this.name = name;
 
         this.updated = false;
@@ -118,7 +118,14 @@ export default abstract class Component {
             const inputs: boolean[] = this.getInputs();
 
             const update = function (this: Component, next: boolean[], noRipple: boolean = false) {
+                if (next) // may not be defined, if the component is a dynamic component, and no value was returned. In this case, inform user with an error
                 this.out = next;
+                else
+                    throw {
+                        msg: `No value was returned from \`compute\` on ${this.name}.`,
+                        component: this,
+                    }
+
                 this.halted = false;
 
                 this.prevInput.shift();

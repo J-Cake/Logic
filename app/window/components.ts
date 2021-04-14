@@ -10,9 +10,3 @@ new Promise<(msgFn: string) => void>(ok => ok(connect())).then(function (msgFn) 
         return msgFn($(this).find('.token').text());
     });
 });
-
-// new Promise((ok) => ok((window.opener.connect as typeof window.connect)())).then(function (msgFn: (msg: string) => void) {
-//     $(".component").on('click', function () {
-//         return msgFn($(this).find('.token').text());
-//     });
-// });

@@ -1,14 +1,13 @@
 import Component from "../Component";
 import {manager} from "../../index";
 import RenderComponent from "../../ui/RenderComponent";
+import * as sanitiser from '../../Plugin/sanitiser';
+import initPlugin, {Plugin} from '../../Plugin/InitPlugin';
+import {fetchData, pickFile, saveData} from "../../Plugin/API";
+import {showModal} from "../../Plugin/DialogManager";
 
 export type TruthTable = [boolean[], boolean[]][];
 export type Body = TruthTable | { [componentId: number]: GenericComponent } | string;
-
-export interface Plugin {
-    setComputeFn: (inputs: boolean[]) => boolean[],
-    onClick: (renderObj: RenderComponent) => void,
-}
 
 // This is the shape of the component as received by the API. Consider this the JSON equivalent of a constructor
 export interface ApiComponent {
@@ -29,7 +28,9 @@ export type wires = {
     }]
 };
 
-// This is a classless representation of a component in use.
+/**
+ * This is a classless representation of a component that is in use.
+*/
 export interface GenericComponent {
     identifier?: string,
     direction: 0 | 1 | 2 | 3,
@@ -67,6 +68,12 @@ export default async function fetchComponent(componentToken: string): Promise<ne
     if (getComponent.ok) {
         const apiComponent: ApiComponent = await getComponent.json();
         apiComponent.token = componentToken;
+
+        const requiredKeys: string[] = ['token', 'name', 'owner', 'component', 'inputLabels', 'outputLabels'];
+        if (typeof apiComponent !== 'object' || requiredKeys.some(i => !(i in apiComponent)))
+            throw {
+                msg: 'Invalid Component'
+            }
 
         if (apiComponent.component.constructor.name === "Array") { // it's a truth table
             return class StatelessComponent extends GenComponent {
@@ -109,11 +116,6 @@ export default async function fetchComponent(componentToken: string): Promise<ne
 
                     for (const i in apiComponent.component as { [componentId: number]: GenericComponent }) {
                         memberComponents[++componentId] = new availComponents[i](Number(i), apiComponent.component[i] as GenericComponent);
-
-                        // if ((apiComponent.component[i] as GenericComponent).identifier === "std/input")
-                        //     this.inputIds.push(componentId);
-                        // else if ((apiComponent.component[i] as GenericComponent).identifier === "std/output")
-                        //     this.outputIds.push(componentId);
                     }
 
                     this.memberComponents = memberComponents;
@@ -142,22 +144,30 @@ export default async function fetchComponent(componentToken: string): Promise<ne
                 constructor(documentComponentKey: number, base: GenericComponent) {
                     super(documentComponentKey, apiComponent.inputLabels, apiComponent.outputLabels, apiComponent.name);
 
-                    let plugin: Partial<Plugin> = {};
-
-                    fetch(apiComponent.component as string).then(res => {
-                        return res.text().then(fn => plugin = new Function(fn)()(apiComponent)({ // wtf
-                            onClick: (callback: (renderObj: RenderComponent) => void) => plugin.onClick = callback,
-                            setComputeFn: (callback: (inputs: boolean[]) => boolean[]) => plugin.setComputeFn = callback,
-                            update: () => this.update(),
-                            component: this
-                        }));
-                    }).then(() => this.update());
-
-                    this.plugin = plugin;
+                    this.plugin = {};
                     this.raw = apiComponent;
                     this.base = base;
 
                     this.label = this.base.label;
+
+                    fetch(apiComponent.component as string).then(res => {
+                        return res.text().then(fn => initPlugin(fn, apiComponent, {
+                            component: {
+                                onClick: (callback: (renderObj: sanitiser.SanitisedRenderer) => void) => this.plugin.onClick = callback,
+                                setComputeFn: (callback: (inputs: boolean[]) => boolean[]) => this.plugin.computeFn = callback,
+                                update: () => this.update(),
+                                component: sanitiser.sanitiseComponent(this)
+                            },
+                            dialog: {
+                                showModal,
+                                pickFile
+                            },
+                            storage: {
+                                saveData,
+                                fetchData
+                            }
+                        }));
+                    }).then(() => this.update());
                 }
 
                 preUpdate(next: () => void): void {
@@ -166,14 +176,14 @@ export default async function fetchComponent(componentToken: string): Promise<ne
 
                 computeOutputs(inputs: boolean[]): boolean[] {
                     // TODO: Offload computation to external script object
-                    if (this.plugin && this.plugin.setComputeFn)
-                        return this.plugin.setComputeFn(inputs);
+                    if (this.plugin && this.plugin.computeFn)
+                        return this.plugin.computeFn(inputs);
                     return [];
                 }
 
                 activate(renderer: RenderComponent) {
                     if (this.plugin.onClick)
-                        this.plugin.onClick(renderer);
+                        this.plugin.onClick(sanitiser.sanitiseRenderComponent(renderer));
                 }
             }
         }

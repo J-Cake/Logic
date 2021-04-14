@@ -47,6 +47,11 @@ export const keyMap: Record<Action, string[]> = {
 
     [Action.ViewDocument]: ['f12'],
     [Action.Help]: ['f1'],
+
+    [Action.Pan_Up]: ['up'],
+    [Action.Pan_Down]: ['down'],
+    [Action.Pan_Left]: ['left'],
+    [Action.Pan_Right]: ['right'],
 }
 
 export default function bind() {

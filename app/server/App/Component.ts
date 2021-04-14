@@ -60,7 +60,7 @@ export async function getTruthTable(info: CircuitObj): Promise<TruthTableGenerat
     const outputLocations: [number, string][] = [];
 
     for (const [a, i] of Object.entries(info.content))
-        if (i.identifier === "std/input")
+        if (i.identifier === "$input")
             inputLocations.push(Number(a));
 
     type connectMap = (number | connectMap)[];
@@ -97,7 +97,7 @@ export async function getTruthTable(info: CircuitObj): Promise<TruthTableGenerat
 
                 if (destinationComponent instanceof StatelessComponent && comp_at_i instanceof StatelessComponent)
                     destinationComponent.addInput(comp_at_i, from, to);
-                else if (info.content[comp].identifier === "std/output")
+                else if (info.content[comp].identifier === "$output")
                     outputLocations.push([Number(a), from]);
             }
     }
@@ -125,7 +125,7 @@ export async function getTruthTable(info: CircuitObj): Promise<TruthTableGenerat
     return {
         table: truthTable,
         inputNames: inputLocations.map((i, a) => info.content[i].label ?? 'i' + a.toString(16)),
-        outputNames: _.filter(info.content, i => i.identifier === 'std/output').map((i, a) => i.label ?? 'o' + a.toString(16)),
+        outputNames: _.filter(info.content, i => i.identifier === '$output').map((i, a) => i.label ?? 'o' + a.toString(16)),
     };
 }
 
@@ -133,8 +133,8 @@ export async function fetchComponent(raw?: GenericComponent): Promise<[string, S
     if (!raw?.identifier)
         return null;
 
-    const source: ApiComponent = JSON.parse(raw?.identifier.startsWith('std/') ?
-        await readFile(path.join(await rootFn(), 'lib', 'components', raw?.identifier.split('/').pop() + ".json")) : // Standard Component
+    const source: ApiComponent = JSON.parse(raw?.identifier.startsWith('$') ?
+        await readFile(path.join(await rootFn(), 'lib', 'components', raw?.identifier.slice(1) + ".json")) : // Standard Component
         await sql.sql_get(`SELECT source
                            from components
                            where componentToken == ?`, [raw?.identifier])); // Custom Component

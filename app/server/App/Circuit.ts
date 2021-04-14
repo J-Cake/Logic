@@ -46,8 +46,8 @@ export default class Circuit implements CircuitObj {
     }
 
     async componentIdStringToNames(): Promise<{ [token: string]: string }> {
-        const comps: ApiComponent[] = (await Promise.all(this.components.map(async i => JSON.parse(i.startsWith('std/') ?
-            await readFile(path.join(await rootFn(), 'lib', 'components', i.split('/').pop() + ".json")) : // Standard Component
+        const comps: ApiComponent[] = (await Promise.all(this.components.map(async i => JSON.parse(i.startsWith('$') ?
+            await readFile(path.join(await rootFn(), 'lib', 'components', i.slice(1) + ".json")) : // Standard Component
             (await sql.sql_get<{source: string}>(`SELECT source
                                from components
                                where componentToken == ?`, [i])).source)))).map((i, a) => ({...i, token: this.components[a]}));
@@ -89,7 +89,6 @@ export default class Circuit implements CircuitObj {
     }
 
     async removeCollaborator(actorId: number, userId: number): Promise<void> {
-        console.log(actorId, userId);
         if (actorId === userId || (!this.readOnly && await this.isOwner(actorId)))
             await sql.sql_query(`DELETE
                                  from access

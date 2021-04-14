@@ -3,6 +3,7 @@ import StateManager from "../../sys/util/stateManager";
 import Component from "../Component";
 import fetchComponent, {GenComponent, GenericComponent} from "./ComponentFetcher";
 import {manager} from "../../State";
+import {attempt} from "../../../util";
 
 export interface CircuitManagerState {
     components: GenComponent[],
@@ -27,7 +28,6 @@ export default class CircuitManager {
     }
 
     deleteSelected() {
-
         for (const i of manager.setState().renderedComponents)
             for (const j of i.wires)
                 for (const k of j.handles ?? [])
@@ -69,7 +69,8 @@ export default class CircuitManager {
             const availSync: { [componentId: string]: new(mapKey: number, base: GenericComponent) => GenComponent } = {};
 
             for (const componentToken of loaded.components)
-                availSync[componentToken] = await fetchComponent(componentToken);
+                await attempt(async () => availSync[componentToken] = await fetchComponent(componentToken),
+                        err => alert(`'${componentToken}' is corrupt, and the document cannot be loaded.`));
 
             const components: { [id: number]: [GenericComponent, GenComponent] } = {};
             for (const i in loaded.content)

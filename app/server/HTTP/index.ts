@@ -15,10 +15,11 @@ import WebRouter from './WebRouter';
 
 import {rootFn, liveReload} from "../utils";
 import configureFiles from '../configureFile';
+import {isLoggedIn} from "../User";
 
 sm.install();
 
-export const app = express();
+export const app: express.Application = express();
 
 export const port: number = (function(): number {
     const _p = process.argv.find(i => /^--port=\d+$/.test(i))?.match(/^--port=(\d+)$/);
@@ -49,7 +50,10 @@ export default async function init(port: number) {
     app.use("/res", ResourceRouter);
 
     app.use(function (req, res) {
-        res.status(404).render('site/404');
+        res.status(404).render('site/404', {
+            devMode: reloadPort,
+            isLoggedIn: isLoggedIn(req)
+        });
     });
 
     app.listen(port, function () {

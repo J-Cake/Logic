@@ -74,6 +74,12 @@ dialogManager.on('windowChange', function (state) { // This event is called when
         button.prop('checked', !!win);
 })
 
+/**
+ * Links a HTML Checkbox to a dialog, such that changing its state opens and closes the dialogs automatically
+ * @param dialog
+ * @param el
+ * @param onMsg
+ */
 export function link(dialog: Dialog, el: JQuery, onMsg: (msg: string) => void) {
     if (!el.is(`input[type="checkbox"]`))
         throw "Please link a checkbox";

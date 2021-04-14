@@ -54,6 +54,7 @@
     counter-increment: toolbox-enum;
 
     color: var(--secondaryaccent);
+    font-family: 'Raleway', sans-serif;
     font-size: 8pt;
     /*opacity: 0.9;*/
     line-height: 12pt;

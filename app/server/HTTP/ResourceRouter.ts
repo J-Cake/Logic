@@ -3,7 +3,7 @@ import * as express from 'express';
 
 import {rootFn} from "../utils";
 
-const router = express.Router();
+const router: express.Router = express.Router();
 
 router.get('/svg/:file', async function (req, res) {
     res.sendFile(path.join(await rootFn(), 'lib', 'res', req.params.file));

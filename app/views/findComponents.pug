@@ -104,13 +104,14 @@ html
                         .controls
                             button.info 
 
-            if search.foundComponents.length > 0
+            if Object.keys(search.foundComponents).length > 0
+                h3 Results
                 section#results
-                    each i in search.foundComponents
+                    each name, token in search.foundComponents
                         div.component
-                            .info
-                                span.name=i[1] || i[0]
-                                span.token=i[0]
+                            .info(data-token=token)
+                                span.name=name || token
+                                span.token=token
                             .controls
                                 button.info 
 

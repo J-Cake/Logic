@@ -50,7 +50,12 @@ export enum Action {
     Rotate_Counterclockwise,
 
     ViewDocument,
-    Help
+    Help,
+
+    Pan_Up,
+    Pan_Down,
+    Pan_Left,
+    Pan_Right,
 }
 
 export const actionMap: Record<Action, () => void> = {
@@ -126,6 +131,11 @@ export const actionMap: Record<Action, () => void> = {
 
     [Action.ViewDocument]: () => void 0,
     [Action.Help]: () => void 0,
+
+    [Action.Pan_Up]: () => manager.setState(prev => ({pan: [prev.pan[0], prev.pan[1] - 4 * prev.pref.setState().gridSize]})),
+    [Action.Pan_Down]: () => manager.setState(prev => ({pan: [prev.pan[0], prev.pan[1] + 4 * prev.pref.setState().gridSize]})),
+    [Action.Pan_Left]: () => manager.setState(prev => ({pan: [prev.pan[0] - 4 * prev.pref.setState().gridSize, prev.pan[1]]})),
+    [Action.Pan_Right]: () => manager.setState(prev => ({pan: [prev.pan[0] + 4 * prev.pref.setState().gridSize, prev.pan[1]]}))
 }
 
 export const triggerAction = (action: Action) => actionMap[action]?.();

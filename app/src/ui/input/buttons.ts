@@ -47,6 +47,11 @@ export const buttons: Record<Action, JQuery[]> = {
 
     [Action.ViewDocument]: [$("button#view")],
     [Action.Help]: [$("button#help")],
+
+    [Action.Pan_Up]: [],
+    [Action.Pan_Down]: [],
+    [Action.Pan_Left]: [],
+    [Action.Pan_Right]: [],
 }
 
 export default function bind() {

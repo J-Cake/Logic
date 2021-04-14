@@ -5,13 +5,13 @@ import * as bodyParser from 'body-parser';
 
 import getFile, {userTokenToId} from "../getFile";
 import {verifyUser} from "../User";
-import {attempt, attemptSync, rootFn} from "../utils";
+import {attempt, attemptSync, Pref, rootFn} from "../utils";
 import sql from "../sql";
 import Circuit, {CircuitObj} from "../App/Circuit";
 
 import * as FS from "../FS";
 
-const router = express.Router();
+const router: express.Router = express.Router();
 
 router.use(bodyParser.json({}));
 
@@ -38,7 +38,7 @@ router.get("/make", async function (req, res) {
         ownerEmail: (await sql.sql_get<{ email: string }>(`SELECT email
                                                            from users
                                                            where userToken == ?`, [userId])).email,
-        components: (await FS.readdir(path.join(await rootFn(), 'lib', 'components'))).map(i => `std/${i.split('.').slice(0, -1).join('')}`),
+        components: (JSON.parse(await FS.readFile(path.join(await rootFn(), 'lib', 'pref.json'))) as Pref).startingComponents,
         content: {}
     };
 

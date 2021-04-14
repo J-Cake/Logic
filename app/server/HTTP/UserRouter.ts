@@ -7,7 +7,7 @@ import {DBUser} from "../getFile";
 import {attempt, getTimeString} from "../utils";
 import {convertFromHTMLForm, getPreferencesForUser, isLoggedIn, verifyUser, writePreferences} from "../User";
 
-const router = express.Router();
+const router: express.Router = express.Router();
 
 router.get('/login', async function (req, res) { // These are pages
     res.render("login", {

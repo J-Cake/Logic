@@ -96,7 +96,12 @@ export default class RenderComponent extends RenderObject {
     }
 
     isWithinBounds(prev: State): boolean {
-        return prev.mouse.x > this.pos[0] && prev.mouse.x < this.pos[0] + this.size[0] && prev.mouse.y > this.pos[1] && prev.mouse.y < this.pos[1] + this.size[1];
+        return this.isHovering([prev.mouse.x, prev.mouse.y]);
+        // return prev.mouse.x > this.pos[0] && prev.mouse.x < this.pos[0] + this.size[0] && prev.mouse.y > this.pos[1] && prev.mouse.y < this.pos[1] + this.size[1];
+    }
+    
+    isHovering(mouse: [number, number]): boolean {
+        return mouse[0] > this.pos[0] && mouse[0] < this.pos[0] + this.size[0] && mouse[1] > this.pos[1] && mouse[1] < this.pos[1] + this.size[1];
     }
 
     /**

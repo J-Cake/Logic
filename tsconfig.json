@@ -2,12 +2,13 @@
     "compilerOptions": {
         "target": "es5",
         "lib": [
-            "ES2019",
-            "dom",
+            "ES2020",
+            "dom"
         ],
         "module": "CommonJS",
         "outDir": "./build/app",
         "rootDir": "./app",
+        "declaration": true,
         "strict": true,
         "sourceMap": true,
         "downlevelIteration": true

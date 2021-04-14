@@ -36,6 +36,20 @@ export default class StateManager<State extends {}> {
         return this.globState;
     }
 
+    async setStateAsync(state?: Promise<Partial<State>> | ((prev: State) => Promise<Partial<State>>)): Promise<State> {
+        const _state: Partial<State> | undefined = await (state instanceof Function ? state(this.globState) : state);
+
+        if (_state) {
+            for (const i of Object.keys(_state))
+                // @ts-ignore
+                this.globState[i] = _state[i];
+
+            this.invokeHandlers();
+        }
+
+        return this.globState;
+    }
+
     onStateChange(callback: (state: State) => any): number {
         this.watchers.push(callback);
 

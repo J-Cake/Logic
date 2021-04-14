@@ -24,7 +24,6 @@ export default class StatelessComponent {
         this.inputs = {};
         this.outputs = _.mapValues(_.mapKeys(labels[1], i => i), () => []);
         this.out = this.compute(labels[0].map(() => false));
-        console.log("Out", this.out);
         this.terminals = labels;
         this.raw = raw;
     }

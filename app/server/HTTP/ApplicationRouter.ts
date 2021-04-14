@@ -1,4 +1,5 @@
-import {Router} from 'express';
+import * as _ from "lodash";
+import * as express from "express";
 
 import {convertFromHTMLForm, getPreferencesForUser, isLoggedIn, verifyUser, writePreferences} from "../User";
 import sql from "../sql";
@@ -9,9 +10,8 @@ import searchComponents from "../App/searchComponents";
 import {attempt} from "../utils";
 import docToComponent from "../App/Component";
 import {PreferenceDescriptor, PreferenceType} from "../../src/Enums";
-import * as _ from "lodash";
 
-const router = Router();
+const router: express.Router = express.Router();
 
 router.use(async function (req, res, next) {
     const userId = req.cookies.userId ?? req.header("userId");
@@ -62,8 +62,8 @@ router.get('/edit/:circuit', async function (req, res) {
 
         res.render("app", {
             circuit: req.params.circuit,
-            devMode: reloadPort,
             title: `Editing ${file.info.circuitName}`,
+            devMode: reloadPort,
             isLoggedIn: isLoggedIn(req)
         });
     })) res.render('site/403');
@@ -123,6 +123,7 @@ router.get('/find/:circuit/', async function (req, res) {
                 yourComponents: await sql.sql_all<{ componentToken: string, componentName: string }>(`SELECT componentToken, componentName
                                                                                                       from components
                                                                                                       where ownerId == (SELECT userId from users where userToken == ?)`, [userToken]) || [],
+                doc: req.params.circuit,
                 devMode: reloadPort,
                 title: `Explore`,
                 isLoggedIn: isLoggedIn(req),
