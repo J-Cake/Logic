@@ -1,15 +1,24 @@
 import fs from 'fs';
 import path from 'path';
+import os from "os";
+import url from 'url'
 
 import sqlite3 from 'sqlite3';
 
-const dir = path.dirname(import.meta.url.slice(6));
+const dir = path.dirname(url.fileURLToPath(import.meta.url));
 
-if (!fs.existsSync('./Data'))
-	fs.mkdirSync('./Data');
+const dirMatcher = /^--db-dir=([.~]?.[^\/]+)+$/;
 
-const db = new (sqlite3.verbose().Database)('./Data/Users');
+let dbDir = process.argv.find(i => dirMatcher.test(i))?.match(dirMatcher)?.[0]?.split('=')?.pop() || './data/LogicX/users.db';
+
+if (dbDir.startsWith('~/'))
+	dbDir = path.join(os.homedir(), dbDir.slice(2));
+
+if (!fs.existsSync(path.dirname(dbDir)))
+	fs.mkdirSync(path.dirname(dbDir), {recursive: true});
+
+const db = new (sqlite3.verbose().Database)(dbDir);
 
 db.serialize(function() {
-    db.exec(fs.readFileSync('./bin/init.sql').toString());
+    db.exec(fs.readFileSync(path.join(dir, 'init.sql')).toString());
 });

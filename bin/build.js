@@ -11,7 +11,7 @@ const dirs = {
 const devMode = !!process.argv.find(i => i.trim() === '--dev');
 
 if (devMode)
-console.log("--- DEV MODE ---");
+    console.log("--- DEV MODE ---");
 
 dirs.app = path.join(dirs.root, 'app');
 dirs.build = path.join(dirs.root, 'build');
@@ -55,4 +55,5 @@ if (!process.argv.find(i => i.trim() === '--static')) {
     }
 }
 
+fs.copyFileSync(path.join(dirs.root, 'package.json'), path.join(dirs.finalOutput, 'package.json'));
 copy(path.join(dirs.app, 'static'), dirs.finalOutput);
