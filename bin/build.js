@@ -21,9 +21,7 @@ dirs.finalOutput = path.join(dirs.build, 'final');
 const buildComponent = (app, out, platform = 'browser') => build.build({
     entryPoints: [path.join(dirs.tsOutput, app)],
     outfile: path.join(dirs.finalOutput, out),
-    loader: {
-        '.js': 'js'
-    },
+    loader: {'.js': 'js'},
     platform: platform,
     format: 'iife',
     bundle: true,
@@ -39,7 +37,6 @@ const components = {
     dashboard: () => buildComponent('window/dashboard.js', 'dashboard.js'),
     componentMenu: () => buildComponent('window/components.js', 'comps.js'),
     collaborators: () => buildComponent('window/collaborators.js', 'collabs.js'),
-    server: () => buildComponent('server/HTTP/index.js', 'server.js', 'node')
 }
 
 if (!process.argv.find(i => i.trim() === '--static')) {
@@ -49,11 +46,11 @@ if (!process.argv.find(i => i.trim() === '--static')) {
         components[i]()
             .then(() => console.log(`${i} - Done in ${new Date(new Date().getTime() - start.getTime()).getSeconds()}s`))
             .catch(async function (err) {
-                console.error(`${i} - Failed`);
+                console.error(`${i} - Failed with ${err.errors.length}`);
                 fs.writeFile(path.join(await rootFn(), 'errs.json'), JSON.stringify(err, null, 4), () => process.exit(-1));
             });
     }
 }
 
-fs.copyFileSync(path.join(dirs.root, 'package.json'), path.join(dirs.finalOutput, 'package.json'));
 copy(path.join(dirs.app, 'static'), dirs.finalOutput);
+fs.copyFileSync(path.join(dirs.root, 'package.json'), path.join(dirs.finalOutput, 'package.json'));

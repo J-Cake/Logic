@@ -86,7 +86,10 @@ block content
                         span.name=collab.identifier
                         span.email=collab.email
                     .controls
-                        input(type="checkbox", checked=!!collab.canEdit, id=collab.identifier, data-user-id=collab.userId).can-edit
+                        if collab.canEdit
+                            input(type="checkbox", checked, id=collab.identifier, data-user-id=collab.userId).can-edit
+                        else
+                            input(type="checkbox", id=collab.identifier, data-user-id=collab.userId).can-edit
                         label(for=collab.identifier) 
-                        button(data-token=collab.userId).icon.rem-usr 
+                        button(data-user-id=collab.userId).icon.rem-usr 
     script(src="/app/collabs.js")

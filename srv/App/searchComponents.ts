@@ -5,7 +5,7 @@ import * as _ from 'lodash';
 import sql from "../sql";
 import * as FS from '../FS';
 import {rootFn} from "../utils";
-import {ApiComponent} from "../../src/Logic/io/ComponentFetcher";
+import {ApiComponent} from "../../app/src/Logic/io/ComponentFetcher";
 
 export type tokenMap = { [token: string]: string };
 

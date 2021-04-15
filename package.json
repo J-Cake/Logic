@@ -2,7 +2,7 @@
     "name": "LogicX",
     "version": "1.0.0",
     "description": "",
-    "main": "build/app/server/HTTP/index.js",
+    "main": "build/srv/HTTP/index.js",
     "scripts": {
         "build": "tsc && node ./bin/build"
     },
@@ -21,6 +21,7 @@
         "markdown-it": "^12.0.4",
         "morgan": "^1.10.0",
         "mousetrap": "^1.6.5",
+        "nodegit": "^0.27.0",
         "noderify": "^5.0.0",
         "p5": "^1.0.0",
         "parse-css-color": "^0.1.2",
@@ -38,9 +39,11 @@
         "@types/jquery": "^3.3.36",
         "@types/lodash": "^4.14.168",
         "@types/markdown-it": "^12.0.1",
+        "@types/mocha": "^8.2.2",
         "@types/morgan": "^1.9.2",
         "@types/mousetrap": "^1.6.3",
         "@types/node": "^12.19.16",
+        "@types/nodegit": "^0.27.0",
         "@types/p5": "^0.9.0",
         "@types/passport": "^1.0.4",
         "@types/seedrandom": "^2.4.28",
@@ -49,7 +52,7 @@
         "@types/wicg-native-file-system": "^2020.6.0",
         "@types/ws": "^7.4.0",
         "esbuild": "^0.8.56",
-        "typescript": "latest",
-        "uglify-es": "^3.3.9"
+        "mocha": "^8.3.2",
+        "typescript": "latest"
     }
 }

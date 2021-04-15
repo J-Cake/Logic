@@ -9,7 +9,7 @@ import getFile, {DBPreferenceMap} from "../getFile";
 import searchComponents from "../App/searchComponents";
 import {attempt} from "../utils";
 import docToComponent from "../App/Component";
-import {PreferenceDescriptor, PreferenceType} from "../../src/Enums";
+import {PreferenceDescriptor, PreferenceType} from "../../app/src/Enums";
 
 const router: express.Router = express.Router();
 

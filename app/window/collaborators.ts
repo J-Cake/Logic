@@ -20,12 +20,13 @@ export async function update(this: HTMLElement) {
     results.empty();
 
     for (const i of users.users)
-        results.append(`<div class="user" data-user="${i.userId}">
+        results.append(`<div class="user" data-user-id="${i.userId}">
                 <span class="name">${i.identifier}</span>
                 <span class="email">${i.email}</span>            
             </div>`);
     $(".user").on('click', function () {
-        fetch(`/circuit/${circuitId}/collaborator?user=${$(this).data('user')}`, {method: 'put'}).then(_ => window.location.reload());
+        fetch(`/circuit/${circuitId}/collaborator?user=${$(this).data('user-id')}`, {method: 'put'})
+            .then(_ => window.location.reload());
     });
 }
 
@@ -34,9 +35,10 @@ $("#searchField").on('input', function () {
 });
 
 $(".rem-usr").on('click', function () {
-    fetch(`/circuit/${circuitId}/collaborator?user=${$(this).data('token')}`, {method: 'delete'}).then(_ => window.location.reload());
+    fetch(`/circuit/${circuitId}/collaborator?user=${$(this).data('user-id')}`, {method: 'delete'}).then(_ => window.location.reload());
 });
 
 $(".can-edit").on('change', function() {
-    fetch(`/circuit/${circuitId}/collaborator?user=${$(this).data('user-id')}&can-edit=${$(this).prop('checked')}`, {method: 'post'}).then(_ => window.location.reload());
+    fetch(`/circuit/${circuitId}/collaborator?user=${$(this).data('user-id')}&can-edit=${$(this).prop('checked') ? 'true' : 'false'}`, {method: 'put'})
+        .then(res => !res.ok ? alert('Failed to update document') : void 0);
 });

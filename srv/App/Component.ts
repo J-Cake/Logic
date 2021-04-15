@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 
 import sql from "../sql";
 import getFile from "../getFile";
-import type {ApiComponent, GenericComponent, TruthTable} from "../../src/Logic/io/ComponentFetcher";
+import type {ApiComponent, GenericComponent, TruthTable} from "../../app/src/Logic/io/ComponentFetcher";
 import {CircuitObj} from "./Circuit";
 import StatelessComponent from "./StatelessComponent";
 import {readFile} from "../FS";

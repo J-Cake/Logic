@@ -19,7 +19,7 @@ export function getTimeString(): string {
     return `${time.getDate().toString().padStart(2, '0')}.${time.getMonth().toString().padStart(2, '0')}.${time.getFullYear()} ${time.getHours().toString().padStart(2, '0')}:${time.getMinutes().toString().padStart(2, '0')}:${time.getSeconds().toString().padStart(2, '0')}`;
 }
 
-export {attempt, attemptSync} from './../util';
+export {attempt, attemptSync} from '../app/util';
 
 export function liveReload(): number | null {
     if (process.argv.includes('--dev')) {

@@ -16,6 +16,7 @@ import WebRouter from './WebRouter';
 import {rootFn, liveReload} from "../utils";
 import configureFiles from '../configureFile';
 import {isLoggedIn} from "../User";
+import AdminRouter from "./AdminRouter";
 
 sm.install();
 
@@ -48,6 +49,7 @@ export default async function init(port: number) {
     app.use(DocumentRouter);
     app.use(ApplicationRouter);
     app.use("/res", ResourceRouter);
+    app.use("/admin", AdminRouter);
 
     app.use(function (req, res) {
         res.status(404).render('site/404', {

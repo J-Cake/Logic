@@ -1,5 +1,5 @@
 import CircuitManager from "./CircuitManager";
-import {CircuitObj} from "../../../server/App/Circuit";
+import {CircuitObj} from "../../../../srv/App/Circuit";
 import {manager} from "../../State";
 import {GenComponent, GenericComponent, wires} from "./ComponentFetcher";
 import Component from "../Component";
@@ -75,7 +75,7 @@ export async function prepareForSave(c_man: CircuitManager): Promise<CircuitObj>
 
     return {
         circuitName: prevDoc.circuitName,
-        components: prevDoc.components,
+        components: Object.keys(c_man.state.setState().availableComponents),
         content: content,
         ownerEmail: prevDoc.ownerEmail,
     }

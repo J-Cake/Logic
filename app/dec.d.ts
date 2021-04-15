@@ -13,11 +13,3 @@ declare module 'parse-css-color' {
     module p {}
     export = p;
 }
-
-declare module "eva-icons" {
-    interface Options {
-        fill: string,
-        class: string
-    }
-    function replace(options?: Partial<Options>): void;
-}

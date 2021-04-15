@@ -55,8 +55,9 @@ block page
                             for doc in shared
                                 .doc
                                     a(href=`/edit/${doc.documentToken}`, tab-index=2)
-                                        span.title= doc.documentTitle
-                                        span.edited= new Date(doc.edited).toLocaleDateString()
+                                        span.info
+                                            span.title= doc.documentTitle
+                                            span.edited= new Date(doc.edited).toLocaleDateString()
                                     .controls
                                         button(data-doc=doc.documentToken).leaveDoc 
 

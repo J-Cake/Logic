@@ -4,9 +4,10 @@ import * as _ from 'lodash';
 
 import sql from "../sql";
 import {DBDocument} from "../getFile";
-import {ApiComponent, GenericComponent} from "../../src/Logic/io/ComponentFetcher";
+import {ApiComponent, GenericComponent} from "../../app/src/Logic/io/ComponentFetcher";
 import {readFile} from "../FS";
 import {rootFn} from "../utils";
+
 
 export interface CircuitObj {
     circuitName: string,
@@ -17,6 +18,7 @@ export interface CircuitObj {
 
 export default class Circuit implements CircuitObj {
     info: CircuitObj;
+    collaborators: number[]; // UserIDs
     private readonly docId: number;
     private readonly readOnly: boolean;
 
@@ -25,6 +27,8 @@ export default class Circuit implements CircuitObj {
         this.info = {circuitName: "", components: [], content: {}, ownerEmail: ""};
 
         this.readOnly = readOnly
+
+        this.collaborators = [];
 
         void this.fetchInfo(); // ignore promise
     }
@@ -48,9 +52,12 @@ export default class Circuit implements CircuitObj {
     async componentIdStringToNames(): Promise<{ [token: string]: string }> {
         const comps: ApiComponent[] = (await Promise.all(this.components.map(async i => JSON.parse(i.startsWith('$') ?
             await readFile(path.join(await rootFn(), 'lib', 'components', i.slice(1) + ".json")) : // Standard Component
-            (await sql.sql_get<{source: string}>(`SELECT source
-                               from components
-                               where componentToken == ?`, [i])).source)))).map((i, a) => ({...i, token: this.components[a]}));
+            (await sql.sql_get<{ source: string }>(`SELECT source
+                                                    from components
+                                                    where componentToken == ?`, [i])).source)))).map((i, a) => ({
+            ...i,
+            token: this.components[a]
+        }));
         return _.mapValues(_.keyBy(comps, 'token'), i => i.name);
     }
 
@@ -64,6 +71,10 @@ export default class Circuit implements CircuitObj {
         const {source} = await sql.sql_get<Partial<DBDocument>>(`SELECT source
                                                                  from documents
                                                                  where documentId == ?`, [this.docId]);
+
+        this.collaborators = (await sql.sql_all<{userId: number}>(`SELECT userId
+                                                from access
+                                                where documentId == ?`, [this.docId])).map(i => i.userId);
 
         if (source)
             try {
@@ -97,15 +108,16 @@ export default class Circuit implements CircuitObj {
         else throw 'write not permitted';
     }
 
-    async addCollaborator(actorId: number, userId: number): Promise<void> {
-        if (!this.readOnly && await this.isOwner(actorId))
+    async addCollaborator(actorId: number, userId: number, canEdit: boolean = false): Promise<void> {
+        if (!this.readOnly && await this.isOwner(actorId)) {
             await sql.sql_query(`insert into access (documentId, userId)
                                  select ?1 as documentId, ?2 as userId except
                                  select documentId, userId
                                  from access
                                  where documentId == ?1
-                                   and userId == ?2`, [this.docId, userId])
-        else throw 'write not permitted';
+                                   and userId == ?2;`, [this.docId, userId]);
+            await this.changeAccess(actorId, userId, canEdit);
+        } else throw 'write not permitted';
     }
 
     async delete(userId: number): Promise<void> {
@@ -119,9 +131,9 @@ export default class Circuit implements CircuitObj {
     async changeAccess(actorId: number, userId: number, canEdit: boolean): Promise<void> {
         if (!this.readOnly && await this.isOwner(actorId))
             await sql.sql_query(`update access
-                                 set canEdit = ?
-                                 where userId == ?
-                                   and documentId == ?`, [canEdit, userId, this.docId]);
+                                 set canEdit = ?1
+                                 where userId == ?2
+                                   and documentId == ?3`, [canEdit, userId, this.docId]);
         else throw 'write not permitted';
     }
 

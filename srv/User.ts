@@ -1,7 +1,7 @@
 import type * as express from 'express';
 import sql, {SQLInjectType} from "./sql";
 import {DBPreferenceMap} from "./getFile";
-import {defaultPreferences, PreferenceDescriptor, PreferenceType} from "../src/Enums";
+import {defaultPreferences, PreferenceDescriptor, PreferenceType} from "../app/src/Enums";
 import * as _ from 'lodash'
 
 export async function verifyUser(userToken?: string): Promise<boolean> {

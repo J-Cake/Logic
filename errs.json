@@ -1,0 +1,10 @@
+{
+    "errors": [
+        {
+            "location": null,
+            "notes": [],
+            "text": "Could not resolve \"C:\\\\Users\\\\JCake\\\\Code\\\\LogicX\\\\build\\\\app\\\\server\\\\HTTP\\\\index.js\""
+        }
+    ],
+    "warnings": []
+}

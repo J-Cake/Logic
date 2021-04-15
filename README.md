@@ -13,14 +13,14 @@ The boilerplate uses TypeScript, Express and Browserify to enable the code to ru
 2. Compile TypeScript
     ```$ pnpx tsc```
 3. Build
-    ```$ node ./bin/build_old.js```
+    ```$ node ./bin/build.js```
 4. Start
-    ```$ node ./build/app/server.js <port?>```
+    ```$ node ./build/app/server.js --port=<port?>```
 
 The default port is 3500 with an optional port being specifiable.
 
 If no source has changed and only static files need to be updated, the `--static` flag can be passed to the build script.
-    ```$ node ./bin/build_old.js --static```
+    ```$ node ./bin/build.js --static```
     
 ## Components
 

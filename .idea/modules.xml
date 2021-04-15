@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/LogicX.iml" filepath="$PROJECT_DIR$/.idea/LogicX.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lib/.idea/lib.iml" filepath="$PROJECT_DIR$/lib/.idea/lib.iml" />
     </modules>
   </component>
 </project>

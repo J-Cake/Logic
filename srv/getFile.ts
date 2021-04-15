@@ -1,6 +1,6 @@
 import Circuit from "./App/Circuit";
 import sql from "./sql";
-import {Preferences} from "../src/Enums";
+import {Preferences} from "../app/src/Enums";
 
 export type AccessTable = { documentId: number, userId: number, dateGranted: Date, canEdit: boolean };
 export type DBUser = { userId: number, email: string, password: string, joined: Date, identifier: string, userToken: string };

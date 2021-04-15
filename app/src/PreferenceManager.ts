@@ -8,7 +8,7 @@ export default class PreferenceManager extends StateManager<Preferences> {
         fetch('/user/preferences').then(i => i.json().then(i => this.setState(i)));
 
         this.onStateChange(function(preferences) {
-            // write preferences to server
+            // write preferences to srv
         });
     }
 }

@@ -129,14 +129,25 @@ router.put('/circuit/:circuit/collaborator', async function (req, res) {
         await file.fetchInfo();
 
         if (req.query.user) {
-            await file.addCollaborator(await userTokenToId(userToken), Number(req.query.user))
-            res.end('Success');
-
+            const alreadyExists = file.collaborators.includes(await userTokenToId(userToken));
+            console.log(req.query['can-edit']);
+            if (alreadyExists && 'can-edit' in req.query) {
+                await file.changeAccess(await userTokenToId(userToken), Number(req.query.user), req.query['can-edit'] === 'true');
+                res.status(200);
+                res.end('Success');
+            } else if (!alreadyExists) {
+                await file.addCollaborator(await userTokenToId(userToken), Number(req.query.user), req.query['can-edit'] === 'true')
+                res.status(200);
+                res.end('Success');
+            } else {
+                res.status(204);
+                res.end('User already added');
+            }
         } else {
             res.status(400);
             res.end('User not specified under ./?user');
         }
-    })) {
+    }, err => console.error(err))) {
         res.status(403);
         res.end('You do not have access to this document');
     }
@@ -212,17 +223,7 @@ router.post('/circuit/:circuit/', async function (req, res) {
         const file = await getFile(userToken, req.params.circuit);
         await file.fetchInfo();
 
-        if ('can-edit' in req.query)
-            if ('user' in req.query)
-                file.changeAccess(await userTokenToId(userToken), Number(req.query.user), req.query['can-edit'] === 'true').then(_ => {
-                    res.status(200);
-                    res.end('Success');
-                });
-            else {
-                res.status(400);
-                res.end('no user specified');
-            }
-        else if ('name' in req.query)
+        if ('name' in req.query)
             file.changeDocumentName(await userTokenToId(userToken), req.query['name'] as string).then(_ => {
                 res.status(200);
                 res.end('Success');
