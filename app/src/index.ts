@@ -1,7 +1,6 @@
 import * as $ from 'jquery';
 import * as _p5 from 'p5';
 import * as mousetrap from 'mousetrap';
-import * as eva from 'eva-icons';
 
 import {manager, Tool} from './State';
 import RenderObject from './sys/components/RenderObject';
@@ -85,10 +84,6 @@ new _p5(function (sketch: _p5) {
         buildComponentPrompt();
         buildFinderPrompt();
 
-        eva.replace({
-            fill: hex(Colour.Blank)
-        });
-        
         const {pan, scale} = manager.setState();
 
         sketch.translate(pan[0], pan[1]);
