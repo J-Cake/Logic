@@ -47,8 +47,8 @@ router.get("/:componentToken", async function (req, res) {
     } else {
         const component = await sql.sql_get<DBComponent>(`SELECT *
                                                           from components
-                                                          WHERE componentToken == ?
-                                                            and (public == true or ownerId == (SELECT userId from users where userToken == ?))`, [req.params.componentToken, req.userId || ""]);
+                                                          WHERE "componentToken" = $1
+                                                            and (public is TRUE or "ownerId" = (SELECT "userId" from users where "userToken" = $2))`, [req.params.componentToken, req.userId || ""]);
 
         if (!component) {
             res.status(404);

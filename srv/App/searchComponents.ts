@@ -20,10 +20,10 @@ interface paginatedSearchQuery {
 export default async function searchComponents(query: string, page: number = 0): Promise<paginatedSearchQuery> {
     const recordsPerPage: number = 25;
 
-    const tok = await sql.sql_all<{ componentToken: string, componentName: string }>(`SELECT componentToken, componentName
+    const tok = await sql.sql_all<{ componentToken: string, componentName: string }>(`SELECT "componentToken", "componentName"
                                                                                       from components
-                                                                                      where componentName like ?1
-                                                                                      LIMIT ?2 * ?3, ?3`, [`%${query}%`, Math.max(page, 0), recordsPerPage]);
+                                                                                      where "componentName" like $1
+                                                                                      LIMIT $3 offset $2 * $3`, [`%${query}%`, Math.max(page, 0), recordsPerPage]);
 
     const stdTokens = (await Promise.all((await FS.readdir(path.join(await rootFn(), 'lib', 'components')))
         .filter(i => i.endsWith('.json'))

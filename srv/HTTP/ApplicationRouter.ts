@@ -33,16 +33,16 @@ router.get('/dashboard', async function (req, res) {
         res.render("dashboard", {
             own: await sql.sql_all<{ documentToken: number, documentTitle: string }>(`SELECT *
                                                                                       from documents
-                                                                                      where ownerId == (SELECT userId from users where userToken == ?)`, [userToken]) || [],
+                                                                                      where "ownerId" = (SELECT "userId" from users where "userToken" = $1)`, [userToken]) || [],
             shared: await sql.sql_all<{ documentToken: number, documentTitle: string }>(`SELECT *
                                                                                          from documents
-                                                                                         where documentId ==
-                                                                                               (SELECT documentId
+                                                                                         where "documentId" =
+                                                                                               (SELECT "documentId"
                                                                                                 from access
-                                                                                                where userId == (SELECT userId from users where userToken == ?))`, [userToken]) || [],
-            comps: await sql.sql_all<{ componentToken: string, componentName: string }>(`SELECT componentToken, componentName
+                                                                                                where "userId" = (SELECT "userId" from users where "userToken" = $1))`, [userToken]) || [],
+            comps: await sql.sql_all<{ componentToken: string, componentName: string }>(`SELECT "componentToken", "componentName"
                                                                                          from components
-                                                                                         where ownerId == (SELECT userId from users where userToken == ?)`, [userToken]) || [],
+                                                                                         where "ownerId" = (SELECT "userId" from users where "userToken" = $1)`, [userToken]) || [],
             title: "Dashboard",
             isLoggedIn: isLoggedIn(req)
         });
@@ -120,9 +120,9 @@ router.get('/find/:circuit/', async function (req, res) {
         if (req.query['q'])
             res.render("findComponents", {
                 search: await searchComponents(req.query['q'] as string),
-                yourComponents: await sql.sql_all<{ componentToken: string, componentName: string }>(`SELECT componentToken, componentName
+                yourComponents: await sql.sql_all<{ componentToken: string, componentName: string }>(`SELECT "componentToken", "componentName"
                                                                                                       from components
-                                                                                                      where ownerId == (SELECT userId from users where userToken == ?)`, [userToken]) || [],
+                                                                                                      where "ownerId" = (SELECT "userId" from users where "userToken" = $1)`, [userToken]) || [],
                 doc: req.params.circuit,
                 devMode: reloadPort,
                 title: `Explore`,
@@ -136,9 +136,9 @@ router.get('/find/:circuit/', async function (req, res) {
                     foundComponents: [],
                     page: 0,
                 },
-                yourComponents: await sql.sql_all<{ componentToken: string, componentName: string }>(`SELECT componentToken, componentName
+                yourComponents: await sql.sql_all<{ componentToken: string, componentName: string }>(`SELECT "componentToken", "componentName"
                                                                                                       from components
-                                                                                                      where ownerId == (SELECT userId from users where userToken == ?)`, [userToken]) || [],
+                                                                                                      where "ownerId" = (SELECT "userId" from users where "userToken" = $1)`, [userToken]) || [],
                 doc: req.params.circuit,
                 devMode: reloadPort,
                 title: `Explore`,
@@ -202,13 +202,13 @@ router.get('/import-document/:circuit', async function (req, res) {
             res.render('import-document', {
                 own: await sql.sql_all<{ documentToken: number, documentTitle: string }>(`SELECT *
                                                                                           from documents
-                                                                                          where ownerId == (SELECT userId from users where userToken == ?)`, [userToken]) || [],
+                                                                                          where "ownerId" = (SELECT "userId" from users where "userToken" = $1)`, [userToken]) || [],
                 shared: await sql.sql_all<{ documentToken: number, documentTitle: string }>(`SELECT *
                                                                                              from documents
-                                                                                             where documentId ==
-                                                                                                   (SELECT documentId
+                                                                                             where "documentId" =
+                                                                                                   (SELECT "documentId"
                                                                                                     from access
-                                                                                                    where userId == (SELECT userId from users where userToken == ?))`, [userToken]) || [],
+                                                                                                    where "userId" = (SELECT "userId" from users where "userToken" = $1))`, [userToken]) || [],
                 doc: req.params.circuit
             });
         else {
@@ -228,12 +228,13 @@ router.get('/collab/:circuit/', async function (req, res) {
 
     if (file)
         res.render('collab', {
-            collabs: await sql.sql_all(`SELECT email, identifier, users.userId, dateGranted, canEdit
+            collabs: await sql.sql_all(`SELECT email, identifier, users."userId", "dateGranted", "canEdit"
                                         from users
-                                                 inner join access a on users.userId = a.userId
-                                        WHERE users.userId in (SELECT userId
-                                                               from access
-                                                               where documentId == (SELECT documentId from documents where documentToken == ?))`, [req.params.circuit])
+                                                 inner join access a on users."userId" = a."userId"
+                                        WHERE users."userId" in (SELECT "userId"
+                                                                 from access
+                                                                 where "documentId" =
+                                                                       (SELECT "documentId" from documents where "documentToken" = $1))`, [req.params.circuit])
         });
     else {
         res.status(403);
@@ -246,12 +247,13 @@ router.get('/search-users', async function (req, res) {
     const {count} = await sql.sql_get<{ count: number }>(`SELECT COUNT(*) as count
                                                           from users`);
     const page = Math.min(Math.max(Number(req.query.page || '0') ?? 0, 0), Math.ceil(count / recordsPerPage));
+
     res.json({
-        users: await sql.sql_all(`SELECT email, identifier, userId
+        users: await sql.sql_all(`SELECT email, identifier, "userId"
                                   from users
-                                  where identifier like ?1
-                                     or email like ?1
-                                  LIMIT ?2 * ?3, ?3`, [`%${req.query.q ?? ''}%`, page, recordsPerPage]),
+                                  where identifier like $1
+                                     or email like $1
+                                  LIMIT $2 OFFSET $3`, [`%${req.query.q ?? ''}%`, recordsPerPage, page * recordsPerPage]),
         page: page + 1,
         records: count,
         recordsPerPage: recordsPerPage,
@@ -284,7 +286,6 @@ router.post('/settings', async function (req, res) {
         res.end('Unverified request');
     } else if (await attempt(async function () {
         const prefs = _.merge(await getPreferencesForUser(userToken), convertFromHTMLForm(req.body)) as DBPreferenceMap
-        console.log("prefs", prefs, "incoming", req.body);
         await writePreferences(prefs, userToken);
         res.redirect('/settings');
     })) res.end('Insufficient permissions');

@@ -9,10 +9,14 @@ $('.controls *').each(function () {
         return false;
     });
 })
-$('#mkDoc').on('click', function () {
+$('#mkDoc').on('click', async function () {
     const name = prompt('Please enter a document name');
-    if (name)
-        window.location.href = `/make?name=${name}`;
+    if (name) {
+        const token = await fetch(`/make?name=${name}`, {method: 'post'});
+        if (token.ok)
+            window.location.href = `/edit/${await token.text()}`;
+        // window.location.href = `/make?name=${name}`;
+    }
 });
 $('.doc').each(function () {
     const i = $(this);

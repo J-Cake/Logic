@@ -30,7 +30,7 @@ router.post("/login", async function (req, res) {
     if (email && password) {
         const db = await sql.sql_get<Partial<DBUser>>(`SELECT *
                                                        from users
-                                                       where email == ?`, [email])
+                                                       where email = $1`, [email])
 
         if (!db) {
             res.status(400);
@@ -58,7 +58,7 @@ router.post("/signup", async function (req, res) {
 
     const usr = await sql.sql_get<DBUser>(`SELECT *
                                            from users
-                                           where email == ?`, [email]);
+                                           where email = $1`, [email]);
 
     if (password !== passwordConfirm) {
         res.status(400);
@@ -76,22 +76,24 @@ router.post("/signup", async function (req, res) {
             res.redirect('/user/signup');
         }
     } else {
-        const userId: number = 1 + (await sql.sql_get<{ userId: number }>(`SELECT max(userId) as userId
+        const userId: number = 1 + (await sql.sql_get<{ userId: number }>(`SELECT max("userId") as userId
                                                                            from users`)).userId;
-        const token = bcrypt.hashSync(`${name}:${email}:${getTimeString()}`, 1);
 
-        await sql.sql_query(`INSERT into users (userId, email, password, joined, identifier, userToken)
-                             VALUES ($userId, $email, $password, date('now'), $identifier, $userToken);
-        INSERT INTO user_preferences (userId)
-        values ($userToken)`, {
-            $userId: userId,
-            $email: email,
-            $password: bcrypt.hashSync(password, 10),
-            $identifier: name,
-            $userToken: token
-        });
+        const token = await (async function() {
+            let token = '';
 
-        // console.log("Done");
+            do
+                token = Math.floor(Math.random() * 11e17).toString(36);
+            while (await sql.sql_get<{userToken: string}>(`SELECT "userToken" from users where "userToken" = $1`, [token]));
+
+            return token;
+        })();
+        // const token = bcrypt.hashSync(`${name}:${email}:${getTimeString()}`, 1);
+
+        await sql.sql_query(`INSERT into users (email, password, joined, identifier, "userToken")
+                             VALUES ($1, $2, date('now'), $3, $4)`, [email, bcrypt.hashSync(password, 10), name, token]);
+        await sql.sql_query(`INSERT INTO user_preferences ("userId")
+                             values ((SELECT "userId" from users where "userToken" = $1))`, [token])
         res.cookie('userId', token);
         res.status(201);
         res.redirect('/dashboard#own');

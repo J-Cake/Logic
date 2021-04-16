@@ -12,27 +12,30 @@ import ComponentRouter from "./ComponentRouter";
 import ApplicationRouter from './ApplicationRouter';
 import ResourceRouter from './ResourceRouter';
 import WebRouter from './WebRouter';
+import AdminRouter from "./AdminRouter";
 
-import {rootFn, liveReload} from "../utils";
+import {liveReload, rootFn} from "../utils";
 import configureFiles from '../configureFile';
 import {isLoggedIn} from "../User";
-import AdminRouter from "./AdminRouter";
 
 sm.install();
 
+export const devMode: boolean = process.argv.includes('--dev');
+
 export const app: express.Application = express();
 
-export const port: number = (function(): number {
+export const port: number = (function (): number {
     const _p = process.argv.find(i => /^--port=\d+$/.test(i))?.match(/^--port=(\d+)$/);
     return Number(_p ? _p[1] : '2560');
 })();
 export const reloadPort = liveReload();
 
 export default async function init(port: number) {
-    app.use(morgan(process.argv.includes('--dev') ? 'dev' : 'combined'));
+    app.use(morgan(devMode ? 'dev' : 'combined'));
 
     app.set("view engine", "pug");
     app.set("views", path.join(await rootFn(), 'app', 'views'));
+    app.enable("trust proxy");
 
     app.use(cookies());
     app.use(body.urlencoded({extended: true}));

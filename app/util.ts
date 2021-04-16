@@ -25,4 +25,16 @@ export function attemptSync(fn: () => any, fail?: (err: any) => void): boolean {
     }
 }
 
+export function Try<T>(fn: () => Promise<T>): Promise<T> {
+    return new Promise(function (resolve, reject) {
+        try {
+            fn().then(res => resolve(res)).catch(err => {
+                reject(err);
+            });
+        } catch (err) {
+            reject(null);
+        }
+    });
+}
+
 export const xor = (a: boolean, b: boolean): boolean => !(a && b) && (a || b);

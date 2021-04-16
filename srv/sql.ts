@@ -1,59 +1,81 @@
-import * as path from 'path';
-import * as os from "os";
+import {Pool} from 'pg';
+import {Try} from "../app/util";
 
-import * as sqlite3 from 'sqlite3';
-
-import {rootFn} from "./utils";
-
-export const Users = (async function () {
-    const dirMatcher = /^--db-dir=([.~]?.[^\/]+)+$/;
-
-    let dbDir = process.argv.find(i => dirMatcher.test(i))?.match(dirMatcher)?.[0]?.split('=')?.pop() || path.join(await rootFn(), './data/LogicX/users.db');
-
-    if (dbDir.startsWith('~/'))
-        dbDir = path.join(os.homedir(), dbDir.slice(2));
-
-    return new (sqlite3.verbose().Database)(dbDir);
-})();
+import {devMode} from "./HTTP";
+import * as path from "path";
 
 export type SQLValue = string | number | boolean | Date;
-export type SQLInjectType = {[key: string]: SQLValue} | SQLValue[];
+// export type SQLInjectType = { [key: string]: SQLValue } | SQLValue[];
+
+export type SQLInjectType = SQLValue[];
+
+export interface SQLFN {
+    sql_each<Data extends {}>(query: string, placeholders?: SQLInjectType): Promise<Data>
+
+    sql_query(query: string, placeholders?: SQLInjectType): Promise<void>
+
+    sql_get<Data extends {}>(query: string, placeholders?: SQLInjectType): Promise<Data>
+
+    sql_all<Data extends {}>(query: string, placeholders?: SQLInjectType): Promise<Data[]>
+}
+
+const pgPool = new Pool();
+
+pgPool.on('error', err => {
+    throw err;
+});
+
+const parseStack = function (): string {
+    const err = new Error().stack;
+
+    if (err) {
+        const lines = err.split('\n').map(i => i.match(/((?:[a-zA-Z]:|..|.|~)?(?:[\\\/].+?)+)\)?$/)?.pop()).filter(i => i) as string[];
+        return lines.find(i => !i.includes(path.parse(__filename).name)) ?? lines[0];
+    }
+
+    return '';
+}
 
 export default {
-    sql_each<Data extends {}>(query: string, placeholders?: SQLInjectType): Promise<Data> {
-        return new Promise(async function (resolve, reject) {
-            (await Users).each(query, placeholders, function(err, data) {
-                if (err)
-                    return reject(err);
-                resolve(data);
-            });
-        });
-    },
     sql_query(query: string, placeholders?: SQLInjectType): Promise<void> {
-        return new Promise(async function (resolve, reject) {
-            (await Users).run(query, placeholders, function (err) {
-                if (err)
-                    return reject(err);
-                resolve();
-            })
+        const caller = parseStack();
+
+        return Try(async function () {
+            const client = await pgPool.connect();
+            await client.query(query, placeholders);
+            await client.release();
+        }).catch(err => {
+            if (devMode)
+                console.error(`SQLError - ${err.message}\n  `, caller, '\n  ', query);
+            throw `SQLError - ${err.message}`;
         });
     },
     sql_get<Data extends {}>(query: string, placeholders?: SQLInjectType): Promise<Data> {
-        return new Promise(async function (resolve, reject) {
-            (await Users).get(query, placeholders, function(err, data) {
-                if (err)
-                    return reject(err);
-                resolve(data);
-            });
+        const caller = parseStack();
+
+        return Try(async function (): Promise<Data> {
+            const client = await pgPool.connect();
+            const result = await client.query<Data>(query, placeholders);
+            await client.release();
+            return result.rows[0];
+        }).catch(err => {
+            if (devMode)
+                console.error(`SQLError - ${err.message}\n  `, caller, '\n  ', query);
+            throw `SQLError - ${err.message}`;
         });
     },
     sql_all<Data extends {}>(query: string, placeholders?: SQLInjectType): Promise<Data[]> {
-        return new Promise(async function (resolve, reject) {
-            (await Users).all(query, placeholders, function(err, data) {
-                if (err)
-                    return reject(err);
-                resolve(data as unknown as Data[]);
-            });
+        const caller = parseStack();
+
+        return Try(async function (): Promise<Data[]> {
+            const client = await pgPool.connect();
+            const result = await client.query<Data>(query, placeholders);
+            await client.release();
+            return result.rows;
+        }).catch(err => {
+            if (devMode)
+                console.error(`SQLError - ${err.message}\n  `, caller, '\n  ', query);
+            throw `SQLError - ${err.message}`;
         });
-    },
+    }
 }

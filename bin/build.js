@@ -4,7 +4,7 @@ import build from 'esbuild';
 
 import {copy, rootFn} from "./build_utils.js";
 
-const dirs = {
+export const dirs = {
     root: rootFn(import.meta.url),
 }
 
@@ -52,5 +52,5 @@ if (!process.argv.find(i => i.trim() === '--static')) {
     }
 }
 
-copy(path.join(dirs.app, 'static'), dirs.finalOutput);
+copy(path.join(dirs.app, 'static/app'), dirs.finalOutput);
 fs.copyFileSync(path.join(dirs.root, 'package.json'), path.join(dirs.finalOutput, 'package.json'));

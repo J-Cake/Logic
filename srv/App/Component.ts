@@ -18,12 +18,12 @@ type TruthTableGenerator = {
 
 export default async function docToComponent(documentToken: string, userToken: string, stateful: boolean): Promise<string> {
     await attempt(async function () {
-        const document = await sql.sql_get<{ source: string, documentTitle: string }>(`SELECT source, documentTitle
+        const document = await sql.sql_get<{ source: string, documentTitle: string }>(`SELECT source, "documentTitle"
                                                                                        from documents
-                                                                                       where documentToken == ?`, [documentToken]);
-        const user = await sql.sql_get<{ email: string, userId: number }>(`SELECT email, userId
+                                                                                       where "documentToken" = $1`, [documentToken]);
+        const user = await sql.sql_get<{ email: string, userId: number }>(`SELECT email, "userId"
                                                                            from users
-                                                                           where userToken == ?`, [userToken]);
+                                                                           where "userToken" = $1`, [userToken]);
 
         const file = await getFile(userToken, documentToken);
         if (!file)
@@ -42,14 +42,18 @@ export default async function docToComponent(documentToken: string, userToken: s
                 token: Math.floor(Math.random() * 11e17).toString(36), // pick a token that isn't in use,
                 wires: []
             }
-            await sql.sql_query(`INSERT INTO components (ownerId, componentToken, componentName, source, componentId)
-                                 values ($ownerId, $compToken,
-                                         $compName, $source, coalesce((SELECT max(componentId) as componentId from components) + 1, 0))`, {
-                $ownerId: user.userId,
-                $compToken: componentDocument.token,
-                $compName: componentDocument.name,
-                $source: JSON.stringify(componentDocument)
-            });
+            await sql.sql_query(`INSERT INTO components ("ownerId", "componentToken", "componentName", source, "componentId")
+                                 values ($1, $2, $3, $4,
+                                         coalesce((SELECT max("componentId") as "componentId" from components) + 1,
+                                                  0))`, [user.userId, componentDocument.token, componentDocument.name, JSON.stringify(componentDocument)]);
+            // await sql.sql_query(`INSERT INTO components (ownerId, componentToken, componentName, source, componentId)
+            //                      values ($ownerId, $compToken,
+            //                              $compName, $source, coalesce((SELECT max(componentId) as componentId from components) + 1, 0))`, {
+            //     $ownerId: user.userId,
+            //     $compToken: componentDocument.token,
+            //     $compName: componentDocument.name,
+            //     $source: JSON.stringify(componentDocument)
+            // });
         }
     }, err => console.error(err));
     return '';
@@ -137,7 +141,7 @@ export async function fetchComponent(raw?: GenericComponent): Promise<[string, S
         await readFile(path.join(await rootFn(), 'lib', 'components', raw?.identifier.slice(1) + ".json")) : // Standard Component
         await sql.sql_get(`SELECT source
                            from components
-                           where componentToken == ?`, [raw?.identifier])); // Custom Component
+                           where "componentToken" = $1`, [raw?.identifier])); // Custom Component
 
     if (Object.prototype.toString.call(source.component) === "[object Array]")
         return [raw?.identifier, new StatelessComponent(source.component as TruthTable, [source.inputLabels, source.outputLabels], raw)];

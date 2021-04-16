@@ -6,9 +6,9 @@ import * as _ from 'lodash'
 
 export async function verifyUser(userToken?: string): Promise<boolean> {
     // console.log(userToken, !!userToken, await sql.sql_get(`SELECT userId from users where userToken == ?`, [userToken || ""]))
-    return !!userToken && !!await sql.sql_get(`SELECT userId
+    return !!userToken && !!await sql.sql_get(`SELECT "userId"
                                                from users
-                                               where userToken == ?`, [userToken || ""]);
+                                               where "userToken" = $1`, [userToken || ""]);
 }
 
 export function isLoggedIn(req: express.Request): boolean {
@@ -18,7 +18,7 @@ export function isLoggedIn(req: express.Request): boolean {
 export async function getPreferencesForUser(userToken: string): Promise<DBPreferenceMap> {
     const pref: DBPreferenceMap = await sql.sql_get<DBPreferenceMap>(`SELECT *
                                                                       from user_preferences
-                                                                      where userId == (SELECT userId from users where userToken == ?)`, [userToken]);
+                                                                      where "userId" = (SELECT "userId" from users where "userToken" = $1)`, [userToken]);
 
     const converters: Record<'bigint' | 'boolean' | 'number' | 'string' | 'object' | 'function' | 'symbol' | 'undefined', (t: any) => any> = {
         bigint: t => BigInt(t),
@@ -64,8 +64,12 @@ export function convertFromHTMLForm(pref: Record<keyof DBPreferenceMap, string>)
 
 export async function writePreferences(pref: Partial<DBPreferenceMap>, userToken: string): Promise<void> {
     try {
-        const params = _.mapKeys({...pref, userId: userToken}, (i, a) => `$${a}`) as SQLInjectType;
-        return void await sql.sql_query(`update user_preferences set ${Object.keys(pref).map(i => `${i} = $${i}`)} where userId == (select userId from users where userToken == $userId)`, params);
+        const preferenceKeys: string[] = (await sql.sql_all<{column_name: string}>(`select column_name
+                                                            from information_schema.columns
+                                                            where table_name = 'user_preferences'`)).map(i => i.column_name).filter(i => i in pref);
+
+        const query = `update user_preferences set ${preferenceKeys.map((i, a) => `"${i}" = $${a + 1}`).join(', ')} where "userId" = (select "userId" from users where "userToken" = $${preferenceKeys.length + 1})`;
+        return void await sql.sql_query(query, [...preferenceKeys.map(i => pref[i as keyof DBPreferenceMap]), userToken] as SQLInjectType);
     } catch (err) {
         console.error(err);
     }

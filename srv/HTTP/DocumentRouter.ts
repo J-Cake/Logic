@@ -24,30 +24,35 @@ router.use('/', async function (req, res, next) {
     else next();
 })
 
-router.get("/make", async function (req, res) {
-    const userId: string = req.userId || "";
+router.post("/make", async function (req, res) {
+    const userToken: string = req.userId || "";
 
     const name = (req.query.name || "").toString() || Math.floor(Math.random() * 11e17).toString(36);
 
-    const circuitToken: string = Math.floor(Math.random() * 11e17).toString(36); // pick a token that isn't in use
-    const circuitId: number = 1 + (await sql.sql_get<{ documentId: number }>(`SELECT max(documentId) as documentId
-                                                                              from documents`)).documentId;
+    const documentToken: string = await (async function() {
+        let token = '';
+
+        do
+            token = Math.floor(Math.random() * 11e17).toString(36);
+        while (await sql.sql_get<{userToken: string}>(`SELECT "documentToken" from documents where "documentToken" = $1`, [token]));
+
+        return token;
+    })();
 
     const document: CircuitObj = {
         circuitName: name,
         ownerEmail: (await sql.sql_get<{ email: string }>(`SELECT email
                                                            from users
-                                                           where userToken == ?`, [userId])).email,
+                                                           where "userToken" = $1`, [userToken])).email,
         components: (JSON.parse(await FS.readFile(path.join(await rootFn(), 'lib', 'pref.json'))) as Pref).startingComponents,
         content: {}
     };
 
-    await sql.sql_query(`INSERT INTO documents
-                         VALUES ((SELECT userId from users where userToken == ?), ?, ?, false, ?, date('now'),
-                                 date('now'),
-                                 ?)`, [userId, circuitId, name, circuitToken, JSON.stringify(document)]);
+    await sql.sql_query(`INSERT INTO documents ("ownerId", "documentTitle", "documentToken", source)
+                         VALUES ((SELECT "userId" from users where "userToken" = $1), $2, $3, $4)`, [userToken, name, documentToken, JSON.stringify(document)]);
 
-    res.redirect(`/edit/${circuitToken}`);
+    res.status(200);
+    res.end(documentToken);
 });
 
 router.get('/circuit/:circuit', async function (req, res) {
@@ -130,7 +135,6 @@ router.put('/circuit/:circuit/collaborator', async function (req, res) {
 
         if (req.query.user) {
             const alreadyExists = file.collaborators.includes(await userTokenToId(userToken));
-            console.log(req.query['can-edit']);
             if (alreadyExists && 'can-edit' in req.query) {
                 await file.changeAccess(await userTokenToId(userToken), Number(req.query.user), req.query['can-edit'] === 'true');
                 res.status(200);
@@ -191,11 +195,14 @@ router.put('/circuit/:circuit/add-component', async function (req, res) {
 
         if (await attempt(async function () {
             if (req.query.component && typeof req.query.component === 'string')
-                if (await sql.sql_get(`SELECT exists(select componentId
+                if (await sql.sql_get(`SELECT exists(select "componentId"
                                                      from components
-                                                     where componentToken == $tok)`, {
-                    $tok: req.query.component
-                })) {
+                                                     where "componentToken" = $1)`, [req.query.component])) {
+                    // if (await sql.sql_get(`SELECT exists(select componentId
+                    //                                      from components
+                    //                                      where componentToken == $tok)`, {
+                    //     $tok: req.query.component
+                    // })) {
                     file.info.components.push(req.query.component);
                     await file.writeContents(file.info);
 

@@ -8,5 +8,12 @@
       <jdbc-url>jdbc:sqlite:$USER_HOME$/data/users</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
+    <data-source source="LOCAL" name="logicx@jschneiderprojects.com.au" uuid="943eb4e1-5937-4a29-a643-9732d45b9250">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://jschneiderprojects.com.au:5432/logicx</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
   </component>
 </project>
