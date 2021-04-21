@@ -1,12 +1,12 @@
-import * as p5 from "p5";
+import type p5 from 'p5';
 
-import {manager, State} from "../../../State";
-import {getColour} from "../../../sys/util/Colour";
-import Colour from "../../../sys/util/Themes";
-import {WireEditMode} from "../../../Enums";
-import mkWire from "./place_wire";
-import Wire, {ApiWire} from "./Wire";
-import {WireHandle} from "./WireHandle";
+import {manager, State} from '../../../State';
+import {getColour} from '../../../sys/util/Colour';
+import Colour from '../../../sys/util/Themes';
+import {WireEditMode} from '../../../Enums';
+import mkWire from './place_wire';
+import Wire, {ApiWire} from './Wire';
+import {WireHandle} from './WireHandle';
 
 export function remove(state: State) {
     const handle = WireHandle.findByCoords([state.mouse.x, state.mouse.y]);

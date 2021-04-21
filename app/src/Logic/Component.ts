@@ -1,7 +1,7 @@
-import * as _ from 'lodash';
-import RenderComponent from "../ui/RenderComponent";
-import {DebugMode} from "../Enums";
-import {manager} from "../State";
+import _ from 'lodash';
+import RenderComponent from '../ui/RenderComponent';
+import {DebugMode} from '../Enums';
+import {manager} from '../State';
 
 export const containsDuplicates = (list: string[]): boolean => new Set(list).size !== list.length;
 

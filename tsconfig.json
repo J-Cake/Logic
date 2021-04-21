@@ -1,21 +1,25 @@
 {
     "compilerOptions": {
-        "target": "es5",
+        "target": "esnext",
+        "module": "ESNext",
+        "moduleResolution": "Node",
         "lib": [
             "ES2020",
             "dom"
         ],
-        "module": "CommonJS",
         "outDir": "./build",
         "declaration": true,
         "strict": true,
         "sourceMap": true,
-        "downlevelIteration": true
+        "allowJs": true,
+        "downlevelIteration": true,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true
     },
     "exclude": [
         "training",
         "build",
         "node_modules"
     ],
-    "include": ["app", "srv"]
+    "include": ["app", "srv", "bin"]
 }

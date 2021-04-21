@@ -1,10 +1,10 @@
-import {manager} from "../../State";
-import * as $ from "jquery";
-import saveDocument from "../../Logic/io/DocumentWriter";
-import {Dialog, setVisible} from "../../menus/DialogManager";
-import {DebugMode, WireEditMode} from "../../Enums";
-import Debugger from "../../Logic/Debugger";
-import {setWireMode} from "../output/wire/wireController";
+import {manager} from '../../State';
+import $ from 'jquery';
+import save from '../../Logic/io/DocumentWriter';
+import {Dialog, setVisible} from '../../menus/DialogManager';
+import {DebugMode, WireEditMode} from '../../Enums';
+import Debugger from '../../Logic/Debugger';
+import {setWireMode} from '../output/wire/wireController';
 
 export enum Action {
     Enter,
@@ -90,7 +90,7 @@ export const actionMap: Record<Action, () => void> = {
         i.wires.forEach(i => i.handles?.forEach(i => i.isSelected = false));
     }),
 
-    [Action.Save]: () => saveDocument(),
+    [Action.Save]: () => save(),
     [Action.Cut]: () => void 0,
     [Action.Copy]: () => void 0,
     [Action.Paste]: () => void 0,

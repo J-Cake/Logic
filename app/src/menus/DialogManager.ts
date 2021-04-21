@@ -1,7 +1,7 @@
-import * as $ from 'jquery';
+import $ from 'jquery';
 
-import StateManager from "../sys/util/stateManager";
-import {manager} from "../index";
+import StateManager from '../sys/util/stateManager';
+import {manager} from '../';
 
 export enum Dialog {
     ComponentView,

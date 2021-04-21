@@ -1,22 +1,20 @@
-import CircuitManager from "./CircuitManager";
-import {CircuitObj} from "../../../../srv/App/Circuit";
-import {manager} from "../../State";
-import {GenComponent, GenericComponent, wires} from "./ComponentFetcher";
-import Component from "../Component";
-import RenderComponent from "../../ui/RenderComponent";
+import CircuitManager from './CircuitManager';
+import {CircuitObj} from '../../../../srv/App/Document/Document';
+import {manager} from '../../State';
+import {GenComponent, GenericComponent, wires} from './ComponentFetcher';
+import Component from '../Component';
+import RenderComponent from '../../ui/RenderComponent';
+import {attempt} from "../../../util";
+import {saveDocument} from "../../sys/API/circuit";
 
-export default async function saveDocument(): Promise<void> {
-    const mgr = manager.setState().circuit, file = await prepareForSave(mgr);
-    if (mgr.circuitId) {
-        if (!(await fetch(`/circuit/${mgr.circuitId}`, {
-            body: JSON.stringify(file, null, 4),
-            method: 'PUT',
-            headers: {
-                'Content-type': 'application/json'
-            }
-        })).ok)
-            alert('There was an issue saving the file. Check the logs for more info');
-    } else if (confirm('You are not signed in. Create Account?'))
+export default async function save(): Promise<void> {
+    const mgr = manager.setState().circuit;
+    const file = await prepareForSave(mgr);
+
+    if (mgr.circuitId)
+        await saveDocument(mgr.circuitId, file);
+        // alert('There was an issue saving the file. Check the logs for more info');
+    else if (confirm('You are not signed in. Create Account?'))
         window.open('/user/signup', '_blank');
 }
 

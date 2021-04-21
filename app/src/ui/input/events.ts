@@ -1,14 +1,14 @@
-import * as $ from "jquery";
-import type * as p5 from 'p5';
+import $ from 'jquery';
+import type p5 from 'p5';
 
-import RenderObject from "../../sys/components/RenderObject";
-import {manager, Tool} from "../../index";
-import {closeAll} from "../../menus/DialogManager";
-import touch from "./touch";
-import {clickHandler, updateTooltips} from "./mouseEvents";
-import bindKeys from "./keymap";
-import bindButtons from "./buttons";
-import {initWires} from "../output/wire/InitWires";
+import RenderObject from '../../sys/components/RenderObject';
+import {manager, Tool} from '../../';
+import {closeAll} from '../../menus/DialogManager';
+import touch from './touch';
+import {clickHandler, updateTooltips} from './mouseEvents';
+import bindKeys from './keymap';
+import bindButtons from './buttons';
+import {initWires} from '../output/wire/InitWires';
 
 export default function handleEvents(canvas: JQuery, sketch: p5) {
     const container = $('#canvas-container');

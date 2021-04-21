@@ -1,12 +1,14 @@
-import * as $ from 'jquery';
-import * as mousetrap from 'mousetrap';
+import $ from 'jquery';
+import mousetrap from 'mousetrap';
+import {searchUsers} from "../src/sys/API/user";
+import {addCollaborator, allowEdit, removeCollaborator} from "../src/sys/API/circuit";
 
 mousetrap.bind('esc', () => window.close());
 
-const circuitId = window.location.href.split('/').pop();
+const circuitToken: string = window.location.href.split('/').pop() as string;
 
 export async function update(this: HTMLElement) {
-    const users: {
+    type searchUsers = {
         users: {
             email: string,
             identifier: string,
@@ -14,7 +16,8 @@ export async function update(this: HTMLElement) {
             dateGranted: number,
             canEdit: boolean
         }[]
-    } = await (await fetch(`/search-users?q=${encodeURIComponent($(this).val() as string).trim()}`)).json();
+    };
+    const users: searchUsers = await searchUsers(encodeURIComponent(($(this).val() as string).trim())) as searchUsers;
 
     const results = $("#results");
     results.empty();
@@ -25,8 +28,13 @@ export async function update(this: HTMLElement) {
                 <span class="email">${i.email}</span>            
             </div>`);
     $(".user").on('click', function () {
-        fetch(`/circuit/${circuitId}/collaborator?user=${$(this).data('user-id')}`, {method: 'put'})
-            .then(_ => window.location.reload());
+        addCollaborator(circuitToken, $(this).data('user-id'));
+        // fetch(`${window.location.protocol}//api.${window.location.host}/document/${circuitToken}/collaborator?user=${$(this).data('user-id')}`, {
+        //     method: 'put',
+        //     headers: {
+        //         'auth-token': document.cookie.split(';').find(i => /^auth-token=.+$/)?.split('=')[0] ?? ''
+        //     }
+        // }).then(_ => window.location.reload());
     });
 }
 
@@ -34,11 +42,10 @@ $("#searchField").on('input', function () {
     update.bind(this)();
 });
 
-$(".rem-usr").on('click', function () {
-    fetch(`/circuit/${circuitId}/collaborator?user=${$(this).data('user-id')}`, {method: 'delete'}).then(_ => window.location.reload());
+$(".rem-usr").on('click', async function () {
+    await removeCollaborator(circuitToken, $(this).data('user-id'));
 });
 
-$(".can-edit").on('change', function() {
-    fetch(`/circuit/${circuitId}/collaborator?user=${$(this).data('user-id')}&can-edit=${$(this).prop('checked') ? 'true' : 'false'}`, {method: 'put'})
-        .then(res => !res.ok ? alert('Failed to update document') : void 0);
+$(".can-edit").on('change', async function () {
+    await allowEdit(circuitToken, $(this).data('user-id') as string, $(this).prop('checked'));
 });

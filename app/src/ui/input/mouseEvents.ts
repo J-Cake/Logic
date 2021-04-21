@@ -1,7 +1,8 @@
-import * as p5 from 'p5';
-import {manager, Tool} from "../../State";
-import * as $ from "jquery";
-import {DebugMode} from "../../Enums";
+import type p5 from 'p5';
+import $ from 'jquery';
+
+import {manager, Tool} from '../../State';
+import {DebugMode} from '../../Enums';
 
 export function clickHandler(sketch: p5) {
     const {dragStart, mouse, keys, tool, debug, renderedComponents: comps} = manager.setState();

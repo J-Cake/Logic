@@ -1,12 +1,12 @@
-import * as path from "path";
+import path from 'path';
 
-import * as _ from 'lodash';
+import _ from 'lodash';
 
-import sql from "../sql";
-import {DBDocument} from "../getFile";
-import {ApiComponent, GenericComponent} from "../../app/src/Logic/io/ComponentFetcher";
-import {readFile} from "../FS";
-import {rootFn} from "../utils";
+import sql from '../../util/sql';
+import {DBDocument} from './getFile';
+import {ApiComponent, GenericComponent} from '../../../app/src/Logic/io/ComponentFetcher';
+import {readFile} from '../../util/files';
+import {rootFn} from '../../util/utils';
 
 
 export interface CircuitObj {
@@ -16,7 +16,7 @@ export interface CircuitObj {
     ownerEmail: string,
 }
 
-export default class Circuit implements CircuitObj {
+export default class Document implements CircuitObj {
     info: CircuitObj;
     collaborators: number[]; // UserIDs
     private readonly docId: number;
@@ -72,7 +72,7 @@ export default class Circuit implements CircuitObj {
                                                                  from documents
                                                                  where "documentId" = $1`, [this.docId]);
 
-        this.collaborators = (await sql.sql_all<{userId: number}>(`SELECT "userId"
+        this.collaborators = (await sql.sql_all<{ userId: number }>(`SELECT "userId"
                                                 from access
                                                 where "documentId" = $1`, [this.docId])).map(i => i.userId);
 

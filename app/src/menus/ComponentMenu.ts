@@ -1,8 +1,8 @@
-import * as $ from 'jquery';
+import $ from 'jquery';
 
-import {manager, Tool} from "../index";
-import RenderComponent from "../ui/RenderComponent";
-import {Dialog, link} from "./DialogManager";
+import {manager, Tool} from '../';
+import RenderComponent from '../ui/RenderComponent';
+import {Dialog, link} from './DialogManager';
 import getColourForComponent from '../ui/output/getColourForComponent';
 
 export default function buildPrompt() {
@@ -28,7 +28,7 @@ export default function buildPrompt() {
                 const r = new RenderComponent(component, {
                     direction: 0,
                     isStateful: false,
-                    label: name || '',
+                    label: '',
                     pos: prev.board.coordsToGrid([prev.mouse.x, prev.mouse.y]),
                     flip: false,
                     isMoving: true,

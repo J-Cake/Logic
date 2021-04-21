@@ -1,7 +1,7 @@
-import RenderObject from "./RenderObject";
-import * as p5 from 'p5';
+import RenderObject from './RenderObject';
+import type p5 from 'p5';
 
-import {manager} from '../../index';
+import {manager} from '../../';
 
 export default abstract class DragObject extends RenderObject {
     isDragging: boolean;

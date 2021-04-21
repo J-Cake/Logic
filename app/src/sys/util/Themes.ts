@@ -1,9 +1,9 @@
-import * as $ from "jquery";
-import * as parse from "parse-css-color";
-import type {rgb} from "./Colour";
+import $ from 'jquery';
+import parse from 'parse-css-color';
+import type {rgb} from './Colour';
 
 import {Colour, Theme} from '../../Enums';
-import {manager} from "../../State";
+import {manager} from '../../State';
 
 export {Theme} from '../../Enums';
 export default Colour;

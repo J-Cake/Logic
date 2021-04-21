@@ -1,17 +1,17 @@
-import * as _p5 from "p5";
+import type p5 from 'p5';
 
-import StateManager from "./sys/util/stateManager";
-import Board from "./sys/components/Board";
-import TooltipPane from "./ui/output/TooltipPane";
-import DragObject from "./sys/components/DragObject";
-import DropObject from "./sys/components/DropObject";
-import Cursor from "./ui/output/cursor";
-import CircuitManager from "./Logic/io/CircuitManager";
-import RenderComponent from "./ui/RenderComponent";
-import DialogManager, {Dialogs} from "./menus/DialogManager";
-import Debugger from "./Logic/Debugger";
-import PreferenceManager from "./PreferenceManager";
-import {defaultPreferences, Theme, WireEditMode} from "./Enums";
+import StateManager from './sys/util/stateManager';
+import Board from './sys/components/Board';
+import TooltipPane from './ui/output/TooltipPane';
+import DragObject from './sys/components/DragObject';
+import DropObject from './sys/components/DropObject';
+import Cursor from './ui/output/cursor';
+import CircuitManager from './Logic/io/CircuitManager';
+import RenderComponent from './ui/RenderComponent';
+import DialogManager, {Dialogs} from './menus/DialogManager';
+import Debugger from './Logic/Debugger';
+import PreferenceManager from './PreferenceManager';
+import {defaultPreferences, Theme, WireEditMode} from './Enums';
 
 export enum Tool {
     Pointer,
@@ -30,8 +30,8 @@ export interface State {
     dragObjects: DragObject[],
     dropObjects: DropObject[],
     theme: Theme,
-    font: _p5.Font,
-    iconFont: _p5.Font,
+    font: p5.Font,
+    iconFont: p5.Font,
     switchFrame: number, // The frame on which the theme was last switched
     frame: number,
     cursor: Cursor,
@@ -40,7 +40,7 @@ export interface State {
     tool: Tool,
     renderedComponents: RenderComponent[],
     canvas: JQuery,
-    p5Canvas: _p5.Renderer,
+    p5Canvas: p5.Renderer,
     sidebarWidth: number,
     sidebarIsLeft: boolean,
     pan: [number, number],

@@ -3,8 +3,10 @@
         {
             "location": null,
             "notes": [],
-            "text": "Could not resolve \"C:\\\\Users\\\\JCake\\\\Code\\\\LogicX\\\\build\\\\app\\\\server\\\\HTTP\\\\index.js\""
+            "text": "Could not resolve \"app\\\\window\\\\find.js\" (use \"./app\\\\window\\\\find.js\" to reference the file \"app/window/find.ts\")"
         }
     ],
+    "warnings": []
+}    ],
     "warnings": []
 }

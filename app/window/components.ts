@@ -1,5 +1,5 @@
-import * as $ from 'jquery';
-import * as mousetrap from 'mousetrap';
+import $ from 'jquery';
+import mousetrap from 'mousetrap';
 
 mousetrap.bind('esc', () => window.close());
 

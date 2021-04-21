@@ -1,6 +1,6 @@
-import * as $ from "jquery";
-import {manager} from "../../../State";
-import {WireEditMode} from "../../../Enums";
+import $ from 'jquery';
+import {manager} from '../../../State';
+import {WireEditMode} from '../../../Enums';
 
 export default function bindWireMode() {
     $("#wire-mode-selector span.option").on("click", function (this: HTMLElement) {

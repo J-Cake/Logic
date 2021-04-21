@@ -1,9 +1,9 @@
-import * as $ from "jquery";
+import $ from 'jquery';
 
-import StateManager from "../sys/util/stateManager";
-import Component from "./Component";
-import {manager} from "../State";
-import {DebugMode} from "../Enums";
+import StateManager from '../sys/util/stateManager';
+import Component from './Component';
+import {manager} from '../State';
+import {DebugMode} from '../Enums';
 
 export default class Debugger extends StateManager<{
     debugComponent: Component | null,

@@ -1,6 +1,6 @@
-import * as _ from 'lodash';
-import {GenericComponent, TruthTable} from "../../app/src/Logic/io/ComponentFetcher";
-import {attemptSync} from "../utils";
+import _ from 'lodash';
+import {GenericComponent, TruthTable} from '../../../app/src/Logic/io/ComponentFetcher';
+import {attemptSync} from '../../util/utils';
 
 const compareArray: <T>(arr1: T[], arr2: T[]) => boolean = function <T>(arr1: T[], arr2: T[]): boolean {
     if (arr1.length !== arr2.length)

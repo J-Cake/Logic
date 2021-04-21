@@ -1,7 +1,7 @@
-import * as _ from 'lodash';
+import _ from 'lodash';
 
-import StateManager from "./sys/util/stateManager";
-import {State} from "./State";
+import StateManager from './sys/util/stateManager';
+import {State} from './State';
 
 export default class history extends StateManager<{
     history: Partial<State>[];

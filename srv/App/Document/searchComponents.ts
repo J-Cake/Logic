@@ -1,11 +1,11 @@
-import * as path from 'path';
+import path from 'path';
 
-import * as _ from 'lodash';
+import _ from 'lodash';
 
-import sql from "../sql";
-import * as FS from '../FS';
-import {rootFn} from "../utils";
-import {ApiComponent} from "../../app/src/Logic/io/ComponentFetcher";
+import sql from '../../util/sql';
+import * as FS from '../../util/files';
+import {rootFn} from '../../util/utils';
+import {ApiComponent} from '../../../app/src/Logic/io/ComponentFetcher';
 
 export type tokenMap = { [token: string]: string };
 

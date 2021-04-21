@@ -1,6 +1,6 @@
-import {manager} from "../../index";
-import interpolate, {constrain, Interpolation, map} from "./interpolation";
-import Colour, {themes} from "./Themes";
+import {manager} from '../../';
+import interpolate, {constrain, Interpolation, map} from './interpolation';
+import Colour, {themes} from './Themes';
 
 export type rgb = [number, number, number];
 export type rgba = [number, number, number, number];

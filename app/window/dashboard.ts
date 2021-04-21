@@ -1,5 +1,6 @@
-import * as $ from 'jquery';
-import * as mousetrap from 'mousetrap';
+import $ from 'jquery';
+import mousetrap from 'mousetrap';
+import {makeDocument, renameDocument} from "../src/sys/API/circuit";
 
 mousetrap.bind('esc', () => window.close());
 
@@ -12,10 +13,7 @@ $('.controls *').each(function () {
 $('#mkDoc').on('click', async function () {
     const name = prompt('Please enter a document name');
     if (name) {
-        const token = await fetch(`/make?name=${name}`, {method: 'post'});
-        if (token.ok)
-            window.location.href = `/edit/${await token.text()}`;
-        // window.location.href = `/make?name=${name}`;
+        window.location.href = `/edit/${await makeDocument(name) as string}`;
     }
 });
 $('.doc').each(function () {
@@ -37,9 +35,13 @@ $('.collab').each(function () {
     const i = $(this);
     i.on('click', () => window.open(`/collab/${i.data('doc')}`, '_blank', 'location=no,height=450,width=450,scrollbars=no,status=no'));
 });
-$(".editName").on("click", function() {
-    fetch(`/circuit/${$(this).data('doc')}?name=${prompt("Enter a new name")}`, {method: 'post'}).then(_ => window.location.reload());
+$(".editName").on("click", function () {
+    const name = prompt("Enter a new name")
+    if (name)
+        renameDocument($(this).data('doc'), name).then(() => window.location.reload());
 });
-$(".leaveDoc").on('click', function() {
-    fetch(`/circuit/${$(this).data('doc')}/leave`, {method: 'delete'}).then(_ => window.location.reload());
+$(".leaveDoc").on('click', function () {
+
+
+    // fetch(`/circuit/${$(this).data('doc')}/leave`, {method: 'delete'}).then(_ => window.location.reload());
 });

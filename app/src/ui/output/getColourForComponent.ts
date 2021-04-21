@@ -1,7 +1,7 @@
-import {getColour, HSLToRGB, rgb, RGBToHSL} from "../../sys/util/Colour";
-import {manager} from "../../State";
-import Colour from "../../sys/util/Themes";
-import {map} from "../../sys/util/interpolation";
+import {getColour, HSLToRGB, rgb, RGBToHSL} from '../../sys/util/Colour';
+import {manager} from '../../State';
+import Colour from '../../sys/util/Themes';
+import {map} from '../../sys/util/interpolation';
 
 /**
  * Get or Generate a unique colour for a given component, taking the current theme into account

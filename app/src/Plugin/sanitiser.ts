@@ -1,7 +1,7 @@
-import * as _ from 'lodash';
+import _ from 'lodash';
 
-import {GenComponent} from "../Logic/io/ComponentFetcher";
-import RenderComponent from "../ui/RenderComponent";
+import {GenComponent} from '../Logic/io/ComponentFetcher';
+import RenderComponent from '../ui/RenderComponent';
 
 /// <reference path="/plugin.d.ts" />
 

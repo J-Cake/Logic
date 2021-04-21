@@ -1,15 +1,17 @@
-import {Pool} from 'pg';
-import {Try} from "../app/util";
+import path from 'path';
+import url from "url";
 
-import {devMode} from "./HTTP";
-import * as path from "path";
+import pg from 'pg';
+import {Try} from '../../app/util';
+
+import {devMode} from '../';
 
 export type SQLValue = string | number | boolean | Date;
 // export type SQLInjectType = { [key: string]: SQLValue } | SQLValue[];
 
 export type SQLInjectType = SQLValue[];
 
-export interface SQLFN {
+export interface SQL_FN {
     sql_each<Data extends {}>(query: string, placeholders?: SQLInjectType): Promise<Data>
 
     sql_query(query: string, placeholders?: SQLInjectType): Promise<void>
@@ -19,7 +21,7 @@ export interface SQLFN {
     sql_all<Data extends {}>(query: string, placeholders?: SQLInjectType): Promise<Data[]>
 }
 
-const pgPool = new Pool();
+const pgPool = new pg.Pool();
 
 pgPool.on('error', err => {
     throw err;
@@ -30,7 +32,7 @@ const parseStack = function (): string {
 
     if (err) {
         const lines = err.split('\n').map(i => i.match(/((?:[a-zA-Z]:|..|.|~)?(?:[\\\/].+?)+)\)?$/)?.pop()).filter(i => i) as string[];
-        return lines.find(i => !i.includes(path.parse(__filename).name)) ?? lines[0];
+        return lines.find(i => !i.includes(path.parse(url.fileURLToPath(import.meta.url)).name)) ?? lines[0];
     }
 
     return '';

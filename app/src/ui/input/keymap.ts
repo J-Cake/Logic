@@ -1,6 +1,6 @@
-import * as mousetrap from "mousetrap";
+import mousetrap from 'mousetrap';
 
-import {Action, triggerAction} from "./Action";
+import {Action, triggerAction} from './Action';
 
 export const keyMap: Record<Action, string[]> = {
     [Action.Enter]: ['enter'],

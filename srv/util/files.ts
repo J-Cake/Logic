@@ -1,4 +1,4 @@
-import * as fs from 'fs';
+import fs from 'fs';
 
 export function readFile(path: string): Promise<string> {
     return new Promise<string>((resolve, reject) => fs.readFile(path, 'utf8', (err, data) => err ? reject(err) : resolve(data)))

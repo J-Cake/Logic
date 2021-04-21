@@ -1,6 +1,6 @@
-import * as $ from 'jquery'
-import {Action, triggerAction} from "./Action";
-import bindWireMode from "../output/wire/wireController";
+import $ from 'jquery'
+import {Action, triggerAction} from './Action';
+import bindWireMode from '../output/wire/wireController';
 
 export const buttons: Record<Action, JQuery[]> = {
     [Action.Enter]: [],

@@ -1,12 +1,12 @@
-import * as p5 from "p5";
+import p5 from 'p5';
 
-import {manager, Tool} from "../../../State";
-import {getColour} from "../../../sys/util/Colour";
-import Colour from "../../../sys/util/Themes";
-import RenderComponent from "../../RenderComponent";
-import {WireHandle} from "./WireHandle";
-import RenderObject from "../../../sys/components/RenderObject";
-import {WireEditMode} from "../../../Enums";
+import {manager, Tool} from '../../../State';
+import {getColour} from '../../../sys/util/Colour';
+import Colour from '../../../sys/util/Themes';
+import RenderComponent from '../../RenderComponent';
+import {WireHandle} from './WireHandle';
+import RenderObject from '../../../sys/components/RenderObject';
+import {WireEditMode} from '../../../Enums';
 
 export type ApiWire = {
     coords: [number, number][],

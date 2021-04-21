@@ -39,14 +39,30 @@ export const copy = function (loc, dest) {
         } else
             fs.copyFileSync(path.join(loc, item), dest);
     } else
-        throw new Error("The item does not exist");
+        throw {
+            msg: `The item doesn't exist`,
+            item: loc,
+            destination: dest
+        };
 }
 
-export function rootFn() {
-    let dir = path.dirname(url.fileURLToPath(import.meta.url).replace(/\\/g, '/'));
+export function find(dir, file) {
+    if (!fs.statSync(dir).isDirectory())
+        return find(path.dirname(dir), file);
 
-    while (dir.includes('/') && !fs.readdirSync(dir).includes('package.json'))
-        dir = path.dirname(dir);
+    if (fs.readdirSync(dir).includes(file))
+        return dir;
+    else if (dir.split(path.sep).length >= 2)
+        return find(path.dirname(dir), file);
+    else
+        return null;
+}
 
-    return path.dirname(dir);
+export const root = find(url.fileURLToPath(import.meta.url), 'package.json');
+export const dirs = {
+    root: root,
+    app: path.join(root, 'app'),
+    build: path.join(root, 'build'),
+    tsOutput: path.join(root, 'app'),
+    finalOutput: path.join(root, 'final'),
 }

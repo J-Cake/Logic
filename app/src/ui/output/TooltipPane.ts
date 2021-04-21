@@ -1,11 +1,11 @@
-import * as $ from 'jquery';
-import type * as p5 from 'p5';
+import $ from 'jquery';
+import type p5 from 'p5';
 
-import RenderObject from "../../sys/components/RenderObject";
-import {manager} from "../../index";
-import {getColour} from "../../sys/util/Colour";
-import Colour from "../../sys/util/Themes";
-import {GenComponent} from "../../Logic/io/ComponentFetcher";
+import RenderObject from '../../sys/components/RenderObject';
+import {manager} from '../../';
+import {getColour} from '../../sys/util/Colour';
+import Colour from '../../sys/util/Themes';
+import {GenComponent} from '../../Logic/io/ComponentFetcher';
 
 export default class TooltipPane extends RenderObject {
 

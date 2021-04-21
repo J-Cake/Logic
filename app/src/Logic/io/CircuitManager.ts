@@ -1,9 +1,10 @@
-import type {CircuitObj} from "../../../../srv/App/Circuit";
-import StateManager from "../../sys/util/stateManager";
-import Component from "../Component";
-import fetchComponent, {GenComponent, GenericComponent} from "./ComponentFetcher";
-import {manager} from "../../State";
-import {attempt} from "../../../util";
+import type {CircuitObj} from '../../../../srv/App/Document/Document';
+import StateManager from '../../sys/util/stateManager';
+import Component from '../Component';
+import fetchComponent, {GenComponent, GenericComponent} from './ComponentFetcher';
+import {manager} from '../../State';
+import {attempt} from '../../../util';
+import {getDocument} from "../../sys/API/circuit";
 
 export interface CircuitManagerState {
     components: GenComponent[],
@@ -40,7 +41,6 @@ export default class CircuitManager {
         const selected = manager.setState().renderedComponents.filter(i => i.isSelected);
         for (const comp of selected) {
             comp.component.dropAll();
-            delete comp.component;
             comp.deleted = true;
             comp.wires = [];
         }
@@ -61,37 +61,33 @@ export default class CircuitManager {
     }
 
     private async loadCircuit(circuitId: string): Promise<{ [id: number]: [GenericComponent, GenComponent] }> {
-        const circuit = await fetch(circuitId ? `/circuit/${circuitId}` : `/try-it.json`);
+        const loaded: CircuitObj = await getDocument(circuitId) as CircuitObj;
 
-        if (circuit.ok) {
-            const loaded: CircuitObj = await circuit.json();
+        const availSync: { [componentId: string]: new(mapKey: number, base: GenericComponent) => GenComponent } = {};
 
-            const availSync: { [componentId: string]: new(mapKey: number, base: GenericComponent) => GenComponent } = {};
+        for (const componentToken of loaded.components)
+            await attempt(async () => availSync[componentToken] = await fetchComponent(componentToken),
+                err => alert(`'${componentToken}' is corrupt, and the document cannot be loaded.`));
 
-            for (const componentToken of loaded.components)
-                await attempt(async () => availSync[componentToken] = await fetchComponent(componentToken),
-                        err => alert(`'${componentToken}' is corrupt, and the document cannot be loaded.`));
+        const components: { [id: number]: [GenericComponent, GenComponent] } = {};
+        for (const i in loaded.content)
+            if (loaded.content[i].identifier)
+                components[i] = [loaded.content[i], new availSync[loaded.content[i].identifier as string](Number(i), loaded.content[i])];
+            else
+                throw 'invalid component identifier';
 
-            const components: { [id: number]: [GenericComponent, GenComponent] } = {};
-            for (const i in loaded.content)
-                if (loaded.content[i].identifier)
-                    components[i] = [loaded.content[i], new availSync[loaded.content[i].identifier as string](Number(i), loaded.content[i])];
-                else
-                    throw 'invalid component identifier';
+        for (const [comp, obj] of Object.values(components))
+            for (const i in comp.outputs)
+                for (const j of comp.outputs[i])
+                    components[j[0]][1].addInput(obj, i, j[1]);
 
-            for (const [comp, obj] of Object.values(components))
-                for (const i in comp.outputs)
-                    for (const j of comp.outputs[i])
-                        components[j[0]][1].addInput(obj, i, j[1]);
+        this.state.setState({
+            availableComponents: availSync,
+            components: Object.values(components).map(i => i[1]),
+            componentMap: components,
+            document: loaded
+        }).components.forEach(i => i.update());
 
-            this.state.setState({
-                availableComponents: availSync,
-                components: Object.values(components).map(i => i[1]),
-                componentMap: components,
-                document: loaded
-            }).components.forEach(i => i.update());
-
-            return components;
-        } else return {};
+        return components;
     }
 }

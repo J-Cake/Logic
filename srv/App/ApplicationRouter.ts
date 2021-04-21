@@ -1,34 +1,31 @@
-import * as _ from "lodash";
-import * as express from "express";
+import _ from 'lodash';
+import express from 'express';
 
-import {convertFromHTMLForm, getPreferencesForUser, isLoggedIn, verifyUser, writePreferences} from "../User";
-import sql from "../sql";
+import {convertFromHTMLForm, getPreferencesForUser, isLoggedIn, verifyUser, writePreferences} from './Auth/UserActions';
+import sql from '../util/sql';
 
-import {reloadPort} from "./index";
-import getFile, {DBPreferenceMap} from "../getFile";
-import searchComponents from "../App/searchComponents";
-import {attempt} from "../utils";
-import docToComponent from "../App/Component";
-import {PreferenceDescriptor, PreferenceType} from "../../app/src/Enums";
+import getFile, {DBPreferenceMap} from './Document/getFile';
+import searchComponents from './Document/searchComponents';
+import {attempt} from '../util/utils';
+import docToComponent from './Document/Component';
+import {PreferenceDescriptor, PreferenceType} from '../../app/src/Enums';
+import {devMode} from "../index";
 
 const router: express.Router = express.Router();
 
 router.use(async function (req, res, next) {
-    const userId = req.cookies.userId ?? req.header("userId");
-    req.userId = userId;
+    const userToken = req.cookies['auth-token'] ?? req.header("auth-token");
+    req.userToken = userToken;
 
-    if (!userId || !await verifyUser(userId))
+    if (!userToken || !await verifyUser(userToken))
         res.redirect('/user/login');
     else next();
 })
 
 router.get('/dashboard', async function (req, res) {
-    const userToken = req.userId || "";
+    const userToken = req.userToken || "";
 
     if (await verifyUser(userToken)) {
-        // const own =
-        // const shared =
-        // const components = ;
 
         res.render("dashboard", {
             own: await sql.sql_all<{ documentToken: number, documentTitle: string }>(`SELECT *
@@ -50,7 +47,7 @@ router.get('/dashboard', async function (req, res) {
 });
 
 router.get('/edit/:circuit', async function (req, res) {
-    const userToken: string = req.userId || "";
+    const userToken: string = req.userToken || "";
     const usr = await verifyUser(userToken);
 
     if (!usr) {
@@ -63,13 +60,13 @@ router.get('/edit/:circuit', async function (req, res) {
         res.render("app", {
             circuit: req.params.circuit,
             title: `Editing ${file.info.circuitName}`,
-            devMode: reloadPort,
+            devMode: devMode,
             isLoggedIn: isLoggedIn(req)
         });
     })) res.render('site/403');
 });
 router.get('/view/:circuit', async function (req, res) {
-    const userToken: string = req.userId || "";
+    const userToken: string = req.userToken || "";
     const usr = await verifyUser(userToken);
 
     if (!usr) {
@@ -81,7 +78,7 @@ router.get('/view/:circuit', async function (req, res) {
 
         res.render("viewer", {
             circuit: req.params.circuit,
-            devMode: reloadPort,
+            devMode: devMode,
             title: `Peeking ${file.info.circuitName}`,
             isLoggedIn: isLoggedIn(req)
         });
@@ -89,7 +86,7 @@ router.get('/view/:circuit', async function (req, res) {
 });
 
 router.get('/components/:circuit/', async function (req, res) {
-    const userToken: string = req.userId || "";
+    const userToken: string = req.userToken || "";
     const usr = await verifyUser(userToken);
 
     if (!usr) {
@@ -101,7 +98,7 @@ router.get('/components/:circuit/', async function (req, res) {
 
         res.render("componentMenu", {
             components: await file.componentIdStringToNames(),
-            devMode: reloadPort,
+            devMode: devMode,
             title: `Components`,
             isLoggedIn: isLoggedIn(req)
         });
@@ -112,7 +109,7 @@ router.get('/components/:circuit/', async function (req, res) {
 
 });
 router.get('/find/:circuit/', async function (req, res) {
-    const userToken: string = req.userId || "";
+    const userToken: string = req.userToken || "";
     const file = await getFile(userToken, req.params.circuit);
     await file?.fetchInfo();
 
@@ -124,7 +121,7 @@ router.get('/find/:circuit/', async function (req, res) {
                                                                                                       from components
                                                                                                       where "ownerId" = (SELECT "userId" from users where "userToken" = $1)`, [userToken]) || [],
                 doc: req.params.circuit,
-                devMode: reloadPort,
+                devMode: devMode,
                 title: `Explore`,
                 isLoggedIn: isLoggedIn(req),
                 query: req.query['q'] as string,
@@ -140,7 +137,7 @@ router.get('/find/:circuit/', async function (req, res) {
                                                                                                       from components
                                                                                                       where "ownerId" = (SELECT "userId" from users where "userToken" = $1)`, [userToken]) || [],
                 doc: req.params.circuit,
-                devMode: reloadPort,
+                devMode: devMode,
                 title: `Explore`,
                 isLoggedIn: isLoggedIn(req),
                 msg: req.cookies['error'] ?? ''
@@ -152,7 +149,7 @@ router.get('/find/:circuit/', async function (req, res) {
 });
 
 router.post('/doc-to-component/:circuit', async function (req, res) {
-    const userToken: string = req.userId || "";
+    const userToken: string = req.userToken || "";
     const usr = await verifyUser(userToken);
 
     if (!usr) {
@@ -188,7 +185,7 @@ router.post('/doc-to-component/:circuit', async function (req, res) {
 });
 
 router.get('/import-document/:circuit', async function (req, res) {
-    const userToken: string = req.userId || "";
+    const userToken: string = req.userToken || "";
     const usr = await verifyUser(userToken);
 
     if (!usr) {
@@ -222,8 +219,8 @@ router.get('/import-document/:circuit', async function (req, res) {
 });
 
 router.get('/collab/:circuit/', async function (req, res) {
-    const userId: string = req.userId || "";
-    const file = await getFile(userId, req.params.circuit);
+    const userToken: string = req.userToken || "";
+    const file = await getFile(userToken, req.params.circuit);
     await file?.fetchInfo();
 
     if (file)
@@ -242,27 +239,8 @@ router.get('/collab/:circuit/', async function (req, res) {
     }
 });
 
-router.get('/search-users', async function (req, res) {
-    const recordsPerPage = 25;
-    const {count} = await sql.sql_get<{ count: number }>(`SELECT COUNT(*) as count
-                                                          from users`);
-    const page = Math.min(Math.max(Number(req.query.page || '0') ?? 0, 0), Math.ceil(count / recordsPerPage));
-
-    res.json({
-        users: await sql.sql_all(`SELECT email, identifier, "userId"
-                                  from users
-                                  where identifier like $1
-                                     or email like $1
-                                  LIMIT $2 OFFSET $3`, [`%${req.query.q ?? ''}%`, recordsPerPage, page * recordsPerPage]),
-        page: page + 1,
-        records: count,
-        recordsPerPage: recordsPerPage,
-        pages: Math.ceil(count / recordsPerPage)
-    });
-});
-
 router.get('/settings', async function (req, res) {
-    const userToken: string = req.userId || "";
+    const userToken: string = req.userToken || "";
     const usr = await verifyUser(userToken);
 
     if (!usr) {
@@ -278,7 +256,7 @@ router.get('/settings', async function (req, res) {
 });
 
 router.post('/settings', async function (req, res) {
-    const userToken: string = (req.cookies.userId ?? req.header("userId")) || "";
+    const userToken: string = (req.cookies['auth-token'] ?? req.header("auth-token")) || "";
     const usr = await verifyUser(userToken);
 
     if (!usr) {

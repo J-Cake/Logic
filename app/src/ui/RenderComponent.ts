@@ -1,14 +1,14 @@
-import * as p5 from "p5";
+import type p5 from 'p5';
 
-import RenderObject from "../sys/components/RenderObject";
-import Component from "../Logic/Component";
-import CircuitManager from "../Logic/io/CircuitManager";
-import {getColour, rgb, transparent} from "../sys/util/Colour";
-import {manager, State, Tool} from "../index";
-import Colour from "../sys/util/Themes";
-import Wire from "./output/wire/Wire";
-import {GenComponent} from "../Logic/io/ComponentFetcher";
-import getColourForComponent from "./output/getColourForComponent";
+import RenderObject from '../sys/components/RenderObject';
+import Component from '../Logic/Component';
+import CircuitManager from '../Logic/io/CircuitManager';
+import {getColour, rgb, transparent} from '../sys/util/Colour';
+import {manager, State, Tool} from '../';
+import Colour from '../sys/util/Themes';
+import Wire from './output/wire/Wire';
+import {GenComponent} from '../Logic/io/ComponentFetcher';
+import getColourForComponent from './output/getColourForComponent';
 
 export interface RenderProps {
     pos: [number, number],

@@ -2,7 +2,8 @@
     "name": "LogicX",
     "version": "1.0.0",
     "description": "",
-    "main": "build/srv/HTTP/index.js",
+    "type": "module",
+    "main": "build/srv/index.js",
     "scripts": {
         "build": "tsc && node ./bin/build"
     },
@@ -30,6 +31,7 @@
         "sqlite3": "^5.0.0",
         "stack-mapper": "^0.2.2",
         "typescript": "^3.9.6",
+        "vhost": "^3.0.2",
         "ws": "^7.4.2"
     },
     "devDependencies": {
@@ -52,6 +54,7 @@
         "@types/source-map-support": "^0.5.1",
         "@types/sqlite3": "^3.1.6",
         "@types/stack-mapper": "^0.2.28",
+        "@types/vhost": "^3.0.2",
         "@types/wicg-native-file-system": "^2020.6.0",
         "@types/ws": "^7.4.0",
         "esbuild": "^0.8.56",

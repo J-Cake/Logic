@@ -1,7 +1,7 @@
-import * as path from 'path';
-import * as express from 'express';
+import path from 'path';
+import express from 'express';
 
-import {rootFn} from "../utils";
+import {rootFn} from '../util/utils';
 
 const router: express.Router = express.Router();
 

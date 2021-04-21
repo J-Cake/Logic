@@ -1,11 +1,11 @@
-import * as path from 'path';
+import path from 'path';
 
-import * as express from 'express';
-import * as MarkdownIt from 'markdown-it';
+import express from 'express';
+import MarkdownIt from 'markdown-it';
 
-import {rootFn} from "../utils";
-import * as FS from '../FS';
-import {isLoggedIn} from "../User";
+import {rootFn} from '../util/utils';
+import * as FS from '../util/files';
+import {isLoggedIn} from './Auth/UserActions';
 
 const comp = new MarkdownIt({
     html: true,

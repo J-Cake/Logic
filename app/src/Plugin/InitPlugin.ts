@@ -1,7 +1,7 @@
-import {ApiComponent} from "../Logic/io/ComponentFetcher";
-import * as sanitiser from "./sanitiser";
-import type {showModal} from "./DialogManager";
-import type {pickFile} from "./API";
+import {ApiComponent} from '../Logic/io/ComponentFetcher';
+import * as sanitiser from './sanitiser';
+import type {showModal} from './DialogManager';
+import type {pickFile} from './API';
 
 export interface Plugin {
     computeFn: (inputs: boolean[]) => boolean[],

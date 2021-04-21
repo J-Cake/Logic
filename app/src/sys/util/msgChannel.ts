@@ -1,4 +1,4 @@
-import StateManager from "./stateManager";
+import StateManager from './stateManager';
 
 export interface state {
     functionId: number,

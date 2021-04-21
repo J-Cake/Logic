@@ -1,9 +1,9 @@
-import * as p5 from 'p5';
+import type p5 from 'p5';
 
 import RenderObject from './RenderObject';
-import {getColour} from "../util/Colour";
-import {manager} from '../../index';
-import Colour from "../util/Themes";
+import {getColour} from '../util/Colour';
+import {manager} from '../../';
+import Colour from '../util/Themes';
 
 export default class Board extends RenderObject {
     padding: number;

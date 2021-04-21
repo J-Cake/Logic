@@ -1,20 +1,20 @@
-import * as $ from 'jquery';
-import * as _p5 from 'p5';
-import * as mousetrap from 'mousetrap';
+import $ from 'jquery';
+import p5 from 'p5';
+import mousetrap from 'mousetrap';
 
 import {manager, Tool} from './State';
 import RenderObject from './sys/components/RenderObject';
 import Board from './sys/components/Board';
 import {Interpolation} from './sys/util/interpolation';
-import {getColour, hex} from "./sys/util/Colour";
-import Cursor from "./ui/output/cursor";
-import CircuitManager from "./Logic/io/CircuitManager";
-import {renderComponents} from "./ui/RenderComponent";
-import handleEvents from "./ui/input/events";
-import TooltipPane from "./ui/output/TooltipPane";
-import Colour from "./sys/util/Themes";
-import buildComponentPrompt from "./menus/ComponentMenu";
-import buildFinderPrompt from "./menus/ComponentFinder";
+import {getColour} from './sys/util/Colour';
+import Cursor from './ui/output/cursor';
+import CircuitManager from './Logic/io/CircuitManager';
+import {renderComponents} from './ui/RenderComponent';
+import handleEvents from './ui/input/events';
+import TooltipPane from './ui/output/TooltipPane';
+import Colour from './sys/util/Themes';
+import buildComponentPrompt from './menus/ComponentMenu';
+import buildFinderPrompt from './menus/ComponentFinder';
 
 declare global {
     interface Array<T> {
@@ -27,7 +27,7 @@ Array.prototype.last = function (i: number = 0) {
 
 export * from './State';
 
-new _p5(function (sketch: _p5) {
+new p5(function (sketch: p5) {
     sketch.setup = async function () {
         const documentId: string = $("#circuitToken").text();
 

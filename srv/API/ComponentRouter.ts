@@ -1,12 +1,13 @@
-import * as path from 'path';
+import path from 'path';
 
-import * as express from 'express';
+import express from 'express';
 
-import sql from "../sql";
-import {rootFn} from "../utils";
-import ScriptRouter from "./ScriptRouter";
-import * as FS from "../FS";
-import searchComponents from "../App/searchComponents";
+import sql from '../util/sql';
+import {rootFn} from '../util/utils';
+import ScriptRouter from '../App/ScriptRouter';
+import * as FS from '../util/files';
+import searchComponents from '../App/Document/searchComponents';
+import authenticate from "./lib/authenticate";
 
 const router: express.Router = express.Router();
 
@@ -26,13 +27,7 @@ router.get('/find', async function (req, res) {
         res.json([]);
 });
 
-router.use(async function (req, res, next) {
-    req.userId = req.cookies.userId ?? req.header("userId");
-
-    next();
-})
-
-router.use(ScriptRouter);
+router.use(authenticate());
 
 router.get("/:componentToken", async function (req, res) {
     if (req.params.componentToken.startsWith("$")) {
@@ -48,7 +43,7 @@ router.get("/:componentToken", async function (req, res) {
         const component = await sql.sql_get<DBComponent>(`SELECT *
                                                           from components
                                                           WHERE "componentToken" = $1
-                                                            and (public is TRUE or "ownerId" = (SELECT "userId" from users where "userToken" = $2))`, [req.params.componentToken, req.userId || ""]);
+                                                            and (public is TRUE or "ownerId" = (SELECT "userId" from users where "userToken" = $2))`, [req.params.componentToken, req.userToken || ""]);
 
         if (!component) {
             res.status(404);

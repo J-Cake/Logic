@@ -1,22 +1,14 @@
 import path from 'path';
 import fs from 'fs';
+import url from 'url'
 import build from 'esbuild';
 
-import {copy, rootFn} from "./build_utils.js";
-
-export const dirs = {
-    root: rootFn(import.meta.url),
-}
+import {copy, find, dirs} from "./build_utils.js";
 
 const devMode = !!process.argv.find(i => i.trim() === '--dev');
 
 if (devMode)
-    console.log("--- DEV MODE ---");
-
-dirs.app = path.join(dirs.root, 'app');
-dirs.build = path.join(dirs.root, 'build');
-dirs.tsOutput = path.join(dirs.build, 'app');
-dirs.finalOutput = path.join(dirs.build, 'final');
+    console.log("--- Building in dev mode ---");
 
 const buildComponent = (app, out, platform = 'browser') => build.build({
     entryPoints: [path.join(dirs.tsOutput, app)],
@@ -47,7 +39,7 @@ if (!process.argv.find(i => i.trim() === '--static')) {
             .then(() => console.log(`${i} - Done in ${new Date(new Date().getTime() - start.getTime()).getSeconds()}s`))
             .catch(async function (err) {
                 console.error(`${i} - Failed with ${err.errors.length}`);
-                fs.writeFile(path.join(await rootFn(), 'errs.json'), JSON.stringify(err, null, 4), () => process.exit(-1));
+                fs.writeFile(path.join(find(url.fileURLToPath(import.meta.url), 'package.json'), 'errs.json'), JSON.stringify(err, null, 4), () => process.exit(-1));
             });
     }
 }

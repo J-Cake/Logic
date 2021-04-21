@@ -1,4 +1,4 @@
-import * as p5 from 'p5';
+import type p5 from 'p5';
 
 export default abstract class RenderObject {
     private static objs: RenderObject[] = [];

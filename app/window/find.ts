@@ -1,5 +1,6 @@
-import * as $ from 'jquery';
-import * as mousetrap from 'mousetrap';
+import $ from 'jquery';
+import mousetrap from 'mousetrap';
+import {addComponent} from "../src/sys/API/circuit";
 
 mousetrap.bind('esc', () => window.close());
 
@@ -12,11 +13,9 @@ new Promise<(msgFn: string) => void>(ok => ok(connect())).then(function(msgFn) {
 
     $(".info").on('click', function() {
         const tok = $(this).data('token');
-        fetch(`/circuit/${window.location.pathname.split('/').pop()}/add-component?component=${tok}`, {method: 'put'}).then(res => {
-            if (res.ok) {
-                msgFn(tok);
-                window.close();
-            }
+        addComponent(window.location.pathname.split('/').pop() as string, tok).then(res => {
+            msgFn(tok);
+            window.close();
         });
     });
 });

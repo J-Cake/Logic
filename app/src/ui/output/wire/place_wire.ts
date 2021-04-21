@@ -1,6 +1,6 @@
-import Wire, {ApiWire} from "./Wire";
-import {State} from "../../../State";
-import {WireHandle} from "./WireHandle";
+import Wire, {ApiWire} from './Wire';
+import {State} from '../../../State';
+import {WireHandle} from './WireHandle';
 
 export default function mkWire(state: State, wire: Partial<ApiWire>, clearWire: () => void) {
     const hoverComponent = state.renderedComponents.find(i => i.getTouchingTerminal([state.mouse.x, state.mouse.y])); // i.isWithinBounds(state)

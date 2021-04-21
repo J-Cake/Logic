@@ -1,40 +1,36 @@
-import * as path from "path";
+import path from 'path';
 
-import * as express from 'express';
-import * as bodyParser from 'body-parser';
+import express from 'express';
+import bodyParser from 'body-parser';
 
-import getFile, {userTokenToId} from "../getFile";
-import {verifyUser} from "../User";
-import {attempt, attemptSync, Pref, rootFn} from "../utils";
-import sql from "../sql";
-import Circuit, {CircuitObj} from "../App/Circuit";
+import getFile, {userTokenToId} from '../App/Document/getFile';
+import {verifyUser} from '../App/Auth/UserActions';
+import {attempt, attemptSync, Pref, rootFn} from '../util/utils';
+import sql from '../util/sql';
+import Document, {CircuitObj} from '../App/Document/Document';
 
-import * as FS from "../FS";
+import * as FS from '../util/files';
+import authenticate from "./lib/authenticate";
 
 const router: express.Router = express.Router();
 
 router.use(bodyParser.json({}));
 
-router.use('/', async function (req, res, next) {
-    const userId = req.cookies.userId ?? req.header("userId");
-    req.userId = userId;
-
-    if (!userId || !await verifyUser(userId))
-        res.redirect('/user/login');
-    else next();
-})
+router.use(authenticate());
 
 router.post("/make", async function (req, res) {
-    const userToken: string = req.userId || "";
+    const userToken: string = req.userToken || "";
 
     const name = (req.query.name || "").toString() || Math.floor(Math.random() * 11e17).toString(36);
 
-    const documentToken: string = await (async function() {
+    const documentToken: string = await (async function () {
         let token = '';
 
         do
             token = Math.floor(Math.random() * 11e17).toString(36);
-        while (await sql.sql_get<{userToken: string}>(`SELECT "documentToken" from documents where "documentToken" = $1`, [token]));
+        while (await sql.sql_get<{ userToken: string }>(`SELECT "documentToken"
+                                                         from documents
+                                                         where "documentToken" = $1`, [token]));
 
         return token;
     })();
@@ -55,15 +51,15 @@ router.post("/make", async function (req, res) {
     res.end(documentToken);
 });
 
-router.get('/circuit/:circuit', async function (req, res) {
-    const userId: string = req.userId || "";
-    const usr = await verifyUser(userId);
+router.get('/:circuit', async function (req, res) {
+    const userToken: string = req.userToken || "";
+    const usr = await verifyUser(userToken);
 
     if (!usr) {
         res.status(401);
         res.end('Unverified request');
     } else if (await attempt(async function () {
-        const file = await getFile(userId, req.params.circuit);
+        const file = await getFile(userToken, req.params.circuit);
         await file.fetchInfo();
         res.json(file.info);
     })) {
@@ -72,15 +68,15 @@ router.get('/circuit/:circuit', async function (req, res) {
     }
 });
 
-router.put('/circuit/:circuit', async function (req, res) { // File Save
-    const userId: string = req.userId || "";
-    const usr = await verifyUser(userId);
+router.put('/:circuit', async function (req, res) { // File Save
+    const userToken: string = req.userToken || "";
+    const usr = await verifyUser(userToken);
 
     if (!usr) {
         res.status(401);
         res.end('Unverified request');
     } else if (await attempt(async function () {
-        const file: Circuit = await getFile(userId, req.params.circuit);
+        const file: Document = await getFile(userToken, req.params.circuit);
         await file.info;
 
         if (['circuitName', 'content', 'components', 'ownerEmail'].map(i => i in req.body).includes(false)) {
@@ -97,8 +93,8 @@ router.put('/circuit/:circuit', async function (req, res) { // File Save
     }
 });
 
-router.delete('/circuit/:circuit', async function (req, res) {
-    const userToken: string = req.userId || "";
+router.delete('/:circuit', async function (req, res) {
+    const userToken: string = req.userToken || "";
     const usr = await verifyUser(userToken);
 
     if (!usr) {
@@ -122,8 +118,8 @@ router.delete('/circuit/:circuit', async function (req, res) {
 
 });
 
-router.put('/circuit/:circuit/collaborator', async function (req, res) {
-    const userToken: string = req.userId || "";
+router.put('/:circuit/collaborator', async function (req, res) {
+    const userToken: string = req.userToken || "";
     const usr = await verifyUser(userToken);
 
     if (!usr) {
@@ -157,8 +153,8 @@ router.put('/circuit/:circuit/collaborator', async function (req, res) {
     }
 });
 
-router.delete('/circuit/:circuit/collaborator', async function (req, res) {
-    const userToken: string = req.userId || "";
+router.delete('/:circuit/collaborator', async function (req, res) {
+    const userToken: string = req.userToken || "";
     const usr = await verifyUser(userToken);
 
     if (!usr) {
@@ -182,8 +178,8 @@ router.delete('/circuit/:circuit/collaborator', async function (req, res) {
     }
 });
 
-router.put('/circuit/:circuit/add-component', async function (req, res) {
-    const userToken: string = req.userId || "";
+router.put('/:circuit/add-component', async function (req, res) {
+    const userToken: string = req.userToken || "";
     const usr = await verifyUser(userToken);
 
     if (!usr) {
@@ -219,8 +215,8 @@ router.put('/circuit/:circuit/add-component', async function (req, res) {
     }
 })
 
-router.post('/circuit/:circuit/', async function (req, res) {
-    const userToken: string = req.userId || "";
+router.post('/:circuit/', async function (req, res) {
+    const userToken: string = req.userToken || "";
     const usr = await verifyUser(userToken);
 
     if (!usr) {
@@ -249,8 +245,8 @@ router.post('/circuit/:circuit/', async function (req, res) {
         res.end('You do not have access to this document');
     }
 });
-router.delete('/circuit/:circuit/leave', async function (req, res) {
-    const userToken: string = req.userId || "";
+router.delete('/:circuit/leave', async function (req, res) {
+    const userToken: string = req.userToken || "";
     const usr = await verifyUser(userToken);
 
     if (!usr) {

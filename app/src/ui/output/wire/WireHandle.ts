@@ -1,9 +1,10 @@
-import DragObject from "../../../sys/components/DragObject";
-import * as p5 from "p5";
-import {manager, Tool} from "../../../State";
-import {getColour, transparent} from "../../../sys/util/Colour";
-import {Colour, WireEditMode} from "../../../Enums";
-import Wire from "./Wire";
+import type p5 from 'p5';
+
+import DragObject from '../../../sys/components/DragObject';
+import {manager, Tool} from '../../../State';
+import {getColour, transparent} from '../../../sys/util/Colour';
+import {Colour, WireEditMode} from '../../../Enums';
+import Wire from './Wire';
 
 export class WireHandle extends DragObject {
     static handleSize: number = 12;
