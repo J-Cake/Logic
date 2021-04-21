@@ -1,5 +1,5 @@
 import CircuitManager from './CircuitManager';
-import {CircuitObj} from '../../../../srv/App/Document/Document';
+import {CircuitObj} from '../../../../server/App/Document/Document';
 import {manager} from '../../State';
 import {GenComponent, GenericComponent, wires} from './ComponentFetcher';
 import Component from '../Component';

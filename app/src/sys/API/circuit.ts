@@ -1,5 +1,5 @@
 import {authToken} from "./index";
-import type {CircuitObj} from "../../../../srv/App/Document/Document";
+import type {CircuitObj} from "../../../../server/App/Document/Document";
 
 // TODO: Link Return types to API return types.
 

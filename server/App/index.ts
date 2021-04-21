@@ -23,9 +23,9 @@ export default async function(): Promise<express.Application> {
 
     app.use('/app', express.static(dirs.finalOutput));
 
+    app.use('/', WebRouter);
     app.use('/user', UserRouter);
     app.use('/', ApplicationRouter);
-    app.use('/', WebRouter);
 
     app.use('/component/src', ScriptRouter);
 

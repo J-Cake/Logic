@@ -59,10 +59,14 @@ export function find(dir, file) {
 }
 
 export const root = find(url.fileURLToPath(import.meta.url), 'package.json');
+const app = path.join(root, 'app'),
+    build = path.join(root, 'build'),
+    tsOutput = path.join(build, 'app'),
+    finalOutput = path.join(build, 'final')
 export const dirs = {
     root: root,
-    app: path.join(root, 'app'),
-    build: path.join(root, 'build'),
-    tsOutput: path.join(root, 'app'),
-    finalOutput: path.join(root, 'final'),
+    app: app,
+    build: build,
+    tsOutput: tsOutput,
+    finalOutput: finalOutput,
 }

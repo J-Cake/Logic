@@ -1,4 +1,4 @@
-import type {CircuitObj} from '../../../../srv/App/Document/Document';
+import type {CircuitObj} from '../../../../server/App/Document/Document';
 import StateManager from '../../sys/util/stateManager';
 import Component from '../Component';
 import fetchComponent, {GenComponent, GenericComponent} from './ComponentFetcher';
