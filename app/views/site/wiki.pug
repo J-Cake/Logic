@@ -1,8 +1,7 @@
 extends page
 
-mixin renderPages(pages, root)
+mixin renderPages(pages, root, depth)
     -
-        console.log(pages, root);
         const nonCapitalised = ['and', 'or', 'is', 'but', 'not', 'because', 'of', 'from', 'to', 'in', 'at', 'vs']
         const capitalise = function (i) {
             if (i.endsWith('.md'))
@@ -20,16 +19,22 @@ mixin renderPages(pages, root)
         if (typeof pages[page] === 'string')
             a.page(href="/wiki/" + encodeURIComponent(root + page))= capitalise(page)
         else
-            span= capitalise(page)
-            .indent
-                +renderPages(pages[page], '/' + root + page + '/')
+            input(type="checkbox", id=`checkbox-for-${page}-${depth}`, checked).collapse
+            label(for=`checkbox-for-${page}-${depth}`)
+                span= capitalise(page)
+                .indent
+                    +renderPages(pages[page], '/' + root + page + '/', depth + 1)
 
 block page
     link(rel="stylesheet", href="/app/wiki.css")
 
-    h2 Index
-    .pages
-        +renderPages(pages, '')
+    input(type="checkbox", checked)#index.collapse-index
+    label(for="index")
+        h2 Index
+        #pages
+            +renderPages(pages, '', 0)
 
     if (content)
         article#content !{content}
+    else
+        article#content

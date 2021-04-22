@@ -1,25 +1,27 @@
 extends ../web
 
 block content
-    header
-        if isLoggedIn
-            nav#content
-                nav.site
-                    a(href="/") Home
-                    a(href="/explore") Explore
-                    a(href="/wiki") LogicX Wiki
-                nav.user
-                    a(href="/dashboard#own") Dashboard
-                    a(href="/user/account") Account
-                    a(href="/user/logout") Log Out
-        else
-            nav#content
-                nav.site
-                    a(href="/") Home
-                    a(href="/folio") Folio
-                    a(href="/wiki") LogicX Wiki
-                nav.user
-                    a(href="/dashboard") Log In
+    input(type="checkbox")#header-collapse
+    label(for="header-collapse")
+        header
+            if isLoggedIn
+                nav#content
+                    nav.site
+                        a(href="/") Home
+                        a(href="/explore") Explore
+                        a(href="/wiki") LogicX Wiki
+                    nav.user
+                        a(href="/dashboard#own") Dashboard
+                        a(href="/user/account") Account
+                        a(href="/user/logout") Log Out
+            else
+                nav#content
+                    nav.site
+                        a(href="/") Home
+                        a(href="/folio") Folio
+                        a(href="/wiki") LogicX Wiki
+                    nav.user
+                        a(href="/dashboard") Log In
 
     section#body
         //img(src="https://www.lifeofpix.com/wp-content/uploads/2018/05/308-name6012-ake-1-1600x1067.jpg")#bg-img

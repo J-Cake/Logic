@@ -212,3 +212,63 @@ button {
     font-size: 10pt;
     line-height: 24pt;
 }
+
+#page {
+    grid-template-columns: 1fr minmax(min-content, var(--max-width)) 1fr;
+    grid-template-rows: auto;
+    grid-template-areas: "index article side";
+    padding: 16px;
+}
+
+@media (max-width: 800px) {
+    #page {
+        grid-template-columns: auto;
+        grid-template-rows: auto auto;
+        grid-template-areas: "index" "article";
+        margin: 0;
+    }
+
+    :root {
+        --max-width: 800px;
+    }
+
+    article#content {
+        width: 100%;
+    }
+
+    :root form, :root #form {
+
+        height: 100%
+    }
+}
+
+@media (min-width: 800px) and (max-width: 1250px) {
+    #page {
+        grid-template-columns: auto;
+        grid-template-rows: auto auto;
+        grid-template-areas: "index" "article";
+    }
+
+    article#content {
+        max-width: var(--max-width);
+    }
+    :root {
+        --max-width: 800px;
+    }
+
+    :root form, :root #form {
+        height: 100%;
+    }
+}
+
+@media (min-width: 1250px) {
+    #page {
+        grid-template-columns: 1fr minmax(800px, 1fr) 1fr;
+        grid-template-rows: auto;
+        grid-template-areas: "index article side";
+    }
+
+    article#content {
+        min-width: 800px;
+    }
+}

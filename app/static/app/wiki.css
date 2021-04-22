@@ -13,22 +13,26 @@ h1 {
 h2 {
     font-size: 18pt;
     font-family: Rasa, serif;
-    width: 100%;
+    /* width: 100%; */
     border-bottom: 1px solid var(--blank);
     font-weight: normal;
     font-style: italic;
 }
+
 h3 {
     font-size: 16pt;
     font-family: Rasa, serif;
     font-weight: normal;
 }
+
 h4 {
     font-size: 16pt;
 }
+
 h5 {
     font-size: 12pt;
 }
+
 h6 {
     font-size: 8pt;
 }
@@ -75,13 +79,13 @@ ol li:before {
     margin: 0 0.75em;
 }
 
-.pages {
+#pages {
     padding: 8px 24px;
     display: flex;
     flex-direction: column;
 }
 
-.pages .page {
+#pages .page {
     display: flex;
     color: var(--primary);
     line-height: 150%;
@@ -94,7 +98,7 @@ ol li:before {
     padding-left: 24px;
 }
 
-.pages .page:before {
+#pages .page:before {
     content: '';
     display: block;
 }
@@ -133,4 +137,81 @@ td {
 
 tr:nth-child(even) {
     background: var(--primary);
+}
+
+icon {
+    font-family: Remix;
+    font-size: 12pt;
+    display: inline;
+}
+
+#page {
+    max-width: 100%;
+    width: 100%;
+    display: grid;
+}
+
+#index {
+    grid-area: index;
+    width: 100%;
+    height: 100%;
+}
+
+article#content {
+    grid-area: article;
+    width: 100%;
+    height: 100%;
+}
+
+.collapse, .collapse-index {
+    position: absolute;
+    visibility: hidden;
+    width: 0;
+}
+
+.collapse + label > .indent, .collapse-index + label > #pages {
+    display: none;
+}
+
+.collapse:checked + label > .indent {
+    display: block;
+}
+
+.collapse-index:checked + label #pages {
+    display: flex;
+}
+
+.collapse:checked + label:before, .collapse-index:checked + label h2:before {
+    transform: rotate(90deg);
+}
+
+.collapse + label:before, .collapse-index + label h2:before {
+    content: '';
+    font-style: normal;
+    transition: transform 0.3s;
+    width: 16pt;
+    height: 16pt;
+    line-height: 16pt;
+    display: inline-block;
+    text-align: center;
+    font-size: 12pt;
+    font-family: Remix;
+}
+
+@media (max-width: 800px) {
+    article#content {
+        width: 100%;
+    }
+}
+
+@media (min-width: 800px) and (max-width: 1250px) {
+    article#content {
+        max-width: var(--max-width);
+    }
+}
+
+@media (min-width: 1250px) {
+    article#content {
+        min-width: 800px;
+    }
 }
