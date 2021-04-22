@@ -1,7 +1,8 @@
+import os from 'os';
+
 import express from 'express';
 import morgan from 'morgan';
-
-import vhost from 'vhost';
+import _ from 'lodash';
 import 'source-map-support/register';
 
 import API from './API';
@@ -10,6 +11,7 @@ import Admin from './Admin';
 
 import {getPort, liveReload, rootFn} from './util/utils';
 import bodyParser from "body-parser";
+import host from "./host";
 
 export const port: number = getPort();
 export const devMode: boolean = process.argv.includes('--dev');
@@ -32,9 +34,12 @@ app.use(function (req, res, next) {
         next();
 });
 
-app.use(vhost('*', await App()));
-app.use(vhost('api.*', await API()));
-app.use(vhost('admin.*', await Admin()));
+// console.log(os.networkInterfaces())
+// const baseAddr = _.map(os.networkInterfaces(), i => i.map(j => j.address));
+
+app.use(host('api', await API()));
+app.use(host('admin', await Admin()));
+app.use(host(['api', 'admin'], await App()));
 
 app.listen(port, async function () {
     if (devMode) {

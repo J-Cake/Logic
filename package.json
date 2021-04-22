@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "description": "",
     "type": "module",
-    "main": "build/srv/index.js",
+    "main": "build/server/index.js",
     "scripts": {
         "build": "tsc && node ./bin/build"
     },

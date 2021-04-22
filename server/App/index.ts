@@ -10,6 +10,7 @@ import WebRouter from "./WebRouter";
 
 import {dirs, rootFn} from '../util/utils';
 import ScriptRouter from "./ScriptRouter";
+import WikiRouter from "./WikiRouter";
 
 export default async function(): Promise<express.Application> {
     const app: express.Application = express();
@@ -26,6 +27,7 @@ export default async function(): Promise<express.Application> {
     app.use('/', WebRouter);
     app.use('/user', UserRouter);
     app.use('/', ApplicationRouter);
+    app.use('/wiki', WikiRouter);
 
     app.use('/component/src', ScriptRouter);
 

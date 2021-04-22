@@ -11,5 +11,10 @@ export default async function (): Promise<express.Application> {
     app.use('/document', DocumentRouter);
     app.use('/user', UserRouter);
 
+    app.get('/ping', function (req, res) {
+        res.status(200);
+        res.end('ping');
+    });
+
     return app;
 }
