@@ -1,27 +1,27 @@
 extends ../web
 
 block content
-    input(type="checkbox")#header-collapse
+    input(type="checkbox")#header-collapse.hidden
     label(for="header-collapse")
         header
             if isLoggedIn
                 nav#content
                     nav.site
-                        a(href="/") Home
-                        a(href="/explore") Explore
-                        a(href="/wiki") LogicX Wiki
+                        a(href="/", data-icon="") Home
+                        a(href="/explore", data-icon="") Explore
+                        a(href="/wiki", data-icon="") LogicX Wiki
                     nav.user
-                        a(href="/dashboard#own") Dashboard
-                        a(href="/user/account") Account
-                        a(href="/user/logout") Log Out
+                        a(href="/dashboard#own", data-icon="") Dashboard
+                        a(href="/user/account", data-icon="") Account
+                        a(href="/user/logout", data-icon="") Log Out
             else
                 nav#content
                     nav.site
-                        a(href="/") Home
-                        a(href="/folio") Folio
-                        a(href="/wiki") LogicX Wiki
+                        a(href="/", data-icon="") Home
+                        a(href="/folio" data-icon="") Folio
+                        a(href="/wiki", data-icon="") LogicX Wiki
                     nav.user
-                        a(href="/dashboard") Log In
+                        a(href="/dashboard", data-icon="") Log In
 
     section#body
         //img(src="https://www.lifeofpix.com/wp-content/uploads/2018/05/308-name6012-ake-1-1600x1067.jpg")#bg-img
@@ -41,4 +41,4 @@ block content
                 div.res
                     a(href="/dashboard#own") Dashboard
                     a(href="https://github.com/J-Cake/Logic") GitHub
-                    a(href="https://logic.jschneiderprojects.com.au") WebSite
+                    a(href="https://logicx.jschneiderprojects.com.au") WebSite

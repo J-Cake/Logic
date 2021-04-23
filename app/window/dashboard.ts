@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import mousetrap from 'mousetrap';
-import {makeDocument, renameDocument} from "../src/sys/API/circuit";
+import {leaveDocument, makeDocument, renameDocument} from "../src/sys/API/circuit";
 
 mousetrap.bind('esc', () => window.close());
 
@@ -41,7 +41,7 @@ $(".editName").on("click", function () {
         renameDocument($(this).data('doc'), name).then(() => window.location.reload());
 });
 $(".leaveDoc").on('click', function () {
-
+    leaveDocument($(this).data('doc')).then(() => window.location.reload());
 
     // fetch(`/circuit/${$(this).data('doc')}/leave`, {method: 'delete'}).then(_ => window.location.reload());
 });

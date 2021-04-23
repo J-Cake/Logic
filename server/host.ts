@@ -7,7 +7,6 @@ import type express from 'express';
  */
 export default function host(hostnames: string | string[], app: express.Application): express.RequestHandler {
     const matches = function (host: string): boolean {
-        console.log(host, hostnames);
         if (typeof hostnames === "string")
             return host.startsWith(hostnames);
         else
@@ -15,7 +14,6 @@ export default function host(hostnames: string | string[], app: express.Applicat
     }
 
     return function (req: express.Request, res: express.Response, next: express.NextFunction) {
-        console.log(req.headers.host);
         if (!req.headers.host)
             return res.status(400).end('No host specified');
 

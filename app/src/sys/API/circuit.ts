@@ -25,7 +25,7 @@ export function renameDocument(circuitToken: string, name: string) {
     });
 }
 
-export function leaveDocument(circuitToken: string, name: string) {
+export function leaveDocument(circuitToken: string) {
     return new Promise(resolve => {
         fetch(`${window.location.protocol}//api.${window.location.host}/document/${circuitToken}/leave`, {
             method: 'delete',

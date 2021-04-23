@@ -62,11 +62,14 @@ export const root = find(url.fileURLToPath(import.meta.url), 'package.json');
 const app = path.join(root, 'app'),
     build = path.join(root, 'build'),
     tsOutput = path.join(build, 'app'),
-    finalOutput = path.join(build, 'final')
+    finalOutput = path.join(build, 'final'),
+    res = path.join(root, 'lib', 'res')
+
 export const dirs = {
     root: root,
     app: app,
     build: build,
     tsOutput: tsOutput,
     finalOutput: finalOutput,
+    res: res
 }

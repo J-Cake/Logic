@@ -1,5 +1,5 @@
 h1, h2, h3, h4, h5, h6 {
-    margin: 0.25em 0;
+    margin: 0.5em 0;
 }
 
 h1 {
@@ -46,7 +46,7 @@ p, li {
     font-size: 10pt;
 }
 
-ul li:before, .page:before {
+ul > li:before, .page:before {
     content: '';
     background: var(--secondary);
     display: inline-block;
@@ -66,11 +66,15 @@ ul ul ul {
     margin: 0 28pt;
 }
 
+ul ol, ol ul {
+    margin: 0 28pt;
+}
+
 ol {
     counter-reset: list;
 }
 
-ol li:before {
+ol > li:before {
     counter-increment: list;
     content: counter(list);
     color: var(--secondary);
@@ -113,8 +117,27 @@ pre, code {
     font-family: Inconsolata, monospace;
     background: var(--panel);
     padding: 4px;
-    box-sizing: content-box;
+    font-size: 12pt;
+    line-height: 16pt;
     border-radius: 2px;
+}
+
+code {
+    /*break-after: ;*/
+}
+
+pre code {
+    font-family: Inconsolata, monospace;
+    background: var(--panel);
+    padding: 8px;
+    font-size: 12pt;
+    line-height: 16pt;
+    white-space: pre;
+    display: block;
+}
+
+pre {
+    margin: 8px 0;
 }
 
 blockquote {
@@ -169,6 +192,10 @@ article#content {
     width: 0;
 }
 
+.collapse + label span, .collapse-index + label h2 {
+    cursor: pointer;
+}
+
 .collapse + label > .indent, .collapse-index + label > #pages {
     display: none;
 }
@@ -196,6 +223,14 @@ article#content {
     text-align: center;
     font-size: 12pt;
     font-family: Remix;
+}
+
+article img {
+    margin: 8px auto;
+    display: block;
+    max-width: 800px;
+    width: 100%;
+    box-shadow: 0 0 8px var(--dark);
 }
 
 @media (max-width: 800px) {

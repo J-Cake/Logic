@@ -1,12 +1,10 @@
 import express from 'express';
 import bcrypt from 'bcrypt';
-import _ from 'lodash';
 
 import sql from '../../util/sql';
 import {DBUser} from '../Document/getFile';
-import {attempt} from '../../util/utils';
-import {convertFromHTMLForm, getPreferencesForUser, isLoggedIn, verifyUser, writePreferences} from './UserActions';
-import {defaultPreferences} from '../../../app/src/Enums';
+import {isLoggedIn} from './UserActions';
+import authenticate from "../../API/lib/authenticate";
 
 const router: express.Router = express.Router();
 
@@ -77,12 +75,14 @@ router.post("/signup", async function (req, res) {
             res.redirect('/user/signup');
         }
     } else {
-        const token = await (async function() {
+        const token = await (async function () {
             let token = '';
 
             do
                 token = Math.floor(Math.random() * 11e17).toString(36);
-            while (await sql.sql_get<{userToken: string}>(`SELECT "userToken" from users where "userToken" = $1`, [token]));
+            while (await sql.sql_get<{ userToken: string }>(`SELECT "userToken"
+                                                             from users
+                                                             where "userToken" = $1`, [token]));
 
             return token;
         })();

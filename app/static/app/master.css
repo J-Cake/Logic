@@ -22,10 +22,10 @@
 }
 
 #body {
-    /* display: grid; */
-    /* grid-template-rows: auto 1fr 24pt; */
-    /* grid-template-columns: auto 1fr  auto; */
-    /* width: 100vw; */
+    display: grid;
+    grid-template-rows: auto 1fr 24pt;
+    grid-template-columns: auto 1fr  auto;
+    width: 100vw;
 }
 
 #body #debug-bar {

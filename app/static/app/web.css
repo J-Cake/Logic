@@ -131,9 +131,11 @@ a {
 #tab-view #own .doc:before {
     content: '';
 }
+
 #tab-view #shared .doc:before {
     content: '';
 }
+
 #tab-view #my-components .doc:before {
     content: '';
 }
@@ -154,10 +156,12 @@ a {
     color: var(--background);
     /*box-shadow: 0 0 3px var(--dark);*/
 }
+
 #tab-view .tab .doc a {
     flex: 1;
     color: inherit;
 }
+
 #tab-view .tab .doc .controls {
     display: flex;
     font-family: Remix;
@@ -240,6 +244,25 @@ button {
 
         height: 100%
     }
+
+    footer, footer nav, footer nav > * {
+        flex-direction: column;
+        height: initial;
+        width: 100%;
+        padding: 4px;
+        align-items: center;
+        justify-content: center;
+    }
+
+    footer nav a {
+        height: calc(4 * 16pt);
+        width: 100%;
+        line-height: calc(4 * 16pt);
+    }
+
+    #logo {
+        flex-direction: column;
+    }
 }
 
 @media (min-width: 800px) and (max-width: 1250px) {
@@ -252,6 +275,7 @@ button {
     article#content {
         max-width: var(--max-width);
     }
+
     :root {
         --max-width: 800px;
     }
@@ -259,16 +283,37 @@ button {
     :root form, :root #form {
         height: 100%;
     }
+
+
+    footer, footer nav, footer nav > * {
+        flex-direction: column;
+        height: initial;
+        width: 100%;
+        padding: 4px;
+        align-items: center;
+        justify-content: center;
+    }
+
+    footer nav a {
+        height: calc(4 * 16pt);
+        width: 100%;
+        line-height: calc(4 * 16pt);
+    }
 }
 
 @media (min-width: 1250px) {
     #page {
-        grid-template-columns: 1fr minmax(800px, 1fr) 1fr;
+        grid-template-columns: 1fr minmax(auto, 1250px) 1fr;
         grid-template-rows: auto;
         grid-template-areas: "index article side";
     }
 
     article#content {
         min-width: 800px;
+    }
+
+    footer nav a {
+        height: calc(4 * 16pt);
+        line-height: calc(4 * 16pt);
     }
 }

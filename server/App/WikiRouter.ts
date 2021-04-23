@@ -43,12 +43,14 @@ router.get('/:page', async function (req, res) {
         res.render('site/wiki', {
             content: comp.render(await FS.readFile(doc)),
             pages: await getPages(),
-            isLoggedIn: isLoggedIn(req)
+            isLoggedIn: isLoggedIn(req),
+            title: req.params.page
         });
     else if (await FS.exists(doc) && (await FS.stat(doc)).isDirectory())
         res.render('site/wiki', {
             pages: await getPages(req.params.page),
-            isLoggedIn: isLoggedIn(req)
+            isLoggedIn: isLoggedIn(req),
+            title: req.params.page
         });
     else
         res.render('site/404', {

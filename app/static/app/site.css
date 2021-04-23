@@ -32,6 +32,12 @@ header nav a, footer nav a {
     transition-duration: 0.3s;
 }
 
+header nav a:before {
+    content: attr(data-icon);
+    font-family: Remix;
+    margin: 0 8px;
+}
+
 header nav a:hover {
     color: var(--panel);
     background: var(--blank);
@@ -158,11 +164,9 @@ p {
 footer {
     background: var(--blank);
     padding: 0 24px;
-    height: 4em;
+    /* height: 4em; */
     font-size: 10pt;
-
     /*max-width: var(--max-width);*/
-
     border-top: 1px solid var(--blank);
     width: 100%;
     flex-direction: row;
@@ -170,10 +174,7 @@ footer {
 
 footer nav {
     display: flex;
-    align-items: stretch;
-    line-height: 4em;
     font-size: 10pt;
-    flex: 1;
     color: var(--primary);
 }
 
@@ -243,6 +244,10 @@ footer #copyright {
         transform: rotate(180deg);
     }
 
+    #header-collapse:checked + label nav#content > nav > * {
+        opacity: 1;
+    }
+
     nav#content:before {
         transform: rotate(0deg);
         transition: transform 0.3s;
@@ -260,6 +265,8 @@ footer #copyright {
     nav#content > nav > * {
         width: 100%;
         height: var(--4em);
+        opacity: 0;
+        transition: opacity 0.3s;
     }
 
     nav#content, nav#content > nav {
