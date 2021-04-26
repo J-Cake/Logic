@@ -7,6 +7,7 @@ import getColourForComponent from '../ui/output/getColourForComponent';
 
 export default function buildPrompt() {
     link(Dialog.ComponentView, $("#add-component"), function (componentToken: string) {
+        window.focus();
         const {circuit: mgr, board, mouse} = manager.setState(),
             {availableComponents} = mgr.state.setState(),
             Component = availableComponents[componentToken];

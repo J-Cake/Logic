@@ -148,7 +148,11 @@ blockquote {
     line-height: 125%;
     border-left: var(--secondary) 4px solid;
 
-    margin-right: 4px;
+    margin: 8px 4px 8px 0;
+}
+
+table {
+    width: 100%;
 }
 
 td {
@@ -159,13 +163,14 @@ td {
 }
 
 tr:nth-child(even) {
-    background: var(--primary);
+    background: var(--panel);
 }
 
 icon {
     font-family: Remix;
     font-size: 12pt;
     display: inline;
+    text-align: center;
 }
 
 #page {
@@ -229,7 +234,8 @@ article img {
     margin: 8px auto;
     display: block;
     max-width: 800px;
-    width: 100%;
+    max-height: 650px;
+    /*width: 100%;*/
     box-shadow: 0 0 8px var(--dark);
 }
 
