@@ -241,9 +241,8 @@ button {
     }
 
     :root form, :root #form {
-
-        height: 100%
-    }
+height: 100%;
+}
 
     footer, footer nav, footer nav > * {
         flex-direction: column;

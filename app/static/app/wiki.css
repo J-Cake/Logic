@@ -148,7 +148,11 @@ blockquote {
     line-height: 125%;
     border-left: var(--secondary) 4px solid;
 
-    margin-right: 4px;
+    margin: 8px 4px 8px 0;
+}
+
+table {
+    width: 100%;
 }
 
 table {
@@ -170,6 +174,7 @@ icon {
     font-family: Remix;
     font-size: 12pt;
     display: inline;
+    text-align: center;
 }
 
 #page {
