@@ -1,0 +1,46 @@
+<component name="libraryTable">
+  <library name="ts-external-references" type="javaScript">
+    <properties>
+      <sourceFilesUrls>
+        <item url="file://$PROJECT_DIR$/node_modules/.pnpm/@types/node@12.19.12/node_modules/@types/node/assert.d.ts" />
+        <item url="file://$PROJECT_DIR$/node_modules/.pnpm/@types/node@12.19.12/node_modules/@types/node/base.d.ts" />
+        <item url="file://$PROJECT_DIR$/node_modules/.pnpm/@types/node@12.19.12/node_modules/@types/node/index.d.ts" />
+        <item url="file://$PROJECT_DIR$/node_modules/.pnpm/@types/node@12.19.12/node_modules/@types/node/ts3.6/base.d.ts" />
+        <item url="file://$PROJECT_DIR$/node_modules/.pnpm/@types/node@12.19.15/node_modules/@types/node/assert.d.ts" />
+        <item url="file://$PROJECT_DIR$/node_modules/.pnpm/@types/node@12.19.15/node_modules/@types/node/base.d.ts" />
+        <item url="file://$PROJECT_DIR$/node_modules/.pnpm/@types/node@12.19.15/node_modules/@types/node/index.d.ts" />
+        <item url="file://$PROJECT_DIR$/node_modules/.pnpm/@types/node@12.19.15/node_modules/@types/node/ts3.6/base.d.ts" />
+        <item url="file://$PROJECT_DIR$/node_modules/.pnpm/@types/node@12.19.8/node_modules/@types/node/assert.d.ts" />
+        <item url="file://$PROJECT_DIR$/node_modules/.pnpm/@types/node@12.19.8/node_modules/@types/node/base.d.ts" />
+        <item url="file://$PROJECT_DIR$/node_modules/.pnpm/@types/node@12.19.8/node_modules/@types/node/index.d.ts" />
+        <item url="file://$PROJECT_DIR$/node_modules/.pnpm/@types/node@12.19.8/node_modules/@types/node/ts3.6/base.d.ts" />
+        <item url="file://$PROJECT_DIR$/node_modules/.pnpm/@types/node@12.19.9/node_modules/@types/node/assert.d.ts" />
+        <item url="file://$PROJECT_DIR$/node_modules/.pnpm/@types/node@12.19.9/node_modules/@types/node/base.d.ts" />
+        <item url="file://$PROJECT_DIR$/node_modules/.pnpm/@types/node@12.19.9/node_modules/@types/node/index.d.ts" />
+        <item url="file://$PROJECT_DIR$/node_modules/.pnpm/@types/node@12.19.9/node_modules/@types/node/ts3.6/base.d.ts" />
+        <item url="file://$PROJECT_DIR$/node_modules/.pnpm/source-map@0.6.1/node_modules/source-map/source-map.d.ts" />
+      </sourceFilesUrls>
+    </properties>
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/node_modules/.pnpm/@types/node@12.19.12/node_modules/@types/node/assert.d.ts" />
+      <root url="file://$PROJECT_DIR$/node_modules/.pnpm/@types/node@12.19.12/node_modules/@types/node/base.d.ts" />
+      <root url="file://$PROJECT_DIR$/node_modules/.pnpm/@types/node@12.19.12/node_modules/@types/node/index.d.ts" />
+      <root url="file://$PROJECT_DIR$/node_modules/.pnpm/@types/node@12.19.12/node_modules/@types/node/ts3.6/base.d.ts" />
+      <root url="file://$PROJECT_DIR$/node_modules/.pnpm/@types/node@12.19.15/node_modules/@types/node/assert.d.ts" />
+      <root url="file://$PROJECT_DIR$/node_modules/.pnpm/@types/node@12.19.15/node_modules/@types/node/base.d.ts" />
+      <root url="file://$PROJECT_DIR$/node_modules/.pnpm/@types/node@12.19.15/node_modules/@types/node/index.d.ts" />
+      <root url="file://$PROJECT_DIR$/node_modules/.pnpm/@types/node@12.19.15/node_modules/@types/node/ts3.6/base.d.ts" />
+      <root url="file://$PROJECT_DIR$/node_modules/.pnpm/@types/node@12.19.8/node_modules/@types/node/assert.d.ts" />
+      <root url="file://$PROJECT_DIR$/node_modules/.pnpm/@types/node@12.19.8/node_modules/@types/node/base.d.ts" />
+      <root url="file://$PROJECT_DIR$/node_modules/.pnpm/@types/node@12.19.8/node_modules/@types/node/index.d.ts" />
+      <root url="file://$PROJECT_DIR$/node_modules/.pnpm/@types/node@12.19.8/node_modules/@types/node/ts3.6/base.d.ts" />
+      <root url="file://$PROJECT_DIR$/node_modules/.pnpm/@types/node@12.19.9/node_modules/@types/node/assert.d.ts" />
+      <root url="file://$PROJECT_DIR$/node_modules/.pnpm/@types/node@12.19.9/node_modules/@types/node/base.d.ts" />
+      <root url="file://$PROJECT_DIR$/node_modules/.pnpm/@types/node@12.19.9/node_modules/@types/node/index.d.ts" />
+      <root url="file://$PROJECT_DIR$/node_modules/.pnpm/@types/node@12.19.9/node_modules/@types/node/ts3.6/base.d.ts" />
+      <root url="file://$PROJECT_DIR$/node_modules/.pnpm/source-map@0.6.1/node_modules/source-map/source-map.d.ts" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

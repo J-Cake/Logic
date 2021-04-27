@@ -2,47 +2,7 @@
 <project version="4">
   <component name="ProjectTasksOptions" suppressed-tasks="Pug/Jade">
     <TaskOptions isEnabled="true">
-      <option name="arguments" value="./bin/build.js --static" />
-      <option name="checkSyntaxErrors" value="true" />
-      <option name="description" />
-      <option name="exitCodeBehavior" value="ERROR" />
-      <option name="fileExtension" value="css" />
-      <option name="immediateSync" value="true" />
-      <option name="name" value="Static CSS" />
-      <option name="output" value="" />
-      <option name="outputFilters">
-        <array />
-      </option>
-      <option name="outputFromStdout" value="false" />
-      <option name="program" value="$PROJECT_DIR$/../../../../Program FIles/nodejs/node.exe" />
-      <option name="runOnExternalChanges" value="true" />
-      <option name="scopeName" value="Static" />
-      <option name="trackOnlyRoot" value="false" />
-      <option name="workingDir" value="$PROJECT_DIR$" />
-      <envs />
-    </TaskOptions>
-    <TaskOptions isEnabled="true">
-      <option name="arguments" value="./bin/build.js --static" />
-      <option name="checkSyntaxErrors" value="true" />
-      <option name="description" />
-      <option name="exitCodeBehavior" value="ERROR" />
-      <option name="fileExtension" value="js" />
-      <option name="immediateSync" value="true" />
-      <option name="name" value="Static JS" />
-      <option name="output" value="" />
-      <option name="outputFilters">
-        <array />
-      </option>
-      <option name="outputFromStdout" value="false" />
-      <option name="program" value="$PROJECT_DIR$/../../../../Program FIles/nodejs/node.exe" />
-      <option name="runOnExternalChanges" value="true" />
-      <option name="scopeName" value="Static" />
-      <option name="trackOnlyRoot" value="false" />
-      <option name="workingDir" value="$PROJECT_DIR$" />
-      <envs />
-    </TaskOptions>
-    <TaskOptions isEnabled="true">
-      <option name="arguments" value=".\bin\build.js" />
+      <option name="arguments" value="--distribution Ubuntu --exec node --es-module-specifier-resolution=node ./bin/build.js --dev" />
       <option name="checkSyntaxErrors" value="true" />
       <option name="description" />
       <option name="exitCodeBehavior" value="ERROR" />
@@ -54,9 +14,29 @@
         <array />
       </option>
       <option name="outputFromStdout" value="false" />
-      <option name="program" value="node" />
+      <option name="program" value="$PROJECT_DIR$/../../../../WINDOWS/system32/wsl.exe" />
       <option name="runOnExternalChanges" value="true" />
-      <option name="scopeName" value="Client" />
+      <option name="scopeName" value="App" />
+      <option name="trackOnlyRoot" value="false" />
+      <option name="workingDir" value="$PROJECT_DIR$" />
+      <envs />
+    </TaskOptions>
+    <TaskOptions isEnabled="true">
+      <option name="arguments" value="--distribution Ubuntu --exec node --es-module-specifier-resolution=node ./bin/build.js --dev --static" />
+      <option name="checkSyntaxErrors" value="true" />
+      <option name="description" />
+      <option name="exitCodeBehavior" value="ERROR" />
+      <option name="fileExtension" value="*" />
+      <option name="immediateSync" value="true" />
+      <option name="name" value="Static" />
+      <option name="output" value="" />
+      <option name="outputFilters">
+        <array />
+      </option>
+      <option name="outputFromStdout" value="false" />
+      <option name="program" value="$PROJECT_DIR$/../../../../WINDOWS/system32/wsl.exe" />
+      <option name="runOnExternalChanges" value="true" />
+      <option name="scopeName" value="Static" />
       <option name="trackOnlyRoot" value="false" />
       <option name="workingDir" value="$PROJECT_DIR$" />
       <envs />

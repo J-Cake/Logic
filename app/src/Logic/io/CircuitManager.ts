@@ -14,7 +14,6 @@ export interface CircuitManagerState {
 }
 
 export default class CircuitManager {
-
     state: StateManager<CircuitManagerState>;
     loading: Promise<{ [id: number]: [GenericComponent, GenComponent] }>;
     readonly circuitId: string;
