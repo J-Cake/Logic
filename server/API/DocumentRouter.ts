@@ -52,13 +52,9 @@ router.post("/make", async function (req, res) {
 });
 
 router.get('/:circuit', async function (req, res) {
-    const userToken: string = req.userToken || "";
-    const usr = await verifyUser(userToken);
+    const userToken: string = req.userToken ?? "";
 
-    if (!usr) {
-        res.status(401);
-        res.end('Unverified request');
-    } else if (await attempt(async function () {
+    if (await attempt(async function () {
         const file = await getFile(userToken, req.params.circuit);
         await file.fetchInfo();
         res.json(file.info);

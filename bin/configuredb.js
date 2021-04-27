@@ -20,5 +20,5 @@ if (!fs.existsSync(path.dirname(dbDir)))
 const db = new (sqlite3.verbose().Database)(dbDir);
 
 db.serialize(function() {
-    db.exec(fs.readFileSync(path.join(dir, 'init.sql')).toString());
+    db.exec(fs.readFileSync(path.join(dir, 'init-psql.sql')).toString());
 });

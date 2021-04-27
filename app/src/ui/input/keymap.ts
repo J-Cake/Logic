@@ -4,7 +4,7 @@ import {Action, triggerAction} from './Action';
 
 export const keyMap: Record<Action, string[]> = {
     [Action.Enter]: ['enter'],
-    [Action.Delete]: ['del', 'backspace', '8'],
+    [Action.Delete]: ['del', 'backspace', '7'],
     [Action.UpdateComponent]: ['space'],
     [Action.Close]: ['esc'],
 
@@ -38,7 +38,7 @@ export const keyMap: Record<Action, string[]> = {
     [Action.Debugger_Step]: ['tab', 'f2'],
     [Action.Debugger_Resume]: ['enter', 'f3'],
 
-    [Action.OpenComponentMenu]: ['f9', '7'],
+    [Action.OpenComponentMenu]: ['f9', '8'],
     [Action.OpenImportMenu]: ['f10', '9'],
 
     [Action.Flip]: ['up', 'down'],

@@ -23,7 +23,7 @@ export default async function searchComponents(query: string, page: number = 0):
     const tok = await sql.sql_all<{ componentToken: string, componentName: string }>(`SELECT "componentToken", "componentName"
                                                                                       from components
                                                                                       where "componentName" like $1
-                                                                                      LIMIT $3 offset $2 * $3`, [`%${query}%`, Math.max(page, 0), recordsPerPage]);
+                                                                                      LIMIT $2 OFFSET  $3`, [`%${query}%`, recordsPerPage, recordsPerPage * page]);
 
     const stdTokens = (await Promise.all((await FS.readdir(path.join(await rootFn(), 'lib', 'components')))
         .filter(i => i.endsWith('.json'))

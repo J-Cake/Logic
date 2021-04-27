@@ -3,17 +3,19 @@
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/app/test" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/lib/ROM" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/lib" />
       <excludeFolder url="file://$MODULE_DIR$/.tmp" />
       <excludeFolder url="file://$MODULE_DIR$/temp" />
       <excludeFolder url="file://$MODULE_DIR$/tmp" />
       <excludeFolder url="file://$MODULE_DIR$/build" />
-      <excludeFolder url="file://$MODULE_DIR$/lib" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="eva-icons" level="application" />
     <orderEntry type="library" name="@types/ts-nameof" level="application" />
     <orderEntry type="library" name="ts-external-references" level="project" />
+    <orderEntry type="module" module-name="lib" />
     <orderEntry type="module" module-name="lib" />
   </component>
 </module>

@@ -9,79 +9,44 @@ block content
     if circuit
         span.hidden#circuitToken= circuit
 
-    if devMode
-        script.
-            console.log("Enabling Live-Reload");
-            new WebSocket(`ws://${window.location.hostname}:#{devMode}`).addEventListener('message', _ => location.reload());
-
     script(src="/app/app.js", defer=true)
 
     section#body
         div#manipulation-bar.bar
             .group
                 button#cut 
-                    //i(data-eva="scissors-outline")
                 button#copy 
-                    //i(data-eva="copy-outline")
                 button#paste 
-                    //i(data-eva="clipboard-outline")
             hr
             .centre
                 button#flip 
-                    //i(data-eva="swap-outline")
                 button#rotate-left 
-                    //i(data-eva="corner-left-down-outline")
                 button#rotate-right 
-                    //i(data-eva="corner-right-down-outline")
 
         div#toolbar.bar
             .left
                 button#close 
-                    //i(data-eva="arrow-back-outline")
-                    //
-                    //
                 button#save 
-                    //i(data-eva="save-outline")
-                    //
-                    //
                 hr
                 #controls
                     button#undo 
-                        //i(data-eva="corner-up-left-outline")
-                        //
-                        //
                     button#redo 
-                        //i(data-eva="corner-up-right-outline")
-                        //
-                        //
 
             .centre
                 #tool-box
 
                     input(type="radio", name="tool", checked)#pointer
                     label(for="pointer") 
-                        //i(data-eva="navigation-2-outline")
-                        //
-                        //
 
                     input(type="radio", name="tool")#select
                     label(for="select") 
-                        //i(data-eva="crop-outline")
-                        //
-                        //
 
                     input(type="radio", name="tool")#move
                     label(for="move") 
-                        //i(data-eva="move-outline")
-                        //
-                        //
 
                     .select-box
                         input(type="radio", name="tool")#wire
                         label(for="wire") 
-                            //i(data-eva="edit-outline")
-                            //
-                            //
                             #wire-mode-selector.select(for="wire")
                                 h3 Wire Mode
                                 span.option.selected(data-enum=0) Move
@@ -92,84 +57,41 @@ block content
                     .select-box
                         input(type="radio", name="tool")#debug
                         label(for="debug") 
-                            //i(data-eva="stop-circle-outline")
-                            //
-                            //
                             #debug-type-selector.select(for="debug")
                                 h3 Break Mode
                                 span.option.selected(data-enum=0) On Change
                                 span.option(data-enum=1) On Input Change
                                 span.option(data-enum=2) On Output Change
                                 span.option(data-enum=3) On Update
-                                //span.option(data-enum=4) On Component Change
 
                     input(type="radio", name="tool")#label
                     label(for="label") 
-                        //i(data-eva="pricetags-outline")
-                        //
-                        //
+
+                    hr
+
+                    button#remove-component 
 
                     hr
 
                     input(type="checkbox")#add-component
                     label(for="add-component") 
-                        //i(data-eva="plus-outline")
-                        //
-                        //
-                    button#remove-component 
-                        //i(data-eva="trash-outline")
-                        //
-                        //
                     input(type="checkbox")#import-component
                     label(for="import-component") 
-                        //i(data-eva="cloud-download-outline")
-                        //
-                        //
 
             .right
                 #pref
-                    //input(type="checkbox", name="panel-visibility")#panel-vis
-                    //label(for="panel-vis")
-                    //    //
-
-                    //input(type="checkbox", name="pref")#show-labels
-                    //label(for="show-labels") 
-
-                    //hr
                     a(href="/settings", target="_blank")
                         button#settings 
                     a(href="/view/" + circuit, target="_blank")
                         button#view 
                     a(href="/wiki/%2F%2FLogicX%2Fusage%2FInterface.md#Application", target="_blank")
                         button#help 
-                    //button#in 
-                    //    //i(data-eva="maximize-outline")
-                    //    //
-                    //    //
-                    //button#reset 
-                    //    //i(data-eva="expand-outline")
-                    //    //
-                    //    //
-                    //button#out 
-                    //    //i(data-eva="minimize-outline")
-                    //    //
-                    //    //
-
-                    //hr
-
-                    //button#refresh-ui 
 
         div#canvas-container
 
         div#debug-bar.bar
             button(disabled)#resume 
-                //i(data-eva="play-circle-outline")
-                //
-                //
             button(disabled)#step 
-                //i(data-eva="chevron-right-outline")
-                //
-                //
 
         div#status-bar.bar
             .left

@@ -95,7 +95,7 @@ export function allowEdit(circuitToken: string, userToken: string, canEdit: bool
 
 export function addComponent(circuitToken: string, componentToken: string) {
     return new Promise(resolve => {
-        fetch(`${window.location.protocol}//api.${window.location.host}/document/${circuitToken}/add-component?component${componentToken}`, {
+        fetch(`${window.location.protocol}//api.${window.location.host}/document/${circuitToken}/add-component?component=${componentToken}`, {
             method: 'put',
             headers: {
                 'auth-token': authToken
