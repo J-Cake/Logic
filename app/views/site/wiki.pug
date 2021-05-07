@@ -17,7 +17,7 @@ mixin renderPages(pages, root, depth)
         }
     for page in Object.keys(pages)
         if (typeof pages[page] === 'string')
-            a.page(href="/wiki/" + encodeURIComponent(root + page))= capitalise(page)
+            a.page(href=("/wiki/" + (root + page)).replace(/\/{2,}/g, '/'))= capitalise(page)
         else
             input(type="checkbox", id=`checkbox-for-${page}-${depth}`, checked).collapse
             label(for=`checkbox-for-${page}-${depth}`)
@@ -25,16 +25,46 @@ mixin renderPages(pages, root, depth)
                 .indent
                     +renderPages(pages[page], '/' + root + page + '/', depth + 1)
 
+mixin issue
+    div#issue
+        a(href="https://github.com/J-Cake/Logic-components/edit/documentation/doc/wiki" + page)
+            button
+                // TODO: Replace with character literal. KCharSelect somehow doesn't let me copy the glyph
+                icon &#xEC80;
+                | Found an issue?
+
+mixin search
+    form(action="/wiki/search", method="get")#form
+        input(type="search", name="q", placeholder="Search")#query
+        button(type="submit") 
+
 block page
-    link(rel="stylesheet", href="/app/wiki.css")
+    link(rel="stylesheet", href="/app/css/wiki.css")
 
-    input(type="checkbox", checked)#index.collapse-index
-    label(for="index")
-        h2 Index
-        #pages
-            +renderPages(pages, '', 0)
+    if content
+        input(type="checkbox", checked)#index.collapse-index
+        label(for="index")
+            h2 Index
+            #pages
+                +renderPages(pages, '', 0)
 
-    if (content)
-        article#content !{content}
+        section#article
+            +search
+            article !{content}
+            +issue
     else
-        article#content
+        div
+        section#article
+            +search
+            article#content
+                h1 LogicX Docs and Wiki
+
+                p You can find any document in the index below, or by entering a query in the search box aboce
+
+                input(type="checkbox", checked)#index.collapse-index
+                label(for="index")
+                    h2 Index
+                    #pages
+                        +renderPages(pages, '', 0)
+
+            +issue

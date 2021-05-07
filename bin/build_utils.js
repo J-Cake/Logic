@@ -22,28 +22,31 @@ export const awaitProc = cli => new Promise(function (resolve, reject) {
     });
 });
 
-export const copy = function (loc, dest) {
-    if (fs.existsSync(loc)) {
-        if (fs.lstatSync(loc).isDirectory()) {
-            const items = fs.readdirSync(loc);
-
+export const copy = function (loc, dest, flat = false) {
+    const cp = function (loc, dest, flat, copyChain = []) {
+        if (fs.existsSync(loc)) {
             if (!fs.existsSync(dest))
                 fs.mkdirSync(dest, {recursive: true});
 
-            for (const item of items) {
-                if (fs.lstatSync(path.join(loc, item)).isDirectory())
-                    copy(path.join(loc, item), dest);
-                else
-                    fs.copyFileSync(path.join(loc, item), path.join(dest, item));
-            }
+            if (fs.lstatSync(loc).isDirectory()) {
+                const items = fs.readdirSync(loc);
+
+                for (const item of items) {
+                    if (fs.statSync(path.join(loc, item)).isDirectory())
+                        cp(path.join(loc, item), flat ? dest : path.join(dest, ...copyChain.slice(1), item), flat, copyChain.concat(item));
+                    else
+                        fs.copyFileSync(path.join(loc, item), flat ? path.join(dest, item) : path.join(dest, ...copyChain.slice(1, -1), item));
+                }
+            } else
+                fs.copyFileSync(loc, dest);
         } else
-            fs.copyFileSync(path.join(loc, item), dest);
-    } else
-        throw {
-            msg: `The item doesn't exist`,
-            item: loc,
-            destination: dest
-        };
+            throw {
+                msg: `The item doesn't exist`,
+                item: loc,
+                destination: dest
+            };
+    }
+    cp(loc, dest, flat, []);
 }
 
 export function find(dir, file) {

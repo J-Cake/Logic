@@ -23,6 +23,11 @@ const buildComponent = (app, out, platform = 'browser') => build.build({
     logLevel: process.argv.includes('--err') ? 'error' : 'silent'
 })
 
+if (process.argv.includes('--clean'))
+    fs.readdirSync(dirs.build)
+        .map(i => path.join(dirs.build, i))
+        .forEach(i => fs.rmdirSync(i, {recursive: true}));
+
 const components = {
     app: () => buildComponent('src/index.js', 'app.js'),
     find: () => buildComponent('window/find.js', 'find.js'),

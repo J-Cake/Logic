@@ -1,0 +1,14 @@
+:root {
+    --primary:          rgb(85, 85, 85);
+    --danger:           rgb(125, 20, 20);
+    --active:           rgb(142, 44, 49);
+    --label:            rgb(198, 224, 180);
+    --accent:           rgb(198, 11, 83);
+    --secondary:        rgb(109, 10, 48);
+    --secondaryaccent:  rgb(109, 10, 48);
+    --cursor:           #8e582c;
+    --panel:            #252525;
+    --background:       rgb(29, 29, 29);
+    --blank:            #bababa;
+    --dark:             #000000;
+}

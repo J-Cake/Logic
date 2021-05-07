@@ -1,5 +1,7 @@
+create extension if not exists "citext";
+
 -- we don't know how to generate root <with-no-name> (class Root) :(
-create table if not exists access
+create table if not exists "access"
 (
     "documentId" int not null,
     "userId" int not null,
@@ -7,9 +9,9 @@ create table if not exists access
     "canEdit" boolean default false not null
 );
 
-create table if not exists components
+create table if not exists "components"
 (
-    "componentId" serial default 0 not null
+    "componentId" serial not null
         constraint components_pk
             primary key,
     "ownerId" int not null,
@@ -25,7 +27,7 @@ create unique index if not exists components_componentId_uindex
 create unique index if not exists components_componentToken_uindex
 	on components ("componentToken");
 
-create table if not exists documents
+create table if not exists "documents"
 (
     "ownerId" int not null,
     "documentId" serial not null
@@ -61,7 +63,7 @@ create table if not exists user_preferences
 create unique index if not exists user_preferences_userId_uindex
 	on user_preferences ("userId");
 
-create table if not exists users
+create table if not exists "users"
 (
     "userId" serial not null
         constraint users_pk
@@ -74,11 +76,11 @@ create table if not exists users
 );
 
 create unique index if not exists "users_""email""_uindex"
-	on users (email);
+	on "users" (email);
 
 create unique index if not exists "users_""userId""_uindex"
-	on users ("userId");
+	on "users" ("userId");
 
 create unique index if not exists users_userToken_uindex
-	on users ("userToken");
+	on "users" ("userToken");
 

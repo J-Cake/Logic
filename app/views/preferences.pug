@@ -51,12 +51,15 @@ mixin Dropdown(identifier, value, descriptor)
             h2.label= descriptor.label
             span.description= descriptor.description
         .el
-            select(value=value, name=identifier)
+            select(name=identifier)
                 each val, key in descriptor.details
-                    option(data-key=key, selected=(val===value ? "selected" : ""))= val
+                    if val === value
+                        option(data-key=key, selected)= val
+                    else
+                        option(data-key=key)= val
 
 block content
-    link(rel="stylesheet", href="/app/preferences.css")
+    link(rel="stylesheet", href="/app/css/preferences.css")
     button#close 
     script document.querySelector("#close").addEventListener("click", () => window.close());
     form(action="/settings", method="post")#container

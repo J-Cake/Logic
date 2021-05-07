@@ -243,6 +243,77 @@ article img {
     box-shadow: 0 0 8px var(--dark);
 }
 
+#article > * {
+    width: 100%;
+}
+
+#article #issue {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    margin: 24px 0;
+    border-top: 1px solid var(--panel);
+    padding-top: 24px;
+}
+
+#article #issue button {
+    width: auto;
+    display: flex;
+    min-width: 180px;
+    background: var(--panel);
+    color: var(--primary);
+    margin: 8px;
+    padding: 8px;
+    align-items: center;
+    border-radius: 4px;
+    font-family: "Raleway", sans-serif;
+    font-size: 10pt;
+}
+
+article .result {
+    background: var(--panel);
+    border-radius: 4px;
+    padding: 24px;
+    margin: 16px;
+    box-shadow: 0 0 8px var(--dark);
+}
+
+article .result ul li {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    max-width: 100%;
+    flex: 1;
+}
+
+#form {
+    width: 100%;
+    min-width: 100%;
+    height: auto;
+    min-height: auto;
+    background: var(--panel);
+    display: flex;
+    flex-direction: row;
+    margin: 8px;
+}
+
+#form input {
+    width: 100%;
+    /*min-width: 100%;*/
+    flex: 1;
+}
+#form button {
+    font-family: Remix;
+    font-size: 16pt;
+    min-width: 4em;
+    max-width: 4em;
+    width: 4em;
+    /*width: auto;*/
+    line-height: 2em;
+    display: block;
+}
+
 @media (max-width: 800px) {
     article#content {
         width: 100%;

@@ -1,3 +1,8 @@
+@font-face {
+    font-family: Remix;
+    src: url('/app/font/remixicon.woff2');
+}
+
 :root, * {
     padding: 0;
     margin: 0;
@@ -7,7 +12,7 @@
 
     user-select: none;
 
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Raleway', sans-serif;
 
     overflow: hidden;
 }

@@ -24,6 +24,7 @@
         "parse-css-color": "^0.1.2",
         "pg": "^8.6.0",
         "pug": "^3.0.0",
+        "ripgrep-js": "^2.2.0",
         "source-map-support": "^0.5.19",
         "typescript": "^3.9.6",
         "ws": "^7.4.2"

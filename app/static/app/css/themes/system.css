@@ -1,24 +1,3 @@
-
-/*@media screen and (prefers-color-scheme: light) { !* Folio theme *!*/
-/*    :root {*/
-/*        --primary: #efefef;*/
-/*        --danger: #F8CBAD;*/
-/*        --secondary: #FFE699;*/
-/*        --label: #C6E0B4;*/
-/*        --accent: #8EA9DB;*/
-/*        --active: #EFA6EF;*/
-/*        --secondaryaccent: rgb(255, 230, 153);*/
-/*        --cursor: rgb(142, 169, 219);*/
-/*        --panel: rgb(239, 239, 239);*/
-/*        --background: rgb(255, 255, 255);*/
-/*        --blank: rgb(60, 65, 70);*/
-/*    }*/
-/*}*/
-@font-face {
-    font-family: Remix;
-    src: url('/app/remixicon.woff2');
-}
-
 @media screen and (prefers-color-scheme: light) {
     /* Folio theme */
     :root {
@@ -36,22 +15,6 @@
         --dark:             #2e343c;
     }
 }
-
-/*@media screen and (prefers-color-scheme: dark) { !* Folio theme *!*/
-/*    :root {*/
-/*        --primary: #cec9c4;*/
-/*        --danger: #4c3a33;*/
-/*        --secondary: #a84401;*/
-/*        --label: #0cb3c9;*/
-/*        --accent: #28334c;*/
-/*        --active: #419b62;*/
-/*        --secondaryaccent: #ba0950;*/
-/*        --cursor: #454747;*/
-/*        --panel: #2f3334;*/
-/*        --background: #151b1c;*/
-/*        --blank: #c3c3c8;*/
-/*    }*/
-/*}*/
 
 @media screen and (prefers-color-scheme: dark) {
     :root {

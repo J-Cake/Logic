@@ -1,0 +1,14 @@
+:root {
+    --primary:          #727c80;
+    --danger:           #DB6869;
+    --secondary:        #FCA087;
+    --label:            #283A4E;
+    --accent:           #23586D;
+    --active:           #68B2DC;
+    --secondaryaccent:  #7BCBE0;
+    --cursor:           #679ba9;
+    --panel:            #eeeeee;
+    --background:       #FDFCF7;
+    --blank:            #413d3d;
+    --dark:             #2e343c;
+}

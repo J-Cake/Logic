@@ -9,7 +9,7 @@ const dir = path.dirname(url.fileURLToPath(import.meta.url));
 
 const dirMatcher = /^--db-dir=([.~]?.[^\/]+)+$/;
 
-let dbDir = process.argv.find(i => dirMatcher.test(i))?.match(dirMatcher)?.[0]?.split('=')?.pop() || './data/LogicX/users.db';
+let dbDir = process.argv.find(i => dirMatcher.test(i))?.match(dirMatcher)?.[0]?.split('=')?.pop() || './data/logicx/users.db';
 
 if (dbDir.startsWith('~/'))
 	dbDir = path.join(os.homedir(), dbDir.slice(2));
