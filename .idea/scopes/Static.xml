@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="Static" pattern="file[lib]:res//*||file[lib]:doc//*||file[LogicX]:app/static//*" />
+</component>

@@ -41,10 +41,10 @@ new p5(function (sketch: p5) {
             canvas: $(p5Canvas.elt)
         });
 
-        manager.setState(({
+        manager.dispatch('init', ({
             renderedComponents: await renderComponents(manager.setState(() => ({
-                font: sketch.loadFont("/app/font-2.ttf"),
-                iconFont: sketch.loadFont("/app/remixicon.ttf"),
+                font: sketch.loadFont("/app/font/font-2.ttf"),
+                iconFont: sketch.loadFont("/app/font/remixicon.ttf"),
                 board: new Board(),
                 tooltipPane: new TooltipPane(),
                 sidebarWidth: 6,

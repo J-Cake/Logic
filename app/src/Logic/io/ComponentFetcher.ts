@@ -3,9 +3,10 @@ import {getComponent} from "../../sys/API/component";
 import StatelessFactory from "../StatelessFactory";
 import StatefulFactory from "../StatefulFactory";
 import DynamicFactory from "../DynamicFactory";
+import {CircuitObj} from "../../../../server/App/Document/Document";
 
 export type TruthTable = [boolean[], boolean[]][];
-export type Body = TruthTable | ApiComponent | string;
+export type Body = TruthTable | CircuitObj | string;
 
 /**
  * This is the shape of the component as received by the API. Consider this the JSON equivalent of a constructor

@@ -20,16 +20,19 @@ export enum Colour {
     Active,
     Label,
     Accent,
+    Secondary,
     SecondaryAccent,
     Cursor,
     Panel,
     Background,
     Blank,
-    Dark
+    Dark,
 }
 
 export enum Theme {
     System,
+    Dark,
+    Light,
     DarkBlue,
     DarkRed,
     DarkOrange,
@@ -42,8 +45,7 @@ export interface Preferences {
     colouriseComponents: boolean,
     enableTrackpadGestures: boolean,
 
-    useSystemTheme: boolean
-    fallbackTheme: Theme,
+    theme: Theme,
 
     enableTooltips: boolean
 }
@@ -55,8 +57,7 @@ export const defaultPreferences: Preferences = {
     enableTrackpadGestures: true,
     gridSize: 35,
     showGrid: false,
-    useSystemTheme: true,
-    fallbackTheme: 0 as Theme
+    theme: 0 as Theme
 };
 
 export enum PreferenceType {
@@ -77,7 +78,7 @@ export const PreferenceDescriptor: Record<keyof Preferences, {
 }> = {
     colouriseComponents: {
         description: "Colour-coordinate components by type for easier identification",
-        helpUrl: "/wiki/Application%2Fpreferences.md#colourise-components",
+        helpUrl: "/wiki/application%2Fpreferences.md#colourise-components",
         label: "Colourise Components",
         details: undefined,
         type: PreferenceType.Toggle
@@ -85,43 +86,36 @@ export const PreferenceDescriptor: Record<keyof Preferences, {
     enableTooltips: {
         description: "Show useful information about components",
         details: undefined,
-        helpUrl: "/wiki/Application%2Fpreferences.md#tooltips",
+        helpUrl: "/wiki/application%2Fpreferences.md#tooltips",
         label: "Show Tooltips",
         type: PreferenceType.Toggle
     },
     enableTrackpadGestures: {
         description: "Allow easier navigation with gesture-based controls for Trackpad devices",
         details: undefined,
-        helpUrl: "/wiki/Application%2Fpreferences.md#trackpad-gestures",
+        helpUrl: "/wiki/application%2Fpreferences.md#trackpad-gestures",
         label: "Trackpad Gestures",
         type: PreferenceType.Checkbox
     },
-    fallbackTheme: {
+    theme: {
         description: "Theme to use instead of system theme",
         details: _.mapValues(_.keyBy(Object.keys(Theme).filter(i => typeof Theme[i as keyof typeof Theme] !== 'number').map(i => [Number(i), Theme[i as keyof typeof Theme]]), '0'), i => i[1]),
-        helpUrl: "/wiki/Application%2Fpreferences.md#fallback-theme",
+        helpUrl: "/wiki/application%2Fpreferences.md#theme",
         label: "Theme",
         type: PreferenceType.Dropdown
     },
     gridSize: {
         description: "The size of the application grid",
         details: [5, 100],
-        helpUrl: "/wiki/Application%2Fpreferences.md#grid-size",
+        helpUrl: "/wiki/application%2Fpreferences.md#grid-size",
         label: "Grid Size",
         type: PreferenceType.Slider
     },
     showGrid: {
         description: "Indicates whether the grid should be visible",
         details: undefined,
-        helpUrl: "/wiki/Application%2Fpreferences.md#show-grid",
+        helpUrl: "/wiki/application%2Fpreferences.md#show-grid",
         label: "Grid",
         type: PreferenceType.Toggle
     },
-    useSystemTheme: {
-        description: "Use the colour scheme specified by the system",
-        details: undefined,
-        helpUrl: "/wiki/Application%2Fpreferences.md#use-system-theme",
-        label: "Use System theme",
-        type: PreferenceType.Toggle
-    }
 }

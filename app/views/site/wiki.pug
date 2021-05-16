@@ -42,11 +42,13 @@ block page
     link(rel="stylesheet", href="/app/css/wiki.css")
 
     if content
-        input(type="checkbox", checked)#index.collapse-index
-        label(for="index")
-            h2 Index
-            #pages
-                +renderPages(pages, '', 0)
+        section#wiki-index
+            //div.fill
+            label(for="index")#index-container
+                h2 Index
+                #pages
+                    +renderPages(pages, '', 0)
+            input(type="checkbox", checked)#index.collapse-index
 
         section#article
             +search
@@ -59,12 +61,12 @@ block page
             article#content
                 h1 LogicX Docs and Wiki
 
-                p You can find any document in the index below, or by entering a query in the search box aboce
+                p You can find any document in the index below, or by entering a query in the search box above
 
-                input(type="checkbox", checked)#index.collapse-index
                 label(for="index")
                     h2 Index
                     #pages
                         +renderPages(pages, '', 0)
+                input(type="checkbox", checked)#index.collapse-index
 
             +issue
