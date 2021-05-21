@@ -9,12 +9,10 @@ import {ApiComponent} from '../../../app/src/Logic/io/ComponentFetcher';
 
 export type tokenMap = { [token: string]: string };
 
-interface paginatedSearchQuery {
+export interface paginatedSearchQuery {
     foundComponents: tokenMap,
     page: number,
-    // pages: number,
     resultsPerPage: number,
-    // resultNum: number
 }
 
 export default async function searchComponents(query: string, page: number = 0): Promise<paginatedSearchQuery> {
@@ -25,6 +23,7 @@ export default async function searchComponents(query: string, page: number = 0):
                                                                                       where "componentName" like $1
                                                                                       LIMIT $2 OFFSET  $3`, [`%${query}%`, recordsPerPage, recordsPerPage * page]);
 
+    // TODO make standard components case insensitive
     const stdTokens = (await Promise.all((await FS.readdir(path.join(await rootFn(), 'lib', 'components')))
         .filter(i => i.endsWith('.json'))
         .map(async i => [i, JSON.parse(await FS.readFile(path.join(await rootFn(), 'lib', 'components', i))) as ApiComponent] as [string, ApiComponent])))

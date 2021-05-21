@@ -67,7 +67,7 @@ export default class Document implements CircuitObj {
                                     where "ownerId" = $1`, [userId]);
     }
 
-    async fetchInfo() {
+    async fetchInfo(): Promise<CircuitObj> {
         const {source} = await sql.sql_get<Partial<DBDocument>>(`SELECT source
                                                                  from documents
                                                                  where "documentId" = $1`, [this.docId]);
@@ -78,7 +78,7 @@ export default class Document implements CircuitObj {
 
         if (source)
             try {
-                this.info = JSON.parse(source)
+                return this.info = JSON.parse(source)
             } catch (err) {
                 throw 'Document is corrupt and was not able to be read'
             }
@@ -128,13 +128,14 @@ export default class Document implements CircuitObj {
         else throw 'write not permitted';
     }
 
-    async changeAccess(actorId: number, userId: number, canEdit: boolean): Promise<void> {
+    async changeAccess(actorId: number, userId: number, canEdit: boolean): Promise<boolean> {
         if (!this.readOnly && await this.isOwner(actorId))
             await sql.sql_query(`update access
                                  set "canEdit" = $1
                                  where "userId" = $2
                                    and "documentId" = $3`, [canEdit, userId, this.docId]);
         else throw 'write not permitted';
+        return canEdit;
     }
 
     async changeDocumentName(userId: number, name: string): Promise<void> {
