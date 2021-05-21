@@ -23,6 +23,12 @@ declare global {
     }
 }
 
+export async function inform(msg: string) {
+    console.log("Updating");
+    $("span#time").text(new Date().toLocaleTimeString());
+    $("span#status").text(msg);
+}
+
 export function setVisible(dialog: Dialog, visibility: boolean): Window | null {
     const [button, dialogObj] = dialogManager.setState()[dialog];
 
