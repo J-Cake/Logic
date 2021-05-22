@@ -57,18 +57,18 @@ router.post("/make", async function (req, res) {
 });
 
 router.get('/:circuit', async function (req, res) {
-    res.json(await respond(Action.Document_Read, async function (props, error): Promise<CircuitObj> {
-        props.res = res;
+    res.json(await respond(Action.Document_Read, function (props, error): Promise<CircuitObj> {
+        return new Promise(async function (resolve) {
+            props.res = res;
 
-        const userToken: string = req.userToken ?? "";
+            const userToken: string = req.userToken ?? "";
 
-        if (await attempt(async function () {
-            const file = await getFile(userToken, req.params.circuit);
-            return await file.fetchInfo();
-        }))
-            error(Status.Document_Not_Exists, 'Access to the document was denied.');
-
-        return {} as CircuitObj; // Keep the compiler happy
+            if (await attempt(async function () {
+                const file = await getFile(userToken, req.params.circuit);
+                resolve(await file.fetchInfo());
+            }))
+                error(Status.Document_Not_Exists, 'Access to the document was denied.');
+        });
     }));
 });
 
@@ -110,47 +110,49 @@ router.delete('/:circuit', async function (req, res) {
 
 router.put('/:circuit/collaborator', async function (req, res) {
     res.json(await respond(Action.Document_Collaborator_Add, async function (props, error): Promise<boolean> {
-        props.res = res;
+        return new Promise<boolean>(async function (resolve) {
+            props.res = res;
 
-        const userToken: string = req.userToken || "";
+            const userToken: string = req.userToken || "";
 
-        if (await attempt(async function () {
-            const file = await getFile(userToken, req.params.circuit);
-            await file.fetchInfo();
+            if (await attempt(async function () {
+                const file = await getFile(userToken, req.params.circuit);
+                await file.fetchInfo();
 
-            if (req.query.user) {
-                const alreadyExists = file.collaborators.includes(await userTokenToId(userToken));
-                if (alreadyExists && 'can-edit' in req.query)
-                    return await file.changeAccess(await userTokenToId(userToken), Number(req.query.user), req.query['can-edit'] === 'true');
-                else if (!alreadyExists)
-                    return await file.addCollaborator(await userTokenToId(userToken), Number(req.query.user), req.query['can-edit'] === 'true')
-                else {
-                    props.status = Status.User_Not_Exists;
-                    return false;
-                }
-            } else
-                error(Status.No_Change, 'User not specified.');
-        }, err => console.error(err)))
-            error(Status.Insufficient_Access, 'You do not have access to this document.');
-        return void 0 as unknown as boolean;
+                if (req.query.user) {
+                    const alreadyExists = file.collaborators.includes(await userTokenToId(userToken));
+                    if (alreadyExists && 'can-edit' in req.query)
+                        resolve(await file.changeAccess(await userTokenToId(userToken), Number(req.query.user), req.query['can-edit'] === 'true'));
+                    else if (!alreadyExists)
+                        resolve(await file.addCollaborator(await userTokenToId(userToken), Number(req.query.user), req.query['can-edit'] === 'true'));
+                    else {
+                        props.status = Status.User_Not_Exists;
+                        resolve(false);
+                    }
+                } else
+                    error(Status.No_Change, 'User not specified.');
+            }, err => console.error(err)))
+                error(Status.Insufficient_Access, 'You do not have access to this document.');
+            return void 0 as unknown as boolean;
+        });
     }));
 });
 
 router.delete('/:circuit/collaborator', async function (req, res) {
     res.json(await respond(Action.Document_Collaborator_Remove, async function (props, error): Promise<void> {
-        props.res = res;
-        const userToken: string = req.userToken || "";
+            props.res = res;
+            const userToken: string = req.userToken || "";
 
-        if (await attempt(async function () {
-            const file = await getFile(userToken, req.params.circuit);
-            await file.fetchInfo();
+            if (await attempt(async function () {
+                const file = await getFile(userToken, req.params.circuit);
+                await file.fetchInfo();
 
-            if (req.query.user)
-                return await file.removeCollaborator(await userTokenToId(userToken), Number(req.query.user));
-            else
-                error(Status.User_Not_Member, 'User not specified.');
-        }))
-            error(Status.Insufficient_Access, 'You do not have access to this document.');
+                if (req.query.user)
+                    await file.removeCollaborator(await userTokenToId(userToken), Number(req.query.user));
+                else
+                    error(Status.User_Not_Member, 'User not specified.');
+            }))
+                error(Status.Insufficient_Access, 'You do not have access to this document.');
     }));
 });
 
@@ -170,7 +172,7 @@ router.put('/:circuit/add-component', async function (req, res) {
                                                          where "componentToken" = $1)`, [req.query.component])) {
                         if (!file.info.components.includes(req.query.component)) {
                             file.info.components.push(req.query.component);
-                            return await file.writeContents(file.info);
+                            await file.writeContents(file.info);
                         } else
                             error(Status.Component_Exists, 'The component is already included');
                     }
@@ -183,21 +185,22 @@ router.put('/:circuit/add-component', async function (req, res) {
 
 router.get('/:circuit/rename', async function (req, res) {
     res.json(await respond(Action.Document_Rename, async function (props, error): Promise<string> {
-        props.res = res;
+        return new Promise<string>(async function (resolve) {
+            props.res = res;
 
-        const userToken: string = req.userToken || "";
+            const userToken: string = req.userToken || "";
 
-        if (await attempt(async function () {
-            const file = await getFile(userToken, req.params.circuit);
-            await file.fetchInfo();
+            if (await attempt(async function () {
+                const file = await getFile(userToken, req.params.circuit);
+                await file.fetchInfo();
 
-            if ('name' in req.query)
-                return void await file.changeDocumentName(await userTokenToId(userToken), req.query['name'] as string) || req.query['name'];
-            else
-                error(Status.Done, 'No name provided.');
-        })) error(Status.Done, 'An unknown error occurred.');
-
-        return '';
+                if ('name' in req.query) {
+                    void await file.changeDocumentName(await userTokenToId(userToken), req.query['name'] as string)
+                    resolve(req.query['name'] as string);
+                }else
+                    error(Status.Done, 'No name provided.');
+            })) error(Status.Done, 'An unknown error occurred.');
+        });
     }))
 });
 

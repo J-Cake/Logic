@@ -78,8 +78,9 @@ export default class Document implements CircuitObj {
 
         if (source)
             try {
-                return this.info = JSON.parse(source)
+                return this.info = JSON.parse(source);
             } catch (err) {
+                console.error(err);
                 throw 'Document is corrupt and was not able to be read'
             }
         else
@@ -108,7 +109,7 @@ export default class Document implements CircuitObj {
         else throw 'write not permitted';
     }
 
-    async addCollaborator(actorId: number, userId: number, canEdit: boolean = false): Promise<void> {
+    async addCollaborator(actorId: number, userId: number, canEdit: boolean = false): Promise<boolean> {
         if (!this.readOnly && await this.isOwner(actorId)) {
             await sql.sql_query(`insert into access ("documentId", "userId")
                                  select $1 as "documentId", $2 as userId except
@@ -118,6 +119,7 @@ export default class Document implements CircuitObj {
                                    and "userId" = $2;`, [this.docId, userId]);
             await this.changeAccess(actorId, userId, canEdit);
         } else throw 'write not permitted';
+        return canEdit;
     }
 
     async delete(userId: number): Promise<void> {

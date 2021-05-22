@@ -30,6 +30,7 @@ export enum Action {
     Component_Find,
 
     App_SearchUsers,
+    Script_Get,
 }
 
 export enum Status {
@@ -106,26 +107,29 @@ type StatusMap<T extends Action> =
                                                                                 T extends Action.Component_Delete ? Status.Done | Status.Not_Authenticated | Status.Component_Not_Exists :
                                                                                     T extends Action.Component_Get ? Status.No_Change | Status.Component_Not_Exists | Status.Insufficient_Access :
                                                                                         T extends Action.Component_Find ? Status.No_Change :
-                                                                                            T extends Action.App_SearchUsers ? [Status.No_Change] :
-                                                                                                Status.No_Change)
+                                                                                            T extends Action.App_SearchUsers ? Status.No_Change :
+                                                                                                T extends Action.Script_Get ? Status.No_Change | Status.Component_Not_Exists :
+                                                                                                    Status.No_Change)
     | Status.Undefined;
 
-type ApiResponse<Data extends {}, A extends Action> = {
+export type ApiResponse<Data, A extends Action> = ApiResponse_Success<Data, A> | ApiResponse_Failure<Data, A>;
+export type ApiResponse_Success<Data, A extends Action> = {
     action: A,
     data: Data,
     status: StatusMap<A>,
-} | {
+};
+export type ApiResponse_Failure<Data, A extends Action> = {
     action: A,
     error: string,
-    status: StatusMap<A>
-};
+    status: StatusMap<A>,
+}
 
 type props<A extends Action> = { status: StatusMap<A>, res: null | express.Response };
-type PartialResponse<Data extends {}, A extends Action> =
+type PartialResponse<Data, A extends Action> =
     { status: StatusMap<A> }
     & ({ data: Data } | { error: string });
 
-export default function respond<Data extends {}, A extends Action>(action: A, getResponse: (pref: props<A>, error: (status: StatusMap<A>, msg?: string) => void) => Data | Promise<Data>): Promise<ApiResponse<Data, A>> {
+export default function respond<Data, A extends Action>(action: A, getResponse: (pref: props<A>, error: (status: StatusMap<A>, msg?: string) => void) => Data | Promise<Data>): Promise<ApiResponse<Data, A>> {
     return new Promise(function (resolve) {
         const props: props<A> = {
             status: Status.Undefined,

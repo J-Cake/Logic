@@ -7,7 +7,7 @@ import {attempt} from "../../util";
 import {getComponent} from "../sys/API/component";
 
 export async function loadComponent(componentToken: string): Promise<{ [id: number]: [GenericComponent, GenComponent] }> {
-    const component: ApiComponent = await getComponent(componentToken) as ApiComponent;
+    const component: ApiComponent = (await getComponent(componentToken)).data as ApiComponent;
 
     if (typeof component.component === 'object' && !('length' in component.component)) {
         const loaded = component.component as CircuitObj;

@@ -13,7 +13,7 @@ $('.controls *').each(function () {
 $('#mkDoc').on('click', async function () {
     const name = prompt('Please enter a document name');
     if (name) {
-        window.location.href = `/edit/${await makeDocument(name) as string}`;
+        window.location.href = `/edit/${(await makeDocument(name)).data as string}`;
     }
 });
 $('.doc').each(function () {

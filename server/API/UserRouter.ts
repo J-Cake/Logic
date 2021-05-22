@@ -12,18 +12,20 @@ import {DBPreferenceMap} from "../App/Document/getFile";
 
 const router: express.Router = express.Router();
 
+export type userSearch = {
+    users: {
+        email: string,
+        identifier: string,
+        userId: number
+    }[],
+    page: number,
+    records: number,
+    recordsPerPage: number,
+    pages: number
+};
+
 router.get('/search-users', async function (req, res) {
-    res.json(await respond(Action.App_SearchUsers, async function (props): Promise<{
-        users: {
-            email: string,
-            identifier: string,
-            userId: number
-        }[],
-        page: number,
-        records: number,
-        recordsPerPage: number,
-        pages: number
-    }> {
+    res.json(await respond(Action.App_SearchUsers, async function (props): Promise<userSearch> {
         props.res = res;
 
         const recordsPerPage = 25;

@@ -2,22 +2,14 @@ import $ from 'jquery';
 import mousetrap from 'mousetrap';
 import {searchUsers} from "../src/sys/API/user";
 import {addCollaborator, allowEdit, removeCollaborator} from "../src/sys/API/circuit";
+import type {userSearch} from "../../server/API/UserRouter";
 
 mousetrap.bind('esc', () => window.close());
 
 const circuitToken: string = window.location.href.split('/').pop() as string;
 
 export async function update(this: HTMLElement) {
-    type searchUsers = {
-        users: {
-            email: string,
-            identifier: string,
-            userId: number,
-            dateGranted: number,
-            canEdit: boolean
-        }[]
-    };
-    const users: searchUsers = await searchUsers(encodeURIComponent(($(this).val() as string).trim())) as searchUsers;
+    const users: userSearch = (await searchUsers(encodeURIComponent(($(this).val() as string).trim()))).data;
 
     const results = $("#results");
     results.empty();

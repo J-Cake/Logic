@@ -10,10 +10,9 @@ if (!window.opener)
 const connect: typeof window.connect = () => window.opener.connect();
 
 new Promise<(msgFn: string) => void>(ok => ok(connect())).then(function(msgFn) {
-
     $(".info").on('click', function() {
         const tok = $(this).data('token');
-        addComponent(window.location.pathname.split('/').pop() as string, tok).then(res => {
+        addComponent(window.location.pathname.split('/').pop() as string, tok).then(() => {
             msgFn(tok);
             window.close();
         });

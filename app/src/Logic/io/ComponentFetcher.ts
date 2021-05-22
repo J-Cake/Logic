@@ -64,7 +64,7 @@ export abstract class GenComponent extends Component {
 }
 
 export default async function fetchComponent(componentToken: string): Promise<new(mapKey: number, base: GenericComponent) => GenComponent> {
-    const apiComponent: ApiComponent = await getComponent(componentToken) as ApiComponent;
+    const apiComponent: ApiComponent = (await getComponent(componentToken)).data as ApiComponent;
     apiComponent.token = componentToken;
 
     const requiredKeys: string[] = ['token', 'name', 'owner', 'component', 'inputLabels', 'outputLabels'];

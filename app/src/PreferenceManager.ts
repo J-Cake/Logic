@@ -6,7 +6,7 @@ export default class PreferenceManager extends StateManager<Preferences> {
     constructor(preferences?: Partial<Preferences>) {
         super(preferences);
 
-        getPreferences().then(pref => this.setState(pref as Partial<Preferences>));
+        getPreferences().then(pref => this.setState(pref.data as Partial<Preferences>));
         // fetch('/user/preferences').then(i => i.json().then(i => this.setState(i)));
 
         this.onStateChange(function(preferences) {

@@ -6,6 +6,7 @@ import {showModal} from "../Plugin/DialogManager";
 import {fetchData, pickFile, saveData} from "../Plugin/API";
 import {manager} from "../State";
 import RenderComponent from "../ui/RenderComponent";
+import {Action, ApiResponse_Success} from "../../../server/API/lib/Api";
 
 export default function(apiComponent: ApiComponent) {
     return class DynamicComponent extends GenComponent {
@@ -20,8 +21,8 @@ export default function(apiComponent: ApiComponent) {
 
             this.label = this.base.label;
 
-            (fetchScript(apiComponent.component as string) as Promise<string>)
-                .then((fn: string) => initPlugin(fn, apiComponent, {
+            (fetchScript(apiComponent.component as string) as Promise<ApiResponse_Success<string, Action.Script_Get>>)
+                .then((fn: ApiResponse_Success<string, Action.Script_Get>) => initPlugin(fn.data, apiComponent, {
                     component: {
                         onClick: (callback: (renderObj: sanitiser.SanitisedRenderer) => void) => this.plugin.onClick = callback,
                         setComputeFn: (callback: (inputs: boolean[]) => boolean[]) => this.plugin.computeFn = callback,

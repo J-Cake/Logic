@@ -60,7 +60,7 @@ export default class CircuitManager {
     }
 
     private async loadCircuit(circuitId: string): Promise<{ [id: number]: [GenericComponent, GenComponent] }> {
-        const loaded: CircuitObj = await getDocument(circuitId) as CircuitObj;
+        const loaded: CircuitObj = (await getDocument(circuitId)).data as CircuitObj;
 
         const availSync: { [componentId: string]: new(mapKey: number, base: GenericComponent) => GenComponent } = {};
 
