@@ -16,6 +16,16 @@ type TruthTableGenerator = {
     outputNames: string[]
 }
 
+const pickToken = async function () {
+    let token: string;
+    do
+        token = Math.floor(Math.random() * 11e17).toString(36);
+    while ((await sql.sql_get<{ componentToken: string }>(`SELECT "componentToken"
+                                                           from components
+                                                           where "componentToken" = $1`, [token]))?.componentToken);
+    return token;
+} // pick a token that isn't in use,
+
 export default async function docToComponent(documentToken: string, userToken: string, stateful: boolean): Promise<string> {
     await attempt(async function () {
         const document = await sql.sql_get<{ source: string, documentTitle: string }>(`SELECT source, "documentTitle"
@@ -31,32 +41,55 @@ export default async function docToComponent(documentToken: string, userToken: s
 
         await file.fetchInfo();
 
-        if (!stateful) { // Set up a truth table
-            const truthTable: TruthTableGenerator = await getTruthTable(file.info);
-            const componentDocument: ApiComponent = {
-                component: truthTable.table,
-                inputLabels: truthTable.inputNames,
-                name: document.documentTitle,
-                outputLabels: truthTable.outputNames,
-                owner: user.email,
-                token: Math.floor(Math.random() * 11e17).toString(36), // pick a token that isn't in use,
-                wires: []
+        const componentDocument = await (async function (): Promise<ApiComponent> {
+            if (!stateful) { // Set up a truth table
+                const truthTable: TruthTableGenerator = await getTruthTable(file.info);
+                return {
+                    component: truthTable.table,
+                    inputLabels: truthTable.inputNames,
+                    name: document.documentTitle,
+                    outputLabels: truthTable.outputNames,
+                    owner: user.email,
+                    token: await pickToken(), // pick a token that isn't in use,
+                    wires: []
+                }
+
+            } else {
+                const document: CircuitObj = await flattenComponent(file.info);
+                return {
+                    component: document,
+                    inputLabels: Object.values(file.info.content).filter(i => i.token === '$input').map(i => i.label),
+                    outputLabels: _.filter(file.info.content, i => i.token === '$output').map(i => i.label),
+                    name: file.circuitName,
+                    owner: user.email,
+                    token: await pickToken(), // pick a token that isn't in use,
+                    wires: [],
+                }
             }
-            await sql.sql_query(`INSERT INTO components ("ownerId", "componentToken", "componentName", source, "componentId")
-                                 values ($1, $2, $3, $4,
-                                         coalesce((SELECT max("componentId") as "componentId" from components) + 1,
-                                                  0))`, [user.userId, componentDocument.token, componentDocument.name, JSON.stringify(componentDocument)]);
-            // await sql.sql_query(`INSERT INTO components (ownerId, componentToken, componentName, source, componentId)
-            //                      values ($ownerId, $compToken,
-            //                              $compName, $source, coalesce((SELECT max(componentId) as componentId from components) + 1, 0))`, {
-            //     $ownerId: user.userId,
-            //     $compToken: componentDocument.token,
-            //     $compName: componentDocument.name,
-            //     $source: JSON.stringify(componentDocument)
-            // });
-        }
+        })();
+
+        await sql.sql_query(`INSERT INTO components ("ownerId", "componentToken", "componentName", source, "componentId")
+                             values ($1, $2, $3, $4,
+                                     coalesce((SELECT max("componentId") as "componentId" from components) + 1,
+                                              0))`, [user.userId, componentDocument.token, componentDocument.name, JSON.stringify(componentDocument)]);
     }, err => console.error(err));
     return '';
+}
+
+export async function flattenComponent(info: CircuitObj): Promise<CircuitObj> {
+    const isStateful: [string, boolean][] = await Promise.all(info.components.map(async function (token): Promise<[string, boolean]> {
+        const component: ApiComponent = JSON.parse(token.startsWith('$') ?
+            await readFile(path.join(await rootFn(), 'lib', 'components', token.slice(1) + ".json")) :
+            await sql.sql_get(`SELECT source
+                               from components
+                               where "componentToken" = $1`, [token]));
+
+        return [token, !Array.isArray(component.component) && typeof component.component === 'object'];
+    }));
+
+    // TODO: Flatten. That means loaded those components and connect them... have funnnnn!!
+
+    return info;
 }
 
 export async function getTruthTable(info: CircuitObj): Promise<TruthTableGenerator> {
@@ -64,7 +97,7 @@ export async function getTruthTable(info: CircuitObj): Promise<TruthTableGenerat
     const outputLocations: [number, string][] = [];
 
     for (const [a, i] of Object.entries(info.content))
-        if (i.identifier === "$input")
+        if (i.token === "$input")
             inputLocations.push(Number(a));
 
     type connectMap = (number | connectMap)[];
@@ -101,7 +134,7 @@ export async function getTruthTable(info: CircuitObj): Promise<TruthTableGenerat
 
                 if (destinationComponent instanceof StatelessComponent && comp_at_i instanceof StatelessComponent)
                     destinationComponent.addInput(comp_at_i, from, to);
-                else if (info.content[comp].identifier === "$output")
+                else if (info.content[comp].token === "$output")
                     outputLocations.push([Number(a), from]);
             }
     }
@@ -129,23 +162,23 @@ export async function getTruthTable(info: CircuitObj): Promise<TruthTableGenerat
     return {
         table: truthTable,
         inputNames: inputLocations.map((i, a) => info.content[i].label ?? 'i' + a.toString(16)),
-        outputNames: _.filter(info.content, i => i.identifier === '$output').map((i, a) => i.label ?? 'o' + a.toString(16)),
+        outputNames: _.filter(info.content, i => i.token === '$output').map((i, a) => i.label ?? 'o' + a.toString(16)),
     };
 }
 
 export async function fetchComponent(raw?: GenericComponent): Promise<[string, StatelessComponent | string] | null> {
-    if (!raw?.identifier)
+    if (!raw?.token)
         return null;
 
-    const source: ApiComponent = JSON.parse(raw?.identifier.startsWith('$') ?
-        await readFile(path.join(await rootFn(), 'lib', 'components', raw?.identifier.slice(1) + ".json")) : // Standard Component
+    const source: ApiComponent = JSON.parse(raw?.token.startsWith('$') ?
+        await readFile(path.join(await rootFn(), 'lib', 'components', raw?.token.slice(1) + ".json")) : // Standard Component
         await sql.sql_get(`SELECT source
                            from components
-                           where "componentToken" = $1`, [raw?.identifier])); // Custom Component
+                           where "componentToken" = $1`, [raw?.token])); // Custom Component
 
     if (Object.prototype.toString.call(source.component) === "[object Array]")
-        return [raw?.identifier, new StatelessComponent(source.component as TruthTable, [source.inputLabels, source.outputLabels], raw)];
+        return [raw?.token, new StatelessComponent(source.component as TruthTable, [source.inputLabels, source.outputLabels], raw)];
     else if (typeof source.component === "string")
-        return [raw?.identifier, source.component];
+        return [raw?.token, source.component];
     return null;
 }

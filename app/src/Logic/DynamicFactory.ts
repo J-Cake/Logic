@@ -8,18 +8,23 @@ import {manager} from "../State";
 import RenderComponent from "../ui/RenderComponent";
 import {Action, ApiResponse_Success} from "../../../server/API/lib/Api";
 
-export default function(apiComponent: ApiComponent) {
+export default function (apiComponent: ApiComponent) {
     return class DynamicComponent extends GenComponent {
         plugin: Partial<Plugin>;
 
         constructor(documentComponentKey: number, base: GenericComponent) {
-            super(documentComponentKey, apiComponent.inputLabels, apiComponent.outputLabels, apiComponent.name);
+            super({
+                documentComponentKey: documentComponentKey,
+                inputs: apiComponent.inputLabels,
+                outputs: apiComponent.outputLabels,
+                name: apiComponent.name,
+                raw: apiComponent,
+                base: base
+            });
 
             this.plugin = {};
-            this.raw = apiComponent;
-            this.base = base;
 
-            this.label = this.base.label;
+            this.label = base.label;
 
             (fetchScript(apiComponent.component as string) as Promise<ApiResponse_Success<string, Action.Script_Get>>)
                 .then((fn: ApiResponse_Success<string, Action.Script_Get>) => initPlugin(fn.data, apiComponent, {

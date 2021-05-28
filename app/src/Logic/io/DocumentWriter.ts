@@ -13,7 +13,7 @@ export default async function save(): Promise<void> {
 
     if (mgr.circuitId)
         await saveDocument(mgr.circuitId, file);
-        // alert('There was an issue saving the file. Check the logs for more info');
+    // alert('There was an issue saving the file. Check the logs for more info');
     else if (confirm('You are not signed in. Create Account?'))
         window.open('/user/signup', '_blank');
 }
@@ -60,15 +60,21 @@ export async function prepareForSave(c_man: CircuitManager): Promise<CircuitObj>
         for (const i in component.component.outputs)
             outputs[i] = component.component.outputs[i].map(i => [findIdOfComponent(i[0]), i[1]]);
 
-        content[id] = {
-            identifier: (component.component instanceof GenComponent && component.component.raw?.token) ? component.component.raw.token : component.component.name,
-            label: component.component.label,
-            direction: component.props.direction,
-            flip: component.props.flip,
-            position: component.props.pos,
-            outputs: outputs,
-            wires: wires
-        };
+        if ((component.component as GenComponent).raw?.token)
+            content[id] = {
+                token: (component.component as GenComponent).raw?.token ?? '',
+                label: component.component.label,
+                direction: component.props.direction,
+                flip: component.props.flip,
+                position: component.props.pos,
+                outputs: outputs,
+                wires: wires
+            };
+        else
+            throw {
+                msg: `There was an error saving the document. Unknown component found.`,
+                component: component
+            };
     }
 
     return {

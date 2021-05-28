@@ -1,4 +1,5 @@
 import _ from 'lodash';
+
 import {GenericComponent, TruthTable} from '../../../app/src/Logic/io/ComponentFetcher';
 import {attemptSync} from '../../util/utils';
 

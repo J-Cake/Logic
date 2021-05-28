@@ -20,7 +20,8 @@ export default function buildPrompt() {
                 position: board.coordsToGrid([mouse.x, mouse.y]),
                 label: '',
                 flip: false,
-                wires: {}
+                wires: {},
+                token: componentToken,
             });
 
             mgr.addComponent(component);

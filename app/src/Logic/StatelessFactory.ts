@@ -1,15 +1,20 @@
 import {manager} from "../State";
 import {ApiComponent, compareArray, GenComponent, GenericComponent, TruthTable} from "./io/ComponentFetcher";
 
-export default function(apiComponent: ApiComponent) {
+export default function (apiComponent: ApiComponent) {
     return class StatelessComponent extends GenComponent {
         constructor(documentComponentKey: number, base: GenericComponent) {
-            super(documentComponentKey, apiComponent.inputLabels, apiComponent.outputLabels, apiComponent.name);
+            super({
+                documentComponentKey: documentComponentKey,
+                inputs: apiComponent.inputLabels,
+                outputs: apiComponent.outputLabels,
+                name: apiComponent.name,
+                raw: apiComponent,
+                base: base
+            });
             this.update();
-            this.raw = apiComponent;
-            this.base = base;
 
-            this.label = this.base.label;
+            this.label = base.label;
         }
 
         computeOutputs(inputs: boolean[]): boolean[] {

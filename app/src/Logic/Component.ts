@@ -2,6 +2,7 @@ import _ from 'lodash';
 import RenderComponent from '../ui/RenderComponent';
 import {DebugMode} from '../Enums';
 import {manager} from '../State';
+import {GenComponent} from "./io/ComponentFetcher";
 
 export const containsDuplicates = (list: string[]): boolean => new Set(list).size !== list.length;
 
@@ -46,9 +47,8 @@ export default abstract class Component {
         this.outCache = {};
 
         for (const [a, i] of this.outputNames.entries())
-            this.outCache[i] = this.out[a] || false;
+            this.outCache[i] = this.out?.[a] ?? false;
 
-        // this.value = new Array(outputs.length).fill(false);
         this.label = this.name = name;
 
         this.updated = false;
@@ -166,7 +166,6 @@ export default abstract class Component {
             });
         }
     }
-
 
     activate(renderer: RenderComponent) {
         this.update();

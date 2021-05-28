@@ -46,6 +46,10 @@ export interface Pref {
 }
 
 export function getPort(): number {
+    if (process.env.LB_USE_PORT) {
+        console.log('---- Port Override specified:', Number(process.env.LB_USE_PORT));
+        return Number(process.env.LB_USE_PORT);
+    }
     const _p = process.argv.find(i => /^--port=\d+$/.test(i))?.match(/^--port=(\d+)$/);
     return Number(_p ? _p[1] : '2560');
 }

@@ -33,7 +33,7 @@ export type wires = {
  * This is a classless representation of a component that is in use.
  */
 export interface GenericComponent {
-    identifier?: string,
+    token: string,
     direction: 0 | 1 | 2 | 3,
     flip: boolean,
     outputs: {
@@ -55,11 +55,49 @@ export abstract class GenComponent extends Component {
     raw: ApiComponent | null;
     base: GenericComponent | null;
 
-    protected constructor(documentComponentKey: number, inputs: string[], outputs: string[], name: string) {
-        super(inputs, outputs, name);
-        this.documentComponentKey = documentComponentKey;
-        this.raw = null;
-        this.base = null;
+    protected constructor(props: {
+        documentComponentKey: number,
+        inputs: string[],
+        outputs: string[],
+        name: string,
+        raw?: ApiComponent,
+        base?: GenericComponent
+    }) {
+        super(props.inputs, props.outputs, props.name);
+        this.documentComponentKey = props.documentComponentKey;
+
+        this.raw = props.raw ?? null;
+        this.base = props.base ?? null;
+    }
+}
+
+export class PlaceholderComponent extends GenComponent {
+    output: boolean[] = [];
+
+    constructor(replacer: GenComponent) {
+        super({
+            documentComponentKey: replacer.documentComponentKey,
+            inputs: replacer.inputNames,
+            outputs: replacer.outputNames,
+            name: replacer.label
+        });
+        this.out = replacer.outputNames.map(i => false);
+        // @ts-ignore
+        this.inputs = replacer.inputs;
+        // @ts-ignore
+        this.outputs = replacer.outputs;
+        this.base = replacer.base;
+    }
+
+    getInputs(): boolean[] {
+        return this.output;
+    }
+
+    computeOutputs(inputs: boolean[]): boolean[] {
+        return this.output;
+    }
+
+    preUpdate(next: () => void): void {
     }
 }
 

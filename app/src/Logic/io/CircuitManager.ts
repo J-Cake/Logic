@@ -13,6 +13,11 @@ export interface CircuitManagerState {
     document: CircuitObj
 }
 
+export type AvailSync = {
+    [componentId: string]: new(mapKey: number, base: GenericComponent) => GenComponent
+};
+export type ComponentMap = { [id: number]: [GenericComponent, GenComponent] };
+
 export default class CircuitManager {
     state: StateManager<CircuitManagerState>;
     loading: Promise<{ [id: number]: [GenericComponent, GenComponent] }>;
@@ -59,10 +64,8 @@ export default class CircuitManager {
         return Math.max(...this.state.setState().components.map(i => i.documentComponentKey));
     }
 
-    private async loadCircuit(circuitId: string): Promise<{ [id: number]: [GenericComponent, GenComponent] }> {
-        const loaded: CircuitObj = (await getDocument(circuitId)).data as CircuitObj;
-
-        const availSync: { [componentId: string]: new(mapKey: number, base: GenericComponent) => GenComponent } = {};
+    static async parseCircuit(loaded: CircuitObj): Promise<[avail: AvailSync, comps: ComponentMap]> {
+        const availSync: AvailSync = {};
 
         for (const componentToken of loaded.components)
             await attempt(async () => availSync[componentToken] = await fetchComponent(componentToken),
@@ -70,15 +73,23 @@ export default class CircuitManager {
 
         const components: { [id: number]: [GenericComponent, GenComponent] } = {};
         for (const i in loaded.content)
-            if (loaded.content[i].identifier)
-                components[i] = [loaded.content[i], new availSync[loaded.content[i].identifier as string](Number(i), loaded.content[i])];
+            if (loaded.content[i].token && availSync.hasOwnProperty(loaded.content[i].token ?? ''))
+                components[i] = [loaded.content[i], new availSync[loaded.content[i].token as string](Number(i), loaded.content[i])];
             else
-                throw 'invalid component identifier';
+                throw `invalid component identifier ${i}`;
 
         for (const [comp, obj] of Object.values(components))
             for (const i in comp.outputs)
                 for (const j of comp.outputs[i])
                     components[j[0]][1].addInput(obj, i, j[1]);
+
+        return [availSync, components];
+    }
+
+    private async loadCircuit(circuitId: string): Promise<{ [id: number]: [GenericComponent, GenComponent] }> {
+        const loaded: CircuitObj = (await getDocument(circuitId)).data as CircuitObj;
+
+        const [availSync, components] = await CircuitManager.parseCircuit(loaded);
 
         this.state.setState({
             availableComponents: availSync,

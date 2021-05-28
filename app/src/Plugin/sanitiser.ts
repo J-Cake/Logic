@@ -14,7 +14,7 @@ export function sanitiseComponent(component: GenComponent): SanitisedComponent {
         outputNames: component.outputNames,
         label: component.label,
         out: component.out,
-        token: component.name,
+        token: component.raw?.token ?? '',
         compute: component.computeOutputs,
         getInputs: component.getInputs,
         update: component.update,

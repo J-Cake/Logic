@@ -34,9 +34,6 @@ app.use(function (req, res, next) {
         next();
 });
 
-// console.log(os.networkInterfaces())
-// const baseAddr = _.map(os.networkInterfaces(), i => i.map(j => j.address));
-
 app.use(host('api', await API()));
 app.use(host('admin', await Admin()));
 app.use(host(['api', 'admin'], await App()));

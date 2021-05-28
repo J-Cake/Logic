@@ -1,35 +1,16 @@
+import _ from 'lodash';
+
 import {manager} from "../State";
-import fetchComponent, {ApiComponent, GenComponent, GenericComponent} from "./io/ComponentFetcher";
-import CircuitManager from "./io/CircuitManager";
+import {ApiComponent, GenComponent, GenericComponent, PlaceholderComponent} from "./io/ComponentFetcher";
+import CircuitManager, {AvailSync, ComponentMap} from "./io/CircuitManager";
 import {CircuitObj} from "../../../server/App/Document/Document";
-import {getDocument} from "../sys/API/circuit";
-import {attempt} from "../../util";
 import {getComponent} from "../sys/API/component";
 
 export async function loadComponent(componentToken: string): Promise<{ [id: number]: [GenericComponent, GenComponent] }> {
     const component: ApiComponent = (await getComponent(componentToken)).data as ApiComponent;
 
     if (typeof component.component === 'object' && !('length' in component.component)) {
-        const loaded = component.component as CircuitObj;
-        const availSync: { [componentId: string]: new(mapKey: number, base: GenericComponent) => GenComponent } = {};
-
-        for (const componentToken of loaded.components)
-            await attempt(async () => availSync[componentToken] = await fetchComponent(componentToken),
-                err => alert(`'${componentToken}' is corrupt, and the document cannot be loaded.`));
-
-        const components: { [id: number]: [GenericComponent, GenComponent] } = {};
-        for (const i in loaded.content)
-            if (loaded.content[i].identifier)
-                components[i] = [loaded.content[i], new availSync[loaded.content[i].identifier as string](Number(i), loaded.content[i])];
-            else
-                throw 'invalid component identifier';
-
-        for (const [comp, obj] of Object.values(components))
-            for (const i in comp.outputs)
-                for (const j of comp.outputs[i])
-                    components[j[0]][1].addInput(obj, i, j[1]);
-
-        return components;
+        const [availSync, loaded] = await CircuitManager.parseCircuit(component.component);
     }
 
     throw {
@@ -43,17 +24,63 @@ export default function (apiComponent: ApiComponent) {
     return class StatefulComponent extends GenComponent {
 
         componentBody: CircuitObj;
-        circuitMgr: CircuitManager;
+        componentMap!: ComponentMap;
+
+        private readonly inputComponents!: PlaceholderComponent[];
+        private readonly outputComponents!: PlaceholderComponent[];
 
         constructor(documentComponentKey: number, base: GenericComponent) {
-            super(documentComponentKey, apiComponent.inputLabels, apiComponent.outputLabels, apiComponent.name);
+            super({
+                documentComponentKey: documentComponentKey,
+                inputs: apiComponent.inputLabels,
+                outputs: apiComponent.outputLabels,
+                name: apiComponent.name,
+                raw: apiComponent,
+                base: base
+            });
 
-            this.componentBody = apiComponent.component as CircuitObj;
-            this.circuitMgr = new CircuitManager(apiComponent.token);
+            this.label = base.label;
+            this.inputComponents = [];
+            this.outputComponents = [];
+
+            CircuitManager.parseCircuit(this.componentBody = apiComponent.component as CircuitObj).then(function (this: StatefulComponent, component: [AvailSync, ComponentMap]) {
+                for (const i in component[1]) {
+                    if (component[1][i][0].token === '$input' || component[1][i][0].token === '$output') {
+                        const isInput = component[1][i][0].token === '$input';
+                        const comp = component[1][i][1];
+
+                        const placeholder = new PlaceholderComponent(comp);
+                        component[1][i][1] = placeholder;
+                        for (const i in comp.inputs)
+                            comp.inputs[i][0].outputs[comp.inputs[i][1]][comp.inputs[i][0].outputs[comp.inputs[i][1]].findIndex(i => i[0] === comp)][0] = placeholder;
+
+                        for (const i in comp.outputs)
+                            for (const [a, input] of comp.outputs[i].entries())
+                                if (input[0] === comp)
+                                    comp.outputs[i][a][0] = placeholder;
+
+                        if (isInput)
+                            this.inputComponents.push(placeholder);
+                        else
+                            this.outputComponents.push(placeholder);
+                    }
+                }
+                return this.componentMap = component[1];
+            }.bind(this));
         }
 
         computeOutputs(inputs: boolean[]): boolean[] { // TODO: Evaluate stateful components
-            return [];
+            if (!this.componentMap)
+                return _.filter((apiComponent.component as CircuitObj).content, i => i.token === '$output').map(i => false);
+
+            for (const [a] of this.inputComponents.entries())
+                this.inputComponents[a].output[0] = inputs[a];
+
+            // Update the components separately. We'll get weird behaviour otherwise.
+            for (const i of this.inputComponents)
+                i.update();
+
+            return _.filter(this.componentMap, i => i[0].token === "$output").map(i => i[1].out[0]);
         }
 
         preUpdate(next: () => void): void {

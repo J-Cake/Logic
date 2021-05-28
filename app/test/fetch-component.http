@@ -1,0 +1,4 @@
+GET http://api.localhost:2560/component/6swkxw3uc200
+Accept: application/json
+auth-token: 281h2f6v3n28
+###
