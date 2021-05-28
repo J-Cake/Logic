@@ -5,6 +5,7 @@ import Board from './sys/components/Board';
 import TooltipPane from './ui/output/TooltipPane';
 import DragObject from './sys/components/DragObject';
 import DropObject from './sys/components/DropObject';
+import {Animation} from "./ui/output/Animation";
 import Cursor from './ui/output/cursor';
 import CircuitManager from './Logic/io/CircuitManager';
 import RenderComponent from './ui/RenderComponent';
@@ -34,9 +35,9 @@ export interface State {
     iconFont: p5.Font,
     switchFrame: number, // The frame on which the theme was last switched
     frame: number,
+    ready: boolean,
     cursor: Cursor,
     circuit: CircuitManager,
-    loading: boolean,
     tool: Tool,
     renderedComponents: RenderComponent[],
     canvas: JQuery,
@@ -83,7 +84,7 @@ export const manager: StateManager<State> = new StateManager<State>({
     theme: Theme.System,
     pan: [0, 0],
     scale: 1,
-    loading: true,
+    ready: false,
     sidebarIsLeft: true,
     actionChain: [],
     dialogManager: DialogManager,

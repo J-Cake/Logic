@@ -26,7 +26,8 @@ export default class CircuitManager {
     constructor(circuitId: string) {
         this.state = new StateManager<CircuitManagerState>({});
 
-        this.loading = this.loadCircuit(circuitId);
+        this.loading = this.loadCircuit(circuitId)
+            .then(k => void (manager.dispatch('loaded', {ready: true})) || k);
         this.circuitId = circuitId;
 
         manager.broadcast('tick');

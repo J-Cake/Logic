@@ -15,6 +15,8 @@ import TooltipPane from './ui/output/TooltipPane';
 import Colour from './sys/util/Themes';
 import buildComponentPrompt from './menus/ComponentMenu';
 import buildFinderPrompt from './menus/ComponentFinder';
+import renderAnimation from "./ui/output/Animation";
+import {loadingAnimation} from "./ui/output/animations/loadingAnimation";
 
 declare global {
     interface Array<T> {
@@ -41,6 +43,12 @@ new p5(function (sketch: p5) {
             canvas: $(p5Canvas.elt)
         });
 
+        $("button").prop('disabled', true);
+        manager.on('loaded', function(state) {
+            if (state.ready)
+                $("button").prop('disabled', false);
+        })
+
         manager.dispatch('init', ({
             renderedComponents: await renderComponents(manager.setState(() => ({
                 font: sketch.loadFont("/app/font/font-2.ttf"),
@@ -66,7 +74,10 @@ new p5(function (sketch: p5) {
 
         sketch.textFont(manager.setState().font);
 
-        manager.on('tick', async () => sketch.loop());
+        manager.on('tick', async () => {
+            sketch.loop();
+            setTimeout(() => sketch.noLoop(), 250);
+        });
 
         $("#canvas-container").on('wheel', function (e) {
             const event: WheelEvent = e.originalEvent as WheelEvent;
@@ -97,52 +108,51 @@ new p5(function (sketch: p5) {
     sketch.draw = async function () {
         $("#debug-container input").prop("disabled", true);
 
-        const {pan, scale} = manager.setState();
-
-        sketch.translate(pan[0], pan[1]);
-        sketch.scale(scale);
+        const {pan, scale, ready} = manager.setState();
 
         sketch.background(getColour(Colour.Background, {duration: 30, type: Interpolation.linear}));
-        // if (manager.setState().debug.isStopped())
-        //     sketch.background(transparent(Colour.SecondaryAccent, 25));
 
-        const state = manager.setState(prev => ({
-            mouse: {
-                x: sketch.mouseX + prev.board.translate[0],
-                y: sketch.mouseY + prev.board.translate[1],
-                pressed: sketch.mouseIsPressed
-            },
-            p_mouse: {
-                x: sketch.pmouseX + prev.board.translate[0],
-                y: sketch.pmouseY + prev.board.translate[1]
-            },
-            frame: sketch.frameCount,
-            mouseDown: sketch.mouseIsPressed
-        }));
+        if (ready) {
+            sketch.translate(pan[0], pan[1]);
+            sketch.scale(scale);
 
-        const board = manager.setState().board;
-        board.translate = [-pan[0], -pan[1]];
+            const state = manager.setState(prev => ({
+                mouse: {
+                    x: sketch.mouseX + prev.board.translate[0],
+                    y: sketch.mouseY + prev.board.translate[1],
+                    pressed: sketch.mouseIsPressed
+                },
+                p_mouse: {
+                    x: sketch.pmouseX + prev.board.translate[0],
+                    y: sketch.pmouseY + prev.board.translate[1]
+                },
+                frame: sketch.frameCount,
+                mouseDown: sketch.mouseIsPressed
+            }));
 
-        $("span#grid-pos").text(`${board.coordsToGrid([state.mouse.x, state.mouse.y]).join(',')}`);
+            const board = manager.setState().board;
+            board.translate = [-pan[0], -pan[1]];
 
-        board.render(sketch);
-        board.update(sketch);
+            $("span#grid-pos").text(`${board.coordsToGrid([state.mouse.x, state.mouse.y]).join(',')}`);
 
-        RenderObject.tick(sketch);
-        RenderObject.draw(sketch);
+            board.render(sketch);
+            board.update(sketch);
 
-        state.tooltipPane.update(sketch);
-        state.tooltipPane.render(sketch);
+            RenderObject.tick(sketch);
+            RenderObject.draw(sketch);
 
-        if (state.renderedComponents)
-            state.renderedComponents.forEach(i => i.component.updated = false);
+            state.tooltipPane.update(sketch);
+            state.tooltipPane.render(sketch);
 
-        state.cursor.render(sketch);
-        state.cursor.update(sketch);
+            if (state.renderedComponents)
+                state.renderedComponents.forEach(i => i.component.updated = false);
 
-        if (state.wirePreview)
-            state.wirePreview(sketch);
+            state.cursor.render(sketch);
+            state.cursor.update(sketch);
 
-        sketch.noLoop();
+            if (state.wirePreview)
+                state.wirePreview(sketch);
+        } else
+            renderAnimation(loadingAnimation, sketch);
     }
 });
