@@ -134,6 +134,7 @@ export default class RenderComponent extends RenderObject {
             i.render(sketch);
 
         const colour = colouriseComponents ? this.props.colour : getColour(Colour.Blank);
+        // const colour = colouriseComponents ? getColourForComponent((this.component as GenComponent).raw?.token) : getColour(Colour.Blank);
 
         if (this.component.isBreakpoint && this.component.halted) {
             const [inputNum, outputNum] = this.getConnections(false);

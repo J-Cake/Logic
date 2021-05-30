@@ -17,6 +17,8 @@ export type Dialogs = Record<Dialog, [JQuery, Window | null, (msg: string) => vo
 
 const dialogManager: StateManager<Dialogs> = new StateManager<Dialogs>({});
 
+export const invokeCallback = (prompt: Dialog, data: string) => dialogManager.setState()[prompt][2](data);
+
 declare global {
     interface Window {
         connect: () => (msg: string) => void;

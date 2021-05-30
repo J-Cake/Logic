@@ -54,9 +54,9 @@ export function hex(colour: Colour): string {
  * @param hsl: Hue (360deg), Saturation (100%), Lightness (100%)
  */
 export function HSLToRGB(hsl: [number, number, number]): rgb {
-    const c = 1 - 2 * Math.abs(100 / hsl[2]) * (100 / hsl[1]);
+    const c = 1 - 2 * Math.abs(hsl[2] / 100) * (hsl[1] / 100);
     const x = c * (1 - Math.abs((hsl[0] / 60) % 2 - 1));
-    const m = (100 / hsl[2]) - c / 2;
+    const m = (hsl[2] / 100) - c / 2;
 
     const colourP = [
         [c, x, 0],
@@ -68,7 +68,7 @@ export function HSLToRGB(hsl: [number, number, number]): rgb {
     ][Math.floor(hsl[0] / 60)];
 
     if (colourP)
-        return [255 * (colourP[0] + m), 255 * (colourP[1] + m), 255 * (colourP[2] + m)];
+        return [Math.floor(0xff * (colourP[0] + m)), Math.floor(0xff * (colourP[1] + m)), Math.floor(0xff * (colourP[2] + m))];
     else
         debugger;
     return [0xff, 0xff, 0xff];

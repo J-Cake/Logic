@@ -4,6 +4,7 @@ import StatelessFactory from "../StatelessFactory";
 import StatefulFactory from "../StatefulFactory";
 import DynamicFactory from "../DynamicFactory";
 import {CircuitObj} from "../../../../server/App/Document/Document";
+import {manager} from "../../State";
 
 export type TruthTable = [boolean[], boolean[]][];
 export type Body = TruthTable | CircuitObj | string;
@@ -104,6 +105,7 @@ export class PlaceholderComponent extends GenComponent {
 export default async function fetchComponent(componentToken: string): Promise<new(mapKey: number, base: GenericComponent) => GenComponent> {
     const apiComponent: ApiComponent = (await getComponent(componentToken)).data as ApiComponent;
     apiComponent.token = componentToken;
+    manager.setState().circuit.state.setState(prev => ({raw: {...prev.raw, [componentToken]: apiComponent}}));
 
     const requiredKeys: string[] = ['token', 'name', 'owner', 'component', 'inputLabels', 'outputLabels'];
     if (typeof apiComponent !== 'object' || requiredKeys.some(i => !(i in apiComponent)))

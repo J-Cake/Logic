@@ -17,6 +17,8 @@ import buildComponentPrompt from './menus/ComponentMenu';
 import buildFinderPrompt from './menus/ComponentFinder';
 import renderAnimation from "./ui/output/Animation";
 import {loadingAnimation} from "./ui/output/animations/loadingAnimation";
+import getColourForComponent from "./ui/output/getColourForComponent";
+import init from "./init";
 
 declare global {
     interface Array<T> {
@@ -38,63 +40,6 @@ new p5(function (sketch: p5) {
         const p5Canvas = sketch.createCanvas(container.width() ?? window.innerWidth, container.height() ?? window.innerHeight);
         p5Canvas.parent(container[0]);
 
-        const {canvas} = manager.setState({
-            p5Canvas: p5Canvas,
-            canvas: $(p5Canvas.elt)
-        });
-
-        $("button").prop('disabled', true);
-        manager.on('loaded', function(state) {
-            if (state.ready)
-                $("button").prop('disabled', false);
-        })
-
-        manager.dispatch('init', ({
-            renderedComponents: await renderComponents(manager.setState(() => ({
-                font: sketch.loadFont("/app/font/font-2.ttf"),
-                iconFont: sketch.loadFont("/app/font/remixicon.ttf"),
-                board: new Board(),
-                tooltipPane: new TooltipPane(),
-                sidebarWidth: 6,
-                switchFrame: 0,
-                tool: Tool.Pointer,
-                cursor: new Cursor(),
-                documentIdentifier: documentId,
-                circuit: new CircuitManager(documentId),
-                keys: {
-                    shift: false,
-                    alt: false,
-                    ctrl: false,
-                    meta: false
-                }
-            })).circuit)
-        }));
-
-        handleEvents(canvas, sketch);
-
-        sketch.textFont(manager.setState().font);
-
-        manager.on('tick', async () => {
-            sketch.loop();
-            setTimeout(() => sketch.noLoop(), 250);
-        });
-
-        $("#canvas-container").on('wheel', function (e) {
-            const event: WheelEvent = e.originalEvent as WheelEvent;
-
-            if (manager.setState().keys.shift)
-                manager.setState(prev => ({pan: [prev.pan[0] - event.deltaY, prev.pan[1] - event.deltaX]}));
-            else
-                manager.setState(prev => ({pan: [prev.pan[0] - event.deltaX, prev.pan[1] - event.deltaY]}));
-
-            e.preventDefault();
-        });
-
-        mousetrap.bind('alt+s', () => manager.setState(({pan: [0, 0], scale: 1})));
-
-        buildComponentPrompt();
-        buildFinderPrompt();
-
         const {pan, scale} = manager.setState();
 
         sketch.translate(pan[0], pan[1]);
@@ -103,6 +48,8 @@ new p5(function (sketch: p5) {
         sketch.background(getColour(Colour.Background, {duration: 30, type: Interpolation.linear}));
 
         manager.broadcast('tick');
+
+        init(sketch, p5Canvas, documentId);
     }
 
     sketch.draw = async function () {

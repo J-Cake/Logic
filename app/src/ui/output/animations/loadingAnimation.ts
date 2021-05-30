@@ -15,6 +15,7 @@ export const loadingAnimation: LoadingAnimation = {
 
     spinnerSize: 50,
 
+    // This function is responsible for the loading spinner when documents are opened.
     render(sketch: p5, animation: LoadingAnimation): void {
         sketch.noFill();
         sketch.strokeWeight(6);

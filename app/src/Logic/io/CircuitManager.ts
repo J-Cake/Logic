@@ -1,7 +1,7 @@
 import type {CircuitObj} from '../../../../server/App/Document/Document';
 import StateManager from '../../sys/util/stateManager';
 import Component from '../Component';
-import fetchComponent, {GenComponent, GenericComponent} from './ComponentFetcher';
+import fetchComponent, {ApiComponent, GenComponent, GenericComponent} from './ComponentFetcher';
 import {manager} from '../../State';
 import {attempt} from '../../../util';
 import {getDocument} from "../../sys/API/circuit";
@@ -9,6 +9,7 @@ import {getDocument} from "../../sys/API/circuit";
 export interface CircuitManagerState {
     components: GenComponent[],
     availableComponents: { [componentId: string]: new(mapKey: number, base: GenericComponent) => GenComponent },
+    raw: { [token: string]: ApiComponent };
     componentMap: { [id: string]: [GenericComponent, Component] },
     document: CircuitObj
 }
@@ -24,10 +25,13 @@ export default class CircuitManager {
     readonly circuitId: string;
 
     constructor(circuitId: string) {
-        this.state = new StateManager<CircuitManagerState>({});
+        this.state = new StateManager<CircuitManagerState>({raw: {}});
 
         this.loading = this.loadCircuit(circuitId)
-            .then(k => void (manager.dispatch('loaded', {ready: true})) || k);
+            .then(function (this: CircuitManager, k: { [p: number]: [GenericComponent, GenComponent] }) {
+                manager.dispatch('loaded', {ready: true});
+                return k;
+            }.bind(this));
         this.circuitId = circuitId;
 
         manager.broadcast('tick');
@@ -41,7 +45,6 @@ export default class CircuitManager {
                         k.onDelete();
                         j.handles?.splice(j?.handles.indexOf(k), 1);
                     }
-
 
         const selected = manager.setState().renderedComponents.filter(i => i.isSelected);
         for (const comp of selected) {

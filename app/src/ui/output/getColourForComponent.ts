@@ -16,11 +16,6 @@ export default function getColourForComponent(token?: string): rgb {
 
     const hue = map(index, 0, components.length, 0, 360);
     const blank = RGBToHSL(getColour(Colour.Blank));
-    return HSLToRGB([hue, blank[1], blank[2]]);
 
-    // const chaos = (x: number) => x === 0 ? 0 : Math.sin((1 / (x / 100)) * (1 / (1 - x)));
-    //
-    // if (index === -1)
-    //     return getColour(Colour.Blank);
-    // return HSLToRGB([map(chaos(map(index, 0, components.length, -1, 1)), -1, 1, 0, 360), blank[1], blank[2]]);
+    return HSLToRGB([Math.floor(hue), Math.floor(blank[1]), Math.floor(blank[2])]);
 }
