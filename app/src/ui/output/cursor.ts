@@ -52,9 +52,9 @@ export default class Cursor extends RenderObject {
 
     update(sketch: p5): void {
         const state = manager.setState();
-        this.pos = [Math.min(state.dragStart.x, state.mouse.x) + 0.5, Math.min(state.dragStart.y, state.mouse.y) + 0.5];
-        this.size = [Math.abs(Math.max(state.dragStart.x, state.mouse.x) - Math.min(state.dragStart.x, state.mouse.x)),
-            Math.abs(Math.max(state.dragStart.y, state.mouse.y) - Math.min(state.dragStart.y, state.mouse.y))];
+        this.pos = [Math.floor(Math.min(state.dragStart.x, state.mouse.x)), Math.floor(Math.min(state.dragStart.y, state.mouse.y))];
+        this.size = [Math.floor(Math.abs(Math.max(state.dragStart.x, state.mouse.x) - Math.min(state.dragStart.x, state.mouse.x))),
+            Math.floor(Math.abs(Math.max(state.dragStart.y, state.mouse.y) - Math.min(state.dragStart.y, state.mouse.y)))];
     }
 
     clean(): void {

@@ -96,11 +96,11 @@ export class WireHandle extends DragObject {
             Math.floor(this.pos.x / gridSize) * gridSize + Math.floor(gridSize / 4) - 1,
             Math.floor(this.pos.y / gridSize) * gridSize + Math.floor(gridSize / 4) - 1
         ];
-        let rOffset = (gridSize + 1) % 2 * 0.5;
+        let rOffset = Math.floor((gridSize + 1) % 2 * 0.5);
 
         if (this.isDragging) {
             sketch.rectMode(sketch.CENTER);
-            sketch.rect(Math.floor(pos[0]) - rOffset, Math.floor(pos[1]) - rOffset, gridSize + 1 + rOffset, (gridSize + 1) + rOffset);
+            sketch.rect(pos[0] - rOffset, pos[1] - rOffset, gridSize + 1 + rOffset, (gridSize + 1) + rOffset);
             sketch.rectMode(sketch.CORNER);
         }
 

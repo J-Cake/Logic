@@ -42,8 +42,8 @@ new p5(function (sketch: p5) {
 
         const {pan, scale} = manager.setState();
 
-        sketch.translate(pan[0], pan[1]);
-        sketch.scale(scale);
+        sketch.translate(Math.floor(pan[0]) + 0.5, Math.floor(pan[1]) + 0.5);
+        sketch.scale(1);
 
         sketch.background(getColour(Colour.Background, {duration: 30, type: Interpolation.linear}));
 
@@ -55,13 +55,15 @@ new p5(function (sketch: p5) {
     sketch.draw = async function () {
         $("#debug-container input").prop("disabled", true);
 
-        const {pan, scale, ready} = manager.setState();
+        const {pan, scale, ready, pref} = manager.setState();
+        const gridScale = pref.setState().gridSize;
 
         sketch.background(getColour(Colour.Background, {duration: 30, type: Interpolation.linear}));
 
         if (ready) {
-            sketch.translate(pan[0], pan[1]);
-            sketch.scale(scale);
+            // sketch.translate(Math.floor(pan[0]), Math.floor(pan[1]));
+            sketch.translate(Math.floor(pan[0]) + 0.5, Math.floor(pan[1]) + 0.5);
+            sketch.scale(1);
 
             const state = manager.setState(prev => ({
                 mouse: {
@@ -78,7 +80,7 @@ new p5(function (sketch: p5) {
             }));
 
             const board = manager.setState().board;
-            board.translate = [-pan[0], -pan[1]];
+            board.translate = [-Math.floor(pan[0]), -Math.floor(pan[1])];
 
             $("span#grid-pos").text(`${board.coordsToGrid([state.mouse.x, state.mouse.y]).join(',')}`);
 

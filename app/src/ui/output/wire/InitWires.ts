@@ -48,7 +48,7 @@ export function initWires() {
             if (wire.coords)
                 for (const [x, y] of wire.coords) {
                     const pos = board.gridToPix([x, y], true);
-                    sketch.vertex(Math.floor(pos[0]) + 0.5, Math.floor(pos[1]) + 0.5);
+                    sketch.vertex(Math.floor(pos[0]), Math.floor(pos[1]));
                 }
 
             sketch.endShape();

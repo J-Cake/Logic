@@ -99,7 +99,7 @@ export default class RenderComponent extends RenderObject {
         return this.isHovering([prev.mouse.x, prev.mouse.y]);
         // return prev.mouse.x > this.pos[0] && prev.mouse.x < this.pos[0] + this.size[0] && prev.mouse.y > this.pos[1] && prev.mouse.y < this.pos[1] + this.size[1];
     }
-    
+
     isHovering(mouse: [number, number]): boolean {
         return mouse[0] > this.pos[0] && mouse[0] < this.pos[0] + this.size[0] && mouse[1] > this.pos[1] && mouse[1] < this.pos[1] + this.size[1];
     }
@@ -134,14 +134,13 @@ export default class RenderComponent extends RenderObject {
             i.render(sketch);
 
         const colour = colouriseComponents ? this.props.colour : getColour(Colour.Blank);
-        // const colour = colouriseComponents ? getColourForComponent((this.component as GenComponent).raw?.token) : getColour(Colour.Blank);
 
         if (this.component.isBreakpoint && this.component.halted) {
             const [inputNum, outputNum] = this.getConnections(false);
             const pos = mgr.board.gridToPix(mgr.board.coordsToGrid(this.pos));
             sketch.fill(transparent(Colour.Danger, 95));
             sketch.noStroke();
-            sketch.rect(pos[0] - 0.5, pos[1] - 0.5, Math.max(1, Math.min(inputNum, outputNum)) * scl - 1, Math.max(inputNum, outputNum, 1) * scl - 1);
+            sketch.rect(pos[0], pos[1], Math.floor(Math.max(1, Math.min(inputNum, outputNum)) * scl), Math.floor(Math.max(inputNum, outputNum, 1) * scl));
         }
 
         if (!this.isSelected)
@@ -149,7 +148,7 @@ export default class RenderComponent extends RenderObject {
         else sketch.stroke(getColour(Colour.Cursor))
 
         sketch.fill(getColour(Colour.Background));
-        sketch.rect(this.pos[0], this.pos[1], this.size[0], this.size[1]);
+        sketch.rect(this.pos[0] - 1, this.pos[1] - 1, this.size[0] + 2, this.size[1] + 2);
 
         sketch.strokeWeight(1);
         if (!this.isSelected)
@@ -168,11 +167,11 @@ export default class RenderComponent extends RenderObject {
             sketch.strokeWeight(1);
             if (!this.isSelected)
                 sketch.stroke(getColour(terminals[a] ? Colour.Active : Colour.Blank));
-            else sketch.stroke(getColour(Colour.Cursor));
-            if (grid[a])
-                sketch.rect(...grid[a]);
+            else
+                sketch.stroke(getColour(Colour.Cursor));
 
-            // sketch.stroke(getColour(this.isSelected ? Colour.Cursor : (this.component.out.includes(true) ? Colour.Active : Colour.Blank)));
+            if (grid[a])
+                sketch.rect(Math.floor(grid[a][0]), Math.floor(grid[a][1]), Math.floor(grid[a][2]), Math.floor(grid[a][3]));
 
             if (getDist([i[0], i[1]], [mouse.x, mouse.y]) < scl / 4 && tool === Tool.Wire) {
                 sketch.stroke(getColour(Colour.Cursor));
@@ -184,7 +183,7 @@ export default class RenderComponent extends RenderObject {
 
         sketch.noStroke();
         sketch.fill(getColour(Colour.Background));
-        sketch.rect(this.pos[0] + 0.5, this.pos[1] + 0.5, this.size[0] - 1, this.size[1] - 1);
+        sketch.rect(this.pos[0] - 0.5, this.pos[1] - 0.5, this.size[0] + 1, this.size[1] + 1);
 
         sketch.fill(transparent(this.isSelected ? Colour.Cursor : colour, 50))
         sketch.rect(this.pos[0], this.pos[1], this.size[0], this.size[1]);
@@ -232,8 +231,8 @@ export default class RenderComponent extends RenderObject {
         else
             this.mousePos = this.pos;
 
-        const pos: [number, number] = [Math.floor(this.props.pos[0] * scl + this.buff + boardPos.x) + 0.5, Math.floor(this.props.pos[1] * scl + padding + this.buff) + 0.5];
-        const size: [number, number] = [Math.max(1, Math.min(inputNum, outputNum)) * scl - 2 * this.buff, Math.max(inputNum, outputNum, 1) * scl - 2 * this.buff];
+        const pos: [number, number] = [Math.floor(this.props.pos[0] * scl + this.buff + boardPos.x), Math.floor(this.props.pos[1] * scl + padding + this.buff)];
+        const size: [number, number] = [Math.floor(Math.max(1, Math.min(inputNum, outputNum)) * scl - 2 * this.buff), Math.floor(Math.max(inputNum, outputNum, 1) * scl - 2 * this.buff)];
 
         this.pos = pos;
         this.size = this.props.direction % 2 === 0 ? size : [size[1], size[0]];
@@ -256,57 +255,57 @@ export default class RenderComponent extends RenderObject {
         if (this.props.direction % 2 === 0) {
             loop(0, i => i < Math.max(outputNum, inputNum), i => i + 1, i => {
                 this.inputDashesCoords.push([
-                    this.pos[0] - this.buff,
-                    this.pos[1] - this.buff + scl * i + scl / 2 + 0.5,
-                    this.pos[0],
-                    this.pos[1] - this.buff + scl * i + scl / 2 + 0.5]);
+                    Math.floor(this.pos[0] - this.buff),
+                    Math.floor(this.pos[1] - this.buff + scl * i + scl / 2),
+                    Math.floor(this.pos[0]),
+                    Math.floor(this.pos[1] - this.buff + scl * i + scl / 2)]);
             });
             loop(0, o => o < Math.max(outputNum, inputNum), o => o + 1, o => {
                 this.outputDashesCoords.push([
-                    this.pos[0] + this.size[0],
-                    this.pos[1] - this.buff + scl * o + scl / 2 + 0.5,
-                    this.pos[0] + this.size[0] + this.buff,
-                    this.pos[1] - this.buff + scl * o + scl / 2 + 0.5]);
+                    Math.floor(this.pos[0] + this.size[0]),
+                    Math.floor(this.pos[1] - this.buff + scl * o + scl / 2),
+                    Math.floor(this.pos[0] + this.size[0] + this.buff),
+                    Math.floor(this.pos[1] - this.buff + scl * o + scl / 2)]);
 
             });
             loop(0, i => i < Math.max(outputNum, inputNum), i => i + 1, i => this.inputDashesGrid.push([
-                this.pos[0],
-                this.pos[1] + scl * i,
-                scl / 2 - this.buff + 0.5,
-                scl - 2 * this.buff
+                Math.floor(this.pos[0]),
+                Math.floor(this.pos[1] + scl * i),
+                Math.floor(scl / 2 - this.buff),
+                Math.floor(scl - 2 * this.buff)
             ]));
             loop(0, o => o < Math.max(outputNum, inputNum), o => o + 1, o => this.outputDashesGrid.push([
-                this.pos[0] + this.size[0],
-                this.pos[1] + scl * o,
-                -(scl / 2 - this.buff) + 0.5,
-                scl - 2 * this.buff
+                Math.floor(this.pos[0] + this.size[0]),
+                Math.floor(this.pos[1] + scl * o),
+                -Math.floor(scl / 2 - this.buff),
+                Math.floor(scl - 2 * this.buff)
             ]));
         } else {
             loop(0, o => o < Math.max(outputNum, inputNum), o => o + 1, o => {
                 this.inputDashesCoords.push([
-                    this.pos[0] - this.buff + scl * o + scl / 2 + 0.5,
-                    this.pos[1] - this.buff,
-                    this.pos[0] - this.buff + scl * o + scl / 2 + 0.5,
-                    this.pos[1]]);
+                    Math.floor(this.pos[0] - this.buff + scl * o + scl / 2),
+                    Math.floor(this.pos[1] - this.buff),
+                    Math.floor(this.pos[0] - this.buff + scl * o + scl / 2),
+                    Math.floor(this.pos[1])]);
             });
             loop(0, i => i < Math.max(inputNum, outputNum), i => i + 1, i => {
                 this.outputDashesCoords.push([
-                    this.pos[0] - this.buff + scl * i + scl / 2 + 0.5,
-                    this.pos[1] + this.size[1],
-                    this.pos[0] - this.buff + scl * i + scl / 2 + 0.5,
-                    this.pos[1] + this.size[1] + this.buff]);
+                    Math.floor(this.pos[0] - this.buff + scl * i + scl / 2),
+                    Math.floor(this.pos[1] + this.size[1]),
+                    Math.floor(this.pos[0] - this.buff + scl * i + scl / 2),
+                    Math.floor(this.pos[1] + this.size[1] + this.buff)]);
             });
             loop(0, i => i < Math.max(outputNum, inputNum), i => i + 1, i => this.inputDashesGrid.push([
-                this.pos[0] + i * scl,
-                this.pos[1],
-                scl - 2 * this.buff,
-                (scl / 2 - this.buff) + 0.5
+                Math.floor(this.pos[0] + i * scl),
+                Math.floor(this.pos[1]),
+                Math.floor(scl - 2 * this.buff),
+                Math.floor(scl / 2 - this.buff)
             ]));
             loop(0, o => o < Math.max(outputNum, inputNum), o => o + 1, o => this.outputDashesGrid.push([
-                this.pos[0] + o * scl,
-                this.pos[1] + this.size[1],
-                scl - 2 * this.buff,
-                -(scl / 2 - this.buff) + 0.5,
+                Math.floor(this.pos[0] + o * scl),
+                Math.floor(this.pos[1] + this.size[1]),
+                Math.floor(scl - 2 * this.buff),
+                -Math.floor(scl / 2 - this.buff),
             ]));
         }
 

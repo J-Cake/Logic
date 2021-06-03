@@ -75,8 +75,9 @@ export default class TooltipPane extends RenderObject {
         this.isVisible = this.visibilityToggle.is(":checked");
 
         this.outlineSize = [this.visibilityToggle.is(":checked") ? (this.size[0] + state.board.padding) : 0, this.size[1]];
-        this.pos = [state.sidebarIsLeft ? state.board.padding + state.board.translate[0] : state.board.pos.x + state.board.size.w + state.board.translate[0], state.board.pos.y + state.board.translate[1]];
-        this.size = this.isFloating ? [0, 0] : [state.sidebarWidth * state.pref.setState().gridSize, state.board.size.h];
+        this.pos = [Math.floor(state.sidebarIsLeft ? state.board.padding + state.board.translate[0] : state.board.pos.x + state.board.size.w + state.board.translate[0]),
+            Math.floor(state.board.pos.y + state.board.translate[1])];
+        this.size = this.isFloating ? [0, 0] : [Math.floor(state.sidebarWidth * state.pref.setState().gridSize), Math.floor(state.board.size.h)];
 
         if (state.renderedComponents) {
             const components = state.renderedComponents.filter(i => i.isWithinBounds(state) || i.isSelected);
