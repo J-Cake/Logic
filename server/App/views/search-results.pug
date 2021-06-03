@@ -1,0 +1,29 @@
+extends site/page
+
+mixin search
+    form(action="/wiki/search", method="get")#form
+        input(type="search", name="q", placeholder="Search")#query
+        button(type="submit") 
+
+block page
+    link(rel="stylesheet", href="/app/css/wiki.css")
+
+    div
+    section
+        +search()
+        article
+            if results.length > 0
+                h1 Your query returned #{results.length} #{results.length === 1 ? "result" : "results"}
+
+                div.results
+                    each i in results
+                        div.result
+                            h3
+                                a(href="/wiki/" + (i[1].startsWith('/') ? i[1].slice(1) : i[1]))
+                                    +breadcrumbs(i[1])
+                            div.preview !{i[0]}
+
+            else
+                h1 No Results.
+                p Your query returned no results.
+    div

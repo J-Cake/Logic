@@ -112,9 +112,20 @@ header {
 
 #banner {
     width: 100%;
-    font-size: 24pt;
     height: var(--banner-height);
     background: var(--blank);
+    color: var(--background);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#banner {
+    backdrop-filter: blur();
+}
+
+#banner > * {
+    max-height: var(--banner-height);
 }
 
 #page {

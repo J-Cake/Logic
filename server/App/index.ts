@@ -20,7 +20,7 @@ export default async function (): Promise<express.Application> {
     const app: express.Application = express();
 
     app.set("view engine", "pug");
-    app.set("views", path.join(await rootFn(), 'app', 'views'));
+    app.set("views", path.join(await rootFn(), 'server', 'App', 'views'));
 
     app.use(cookies());
     app.use(body.urlencoded({extended: true}));

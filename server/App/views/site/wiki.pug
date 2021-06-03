@@ -3,17 +3,24 @@ extends page
 mixin renderPages(pages, root, depth)
     -
         const nonCapitalised = ['and', 'or', 'is', 'but', 'not', 'because', 'of', 'from', 'to', 'in', 'at', 'vs']
-        const capitalise = function (i) {
+        const allCaps = ['diy', 'faq', 'alu'];
+        const capitalise = function (i, noJoin = false) {
             if (i.endsWith('.md'))
                 i = i.slice(0, -3);
             const words = [];
-            for (const word of i.split(/[-\s.\/\\]+/g)) {
+            for (const word of i.split(/[-\s.\/\\_]+/g).filter(i => i)) {
                 if (nonCapitalised.includes(word.toLowerCase()))
                     words.push(word.toLowerCase());
+                else if (allCaps.includes(word.toLowerCase()))
+                    words.push(word.toUpperCase());
                 else
                     words.push(word[0].toUpperCase() + word.slice(1).toLowerCase());
             }
-            return words.join(' ');
+
+            if (noJoin)
+                return words;
+            else
+                return words.join(' ');
         }
     for page in Object.keys(pages)
         if (typeof pages[page] === 'string')
@@ -39,11 +46,11 @@ mixin search
         button(type="submit") 
 
 block page
+
     link(rel="stylesheet", href="/app/css/wiki.css")
 
     if content
         section#wiki-index
-            //div.fill
             label(for="index")#index-container
                 h2 Index
                 #pages
@@ -52,6 +59,7 @@ block page
 
         section#article
             +search
+            +breadcrumbs(path)
             article !{content}
             +issue
     else
