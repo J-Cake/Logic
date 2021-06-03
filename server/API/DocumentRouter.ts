@@ -3,7 +3,7 @@ import path from 'path';
 import express from 'express';
 import bodyParser from 'body-parser';
 
-import getFile, {userTokenToId} from '../App/Document/getFile';
+import getFile, {DBDocument, userTokenToId} from '../App/Document/getFile';
 import {attempt, Pref, rootFn} from '../util/utils';
 import sql from '../util/sql';
 import Document, {CircuitObj} from '../App/Document/Document';
@@ -140,19 +140,19 @@ router.put('/:circuit/collaborator', async function (req, res) {
 
 router.delete('/:circuit/collaborator', async function (req, res) {
     res.json(await respond(Action.Document_Collaborator_Remove, async function (props, error): Promise<void> {
-            props.res = res;
-            const userToken: string = req.userToken || "";
+        props.res = res;
+        const userToken: string = req.userToken || "";
 
-            if (await attempt(async function () {
-                const file = await getFile(userToken, req.params.circuit);
-                await file.fetchInfo();
+        if (await attempt(async function () {
+            const file = await getFile(userToken, req.params.circuit);
+            await file.fetchInfo();
 
-                if (req.query.user)
-                    await file.removeCollaborator(await userTokenToId(userToken), Number(req.query.user));
-                else
-                    error(Status.User_Not_Member, 'User not specified.');
-            }))
-                error(Status.Insufficient_Access, 'You do not have access to this document.');
+            if (req.query.user)
+                await file.removeCollaborator(await userTokenToId(userToken), Number(req.query.user));
+            else
+                error(Status.User_Not_Member, 'User not specified.');
+        }))
+            error(Status.Insufficient_Access, 'You do not have access to this document.');
     }));
 });
 
@@ -197,7 +197,7 @@ router.get('/:circuit/rename', async function (req, res) {
                 if ('name' in req.query) {
                     void await file.changeDocumentName(await userTokenToId(userToken), req.query['name'] as string)
                     resolve(req.query['name'] as string);
-                }else
+                } else
                     error(Status.Done, 'No name provided.');
             })) error(Status.Done, 'An unknown error occurred.');
         });

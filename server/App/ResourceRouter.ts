@@ -26,6 +26,10 @@ router.get('/slideshow', async function (req: express.Request, res: express.Resp
     res.sendFile(path.join(loc, file));
 });
 
+router.get('/video/:file', function (req, res) {
+    res.sendFile(path.join(dirs.res, 'video', req.params.file));
+});
+
 router.use('/', async function (req: express.Request, res: express.Response) {
     const resource = path.resolve(path.join(dirs.res, req.path));
 
@@ -34,5 +38,6 @@ router.use('/', async function (req: express.Request, res: express.Response) {
     else
         res.status(404).end('Error 404: Not found');
 });
+
 
 export default router;

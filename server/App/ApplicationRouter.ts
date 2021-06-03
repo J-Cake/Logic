@@ -4,7 +4,7 @@ import express from 'express';
 import {convertFromHTMLForm, getPreferencesForUser, isLoggedIn, verifyUser, writePreferences} from './Auth/UserActions';
 import sql from '../util/sql';
 
-import getFile, {DBPreferenceMap} from './Document/getFile';
+import getFile, {DBDocument, DBPreferenceMap} from './Document/getFile';
 import searchComponents from './Document/searchComponents';
 import {attempt} from '../util/utils';
 import docToComponent from './Document/Component';

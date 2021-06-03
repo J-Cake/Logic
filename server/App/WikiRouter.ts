@@ -6,6 +6,7 @@ import * as FS from '../util/files'
 import {attempt, rootFn} from "../util/utils";
 import {isLoggedIn} from "./Auth/UserActions";
 import MarkdownIt from "markdown-it";
+import find from "../util/find";
 
 type FS = {
     [item: string]: string | FS
@@ -39,37 +40,39 @@ const getPages = async function (root?: string): Promise<FS> {
 router.get('/', async function (req, res) {
     res.render('site/wiki', {
         pages: await getPages(),
+        path: decodeURIComponent('/'),
         isLoggedIn: isLoggedIn(req)
     });
 });
 
-router.get('/search', async function(req, res) {
-    const rg = await import ('ripgrep-js');
+router.get('/search', async function (req, res) {
+    if (req.query.q && await attempt(async function () {
+        const results: [preview: string, file: string][] = [];
 
-    if (req.query.q && await attempt(async function() {
+        for await (const i of find((req.query.q as string).replace('+', ' '))) {
+            results.push([comp.render(i[0]), i[1]]);
+            console.log(results[results.length - 1][0]);
+        }
+
         res.render('search-results', {
-            results: (await rg.ripGrep(path.join(await rootFn(), 'lib/doc/wiki'), (req.query.q as string).replace('+', ' '))).map(i => ({...i, preview: comp.render(i.match)})),
+            results: results,
             isLoggedIn: isLoggedIn(req)
         });
     }))
         res.render('search-results', {
             results: [],
             isLoggedIn: isLoggedIn(req)
-        })
-    else
-        res.render('search', {
-            isLoggedIn: isLoggedIn(req)
         });
 })
 
 router.use(async function (req, res) {
-    // TODO: Secure path. `../../../../../` won't return any results, but it will still perform filesystem operations on files outside of the wiki.
     const doc = path.join(await rootFn(), 'lib/doc/wiki', decodeURIComponent(req.path).toLowerCase()).replace(/\/{2,}/g, '/');
 
     if (await FS.exists(doc) && (await FS.stat(doc)).isFile() && doc.split('.').pop() === 'md')
         res.render('site/wiki', {
             content: comp.render(await FS.readFile(doc)),
             pages: await getPages(),
+            path: req.path,
             isLoggedIn: isLoggedIn(req),
             title: req.path,
             page: req.path

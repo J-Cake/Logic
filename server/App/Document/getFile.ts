@@ -11,14 +11,16 @@ export default async function getFile(userToken: string, documentToken: string):
     const document_owner = await sql.sql_get<DBDocument>(`Select "documentId"
                                                           from documents
                                                           where "documentToken" = $1
-                                                            and "ownerId" = (Select "userId" from users where "userToken" = $2)`, [documentToken, userToken]);
+                                                            and ("ownerId" = (Select "userId" from users where "userToken" = $2)
+                                                              or public is true)`, [documentToken, userToken]);
     if (document_owner)
         return new Document(document_owner.documentId);
 
     const document_collaborator = await sql.sql_get<AccessTable>(`Select "documentId", "canEdit"
-                                                                 from access
-                                                                 where "documentId" = (Select "documentId" from documents where "documentToken" = $1)
-                                                                   and "userId" = (Select "userId" from users where "userToken" = $2)`, [documentToken, userToken])
+                                                                  from access
+                                                                  where "documentId" =
+                                                                        (Select "documentId" from documents where "documentToken" = $1)
+                                                                    and "userId" = (Select "userId" from users where "userToken" = $2)`, [documentToken, userToken])
     if (document_collaborator)
         return new Document(document_collaborator.documentId, !document_collaborator.canEdit);
 
@@ -26,5 +28,7 @@ export default async function getFile(userToken: string, documentToken: string):
 }
 
 export async function userTokenToId(token: string): Promise<number> {
-    return (await sql.sql_get<DBUser>(`SELECT "userId" from users where "userToken" = $1`, [token])).userId;
+    return (await sql.sql_get<DBUser>(`SELECT "userId"
+                                       from users
+                                       where "userToken" = $1`, [token])).userId;
 }
