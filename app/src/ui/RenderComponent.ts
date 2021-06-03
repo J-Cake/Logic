@@ -22,7 +22,7 @@ export interface RenderProps {
 
 export const midpoint = (line: [number, number, number, number]): [number, number] => [line[0] + (line[2] - line[0]) / 2, line[1] + (line[3] - line[1]) / 2];
 export const getDist = (point: [number, number], mouse: [number, number]): number => ((mouse[0] - point[0]) ** 2 + (mouse[1] - point[1]) ** 2) ** 0.5;
-
+export const constrain = (n: number, min: number, max: number): number => Math.max(Math.min(n, max), min);
 
 export default class RenderComponent extends RenderObject {
     component: Component;
@@ -148,7 +148,7 @@ export default class RenderComponent extends RenderObject {
         else sketch.stroke(getColour(Colour.Cursor))
 
         sketch.fill(getColour(Colour.Background));
-        sketch.rect(this.pos[0] - 1, this.pos[1] - 1, this.size[0] + 2, this.size[1] + 2);
+        sketch.rect(this.pos[0], this.pos[1], this.size[0], this.size[1]);
 
         sketch.strokeWeight(1);
         if (!this.isSelected)
@@ -171,7 +171,7 @@ export default class RenderComponent extends RenderObject {
                 sketch.stroke(getColour(Colour.Cursor));
 
             if (grid[a])
-                sketch.rect(Math.floor(grid[a][0]), Math.floor(grid[a][1]), Math.floor(grid[a][2]), Math.floor(grid[a][3]));
+                sketch.line(grid[a][0], grid[a][1], grid[a][2], grid[a][3])
 
             if (getDist([i[0], i[1]], [mouse.x, mouse.y]) < scl / 4 && tool === Tool.Wire) {
                 sketch.stroke(getColour(Colour.Cursor));
@@ -183,10 +183,10 @@ export default class RenderComponent extends RenderObject {
 
         sketch.noStroke();
         sketch.fill(getColour(Colour.Background));
-        sketch.rect(this.pos[0] - 0.5, this.pos[1] - 0.5, this.size[0] + 1, this.size[1] + 1);
+        sketch.rect(this.pos[0] + 1, this.pos[1] + 1, this.size[0] - 2, this.size[1] - 2);
 
         sketch.fill(transparent(this.isSelected ? Colour.Cursor : colour, 50))
-        sketch.rect(this.pos[0], this.pos[1], this.size[0], this.size[1]);
+        sketch.rect(this.pos[0] + 1, this.pos[1] + 1, this.size[0] - 2, this.size[1] - 2);
 
         if (this.isSelected)
             if (this.component.out.includes(true))
@@ -268,18 +268,24 @@ export default class RenderComponent extends RenderObject {
                     Math.floor(this.pos[1] - this.buff + scl * o + scl / 2)]);
 
             });
-            loop(0, i => i < Math.max(outputNum, inputNum), i => i + 1, i => this.inputDashesGrid.push([
-                Math.floor(this.pos[0]),
-                Math.floor(this.pos[1] + scl * i),
-                Math.floor(scl / 2 - this.buff),
-                Math.floor(scl - 2 * this.buff)
-            ]));
-            loop(0, o => o < Math.max(outputNum, inputNum), o => o + 1, o => this.outputDashesGrid.push([
-                Math.floor(this.pos[0] + this.size[0]),
-                Math.floor(this.pos[1] + scl * o),
-                -Math.floor(scl / 2 - this.buff),
-                Math.floor(scl - 2 * this.buff)
-            ]));
+            loop(0, i => i < Math.max(outputNum, inputNum), i => i + 1, i => {
+                const grid = board.gridToPix(this.props.pos);
+                this.inputDashesGrid.push([
+                    Math.floor(this.pos[0]),
+                    Math.max(Math.floor(grid[1] + i * scl), this.pos[1]),
+                    Math.floor(this.pos[0]),
+                    Math.min(Math.floor(grid[1] + (i + 1) * scl), this.pos[1] + this.size[1])
+                ]);
+            });
+            loop(0, o => o < Math.max(outputNum, inputNum), o => o + 1, o => {
+                const grid = board.gridToPix(this.props.pos);
+                this.outputDashesGrid.push([
+                    Math.floor(this.pos[0] + this.size[0]),
+                    Math.max(Math.floor(grid[1] + o * scl), this.pos[1]),
+                    Math.floor(this.pos[0] + this.size[0]),
+                    Math.min(Math.floor(grid[1] + (o + 1) * scl), this.pos[1] + this.size[1])
+                ]);
+            });
         } else {
             loop(0, o => o < Math.max(outputNum, inputNum), o => o + 1, o => {
                 this.inputDashesCoords.push([
@@ -295,18 +301,24 @@ export default class RenderComponent extends RenderObject {
                     Math.floor(this.pos[0] - this.buff + scl * i + scl / 2),
                     Math.floor(this.pos[1] + this.size[1] + this.buff)]);
             });
-            loop(0, i => i < Math.max(outputNum, inputNum), i => i + 1, i => this.inputDashesGrid.push([
-                Math.floor(this.pos[0] + i * scl),
-                Math.floor(this.pos[1]),
-                Math.floor(scl - 2 * this.buff),
-                Math.floor(scl / 2 - this.buff)
-            ]));
-            loop(0, o => o < Math.max(outputNum, inputNum), o => o + 1, o => this.outputDashesGrid.push([
-                Math.floor(this.pos[0] + o * scl),
-                Math.floor(this.pos[1] + this.size[1]),
-                Math.floor(scl - 2 * this.buff),
-                -Math.floor(scl / 2 - this.buff),
-            ]));
+            loop(0, i => i < Math.max(outputNum, inputNum), i => i + 1, i => {
+                const grid = board.gridToPix(this.props.pos);
+                this.inputDashesGrid.push([
+                    Math.max(Math.floor(grid[0] + i * scl), this.pos[0]),
+                    Math.floor(this.pos[1]),
+                    Math.min(Math.floor(grid[0] + (i + 1) * scl), this.pos[0] + this.size[0]),
+                    Math.floor(this.pos[1])
+                ]);
+            });
+            loop(0, o => o < Math.max(outputNum, inputNum), o => o + 1, o => {
+                const grid = board.gridToPix(this.props.pos);
+                this.outputDashesGrid.push([
+                    Math.max(Math.floor(grid[0] + o * scl), this.pos[0]),
+                    Math.floor(this.pos[1] + this.size[1]),
+                    Math.min(Math.floor(grid[0] + (o + 1) * scl), this.pos[0] + this.size[0]),
+                    Math.floor(this.pos[1] + this.size[1])
+                ]);
+            });
         }
 
         if (this.props.direction > 1) {
