@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
 import {manager} from "../State";
-import {ApiComponent, GenComponent, GenericComponent, PlaceholderComponent} from "./io/ComponentFetcher";
+import {ApiComponent, GenComponent, GenericComponent} from "./io/ComponentFetcher";
 import CircuitManager, {AvailSync, ComponentMap} from "./io/CircuitManager";
 import {CircuitObj} from "../../../server/App/Document/Document";
 import {getComponent} from "../sys/API/component";
@@ -26,8 +26,12 @@ export default function (apiComponent: ApiComponent) {
         componentBody: CircuitObj;
         componentMap!: ComponentMap;
 
-        private readonly inputComponents!: PlaceholderComponent[];
-        private readonly outputComponents!: PlaceholderComponent[];
+        // private readonly inputComponents!: PlaceholderComponent[];
+        // private readonly outputComponents!: PlaceholderComponent[];
+        // private readonly inputComponents!: GenComponent<'$input'>[];
+        // private readonly outputComponents!: GenComponent<'$output'>[];
+        private readonly inputComponents!: (keyof ComponentMap)[];
+        private readonly outputComponents!: (keyof ComponentMap)[];
 
         constructor(documentComponentKey: number, base: GenericComponent) {
             super({
@@ -43,44 +47,41 @@ export default function (apiComponent: ApiComponent) {
             this.inputComponents = [];
             this.outputComponents = [];
 
-            CircuitManager.parseCircuit(this.componentBody = apiComponent.component as CircuitObj).then(function (this: StatefulComponent, component: [AvailSync, ComponentMap]) {
-                for (const i in component[1]) {
-                    if (component[1][i][0].token === '$input' || component[1][i][0].token === '$output') {
-                        const isInput = component[1][i][0].token === '$input';
-                        const comp = component[1][i][1];
+            CircuitManager.parseCircuit(this.componentBody = apiComponent.component as CircuitObj).then(
+                function (this: StatefulComponent, component: [AvailSync, ComponentMap]) {
+                    for (const i in component[1]) {
+                        if (component[1][i][0].token === '$input')
+                            this.inputComponents.push(Number(i));
+                        else if (component[1][i][0].token === '$output')
+                            this.outputComponents.push(Number(i));
 
-                        const placeholder = new PlaceholderComponent(comp);
-                        component[1][i][1] = placeholder;
-                        for (const i in comp.inputs)
-                            comp.inputs[i][0].outputs[comp.inputs[i][1]][comp.inputs[i][0].outputs[comp.inputs[i][1]].findIndex(i => i[0] === comp)][0] = placeholder;
+                        component[1][i][1].update = function (this: GenComponent) {
+                            this.out = this.computeOutputs(Object.keys(this.inputs).map(i => this.inputs[i][0].out[this.inputs[i][0].outputNames.indexOf(this.inputs[i][1])]));
 
-                        for (const i in comp.outputs)
-                            for (const [a, input] of comp.outputs[i].entries())
-                                if (input[0] === comp)
-                                    comp.outputs[i][a][0] = placeholder;
-
-                        if (isInput)
-                            this.inputComponents.push(placeholder);
-                        else
-                            this.outputComponents.push(placeholder);
+                            for (const i in this.outputs)
+                                for (const j of this.outputs[i])
+                                    j[0].update();
+                        };
                     }
-                }
-                return this.componentMap = component[1];
-            }.bind(this));
+                    return this.componentMap = component[1];
+                }.bind(this)
+            );
         }
 
         computeOutputs(inputs: boolean[]): boolean[] { // TODO: Evaluate stateful components
             if (!this.componentMap)
                 return _.filter((apiComponent.component as CircuitObj).content, i => i.token === '$output').map(i => false);
 
-            for (const [a] of this.inputComponents.entries())
-                this.inputComponents[a].output[0] = inputs[a];
+            for (const [a, i] of this.inputComponents.entries())
+                this.componentMap[i][1].addOverride(inputs[a], 0);
 
-            // Update the components separately. We'll get weird behaviour otherwise.
             for (const i of this.inputComponents)
-                i.update();
+                this.componentMap[i][1].update();
 
-            return _.filter(this.componentMap, i => i[0].token === "$output").map(i => i[1].out[0]);
+            return this.outputComponents.map(i => {
+                const comp = this.componentMap[i][1].inputs['o'];
+                return comp[0].out[comp[0].outputNames.indexOf(comp[1])];
+            });
         }
 
         preUpdate(next: () => void): void {

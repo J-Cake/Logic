@@ -295,3 +295,10 @@ footer #copyright {
         max-height: var(--2em);
     }
 }
+
+#page-banner {
+    display: block;
+    width: 100%;
+    position: absolute;
+    z-index: -1;
+}

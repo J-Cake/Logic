@@ -9,7 +9,7 @@ export {Theme} from '../../Enums';
 export default Colour;
 
 export function parseColour(colour: string): rgb {
-    return parse((colour || "").slice(1)).values;
+    return parse((colour || "").slice(1))?.values ?? [0, 0, 0];
 }
 
 export function getSystemColours(): Record<Colour, rgb> {

@@ -43,8 +43,8 @@ export default class Board extends RenderObject {
         const offset = (mgr.sidebarIsLeft && mgr.tooltipPane.isVisible) ? (mgr.tooltipPane.size[0] + this.padding) : 0;
 
         return [
-            Math.floor(mgr.pref.setState().gridSize * coords[0] + this.padding + offset + (centre ? mgr.pref.setState().gridSize * 0.5 : 0)) + 1.5,
-            Math.floor(mgr.pref.setState().gridSize * coords[1] + this.padding + (centre ? mgr.pref.setState().gridSize * 0.5 : 0)) + 1.5
+            Math.floor(mgr.pref.setState().gridSize * coords[0] + this.padding + offset + (centre ? mgr.pref.setState().gridSize * 0.5 : 0)),
+            Math.floor(mgr.pref.setState().gridSize * coords[1] + this.padding + (centre ? mgr.pref.setState().gridSize * 0.5 : 0))
         ];
     }
 
@@ -54,25 +54,20 @@ export default class Board extends RenderObject {
 
     render(sketch: p5): void {
         sketch.noStroke();
-        // sketch.fill(getColour(Colour.Panel, {duration: 30, type: Interpolation.linear}));
 
         const {gridSize: scl, showGrid} = manager.setState().pref.setState();
-
-        // sketch.rect(this.boxPos[0], this.boxPos[1], this.size.w, this.size.h);
-
-        // this.drawRulers(sketch);
 
         if (showGrid) {
             sketch.strokeWeight(1);
             sketch.stroke(getColour(Colour.Panel));
 
             for (let i = 0; i <= sketch.width; i += scl) {
-                const x = (this.translate[0] + i + 0.5) - (this.translate[0] - this.pos.x) % scl;
+                const x = Math.floor((this.translate[0] + i) - (this.translate[0] - this.pos.x) % scl);
                 sketch.line(x, this.translate[1], x, sketch.height + this.translate[1]);
             }
 
             for (let j = 0; j <= sketch.height; j += scl) {
-                const y = (this.translate[1] + j + 0.5) - (this.translate[1] - this.pos.y) % scl;
+                const y = Math.floor((this.translate[1] + j) - (this.translate[1] - this.pos.y) % scl);
                 sketch.line(this.translate[0], y, sketch.width + this.translate[0], y);
             }
         }
@@ -82,15 +77,15 @@ export default class Board extends RenderObject {
         const state = manager.setState();
 
         this.size = {
-            w: sketch.width - 2 * this.padding - state.tooltipPane.outlineSize[0],
-            h: sketch.height - 2 * this.padding
+            w: Math.floor(sketch.width - 2 * this.padding - state.tooltipPane.outlineSize[0]),
+            h: Math.floor(sketch.height - 2 * this.padding)
         }
         this.pos = {
-            x: this.padding + (state.sidebarIsLeft ? state.tooltipPane.outlineSize[0] : 0),
-            y: this.padding
+            x: Math.floor(this.padding + (state.sidebarIsLeft ? state.tooltipPane.outlineSize[0] : 0)),
+            y: Math.floor(this.padding)
         }
 
-        this.boxPos = [this.pos.x + this.translate[0], this.pos.y + this.translate[1]];
+        this.boxPos = [Math.floor(this.pos.x + this.translate[0]), Math.floor(this.pos.y + this.translate[1])];
 
     }
 

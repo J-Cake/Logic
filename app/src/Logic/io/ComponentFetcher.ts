@@ -5,6 +5,7 @@ import StatefulFactory from "../StatefulFactory";
 import DynamicFactory from "../DynamicFactory";
 import {CircuitObj} from "../../../../server/App/Document/Document";
 import {manager} from "../../State";
+import _ from "lodash";
 
 export type TruthTable = [boolean[], boolean[]][];
 export type Body = TruthTable | CircuitObj | string;
@@ -12,8 +13,8 @@ export type Body = TruthTable | CircuitObj | string;
 /**
  * This is the shape of the component as received by the API. Consider this the JSON equivalent of a constructor
  */
-export interface ApiComponent {
-    token: string,
+export interface ApiComponent<Token extends string = string> {
+    token: Token,
     name: string,
     owner: string,
     component: Body,
@@ -51,9 +52,9 @@ export const compareArray: <T>(arr1: T[], arr2: T[]) => boolean = function <T>(a
     return !arr1.map((i, a) => i === arr2[a]).includes(false);
 }
 
-export abstract class GenComponent extends Component {
+export abstract class GenComponent<Token extends string = string> extends Component {
     documentComponentKey: number;
-    raw: ApiComponent | null;
+    raw: ApiComponent<Token> | null;
     base: GenericComponent | null;
 
     protected constructor(props: {
@@ -61,7 +62,7 @@ export abstract class GenComponent extends Component {
         inputs: string[],
         outputs: string[],
         name: string,
-        raw?: ApiComponent,
+        raw?: ApiComponent<Token>,
         base?: GenericComponent
     }) {
         super(props.inputs, props.outputs, props.name);

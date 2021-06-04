@@ -2,7 +2,7 @@ import _ from 'lodash';
 import RenderComponent from '../ui/RenderComponent';
 import {DebugMode} from '../Enums';
 import {manager} from '../State';
-import {GenComponent} from "./io/ComponentFetcher";
+import {ApiComponent} from "./io/ComponentFetcher";
 
 export const containsDuplicates = (list: string[]): boolean => new Set(list).size !== list.length;
 
@@ -15,13 +15,10 @@ export default abstract class Component {
 
     public label: string;
 
-    // value: boolean[];
-
     readonly inputs: { [terminal: string]: [Component, string] };
     readonly outputs: { [terminal: string]: [Component, string][] }
-    // readonly outputs: Component[];
 
-    out: boolean[];
+    #outs: boolean[];
     prevInput: [boolean[], boolean[]];
     outCache: { [terminal: string]: boolean };
     updated: boolean;
@@ -30,6 +27,8 @@ export default abstract class Component {
     isBreakpoint: DebugMode | null;
     public breakNext: boolean = false;
     public halted: boolean = false;
+
+    protected override: (null | boolean)[] = [];
 
     protected constructor(inputs: string[], outputs: string[], name: string) {
         if (containsDuplicates(inputs) || containsDuplicates(outputs))
@@ -42,7 +41,7 @@ export default abstract class Component {
         this.outputs = {};
 
         this.prevInput = new Array(2).fill(Array.from(this.inputNames.map(i => i in this.inputs ? (this.inputs[i][0].out[this.inputs[i][0].outputNames.indexOf(i)]) : false))) as [boolean[], boolean[]];
-        this.out = this.computeOutputs(this.prevInput[this.prevInput.length - 1]); // get the list of default values
+        this.#outs = this.computeOutputs(this.prevInput[this.prevInput.length - 1]); // get the list of default values
 
         this.outCache = {};
 
@@ -54,6 +53,19 @@ export default abstract class Component {
         this.updated = false;
         this.isRecursive = false;
         this.isBreakpoint = null;
+        this.override = [];
+    }
+
+    addOverride(value: boolean, index: number) {
+        this.override = new Array(Math.max(index, this.override.length)).fill(null).map((i, a) => typeof this.override[a] === "boolean" ? this.override[a] : null);
+        this.override[index] = value;
+    }
+
+    get out() {
+        return _.merge(new Array(Math.max(this.override.length, this.#outs.length)).fill(0), this.override).map((i, a) => typeof i !== "boolean" ? this.#outs[a] : i);
+    }
+    set out(value: boolean[]) {
+        this.#outs = value;
     }
 
     abstract computeOutputs(inputs: boolean[]): boolean[];
@@ -119,7 +131,7 @@ export default abstract class Component {
 
             const update = function (this: Component, next: boolean[], noRipple: boolean = false) {
                 if (next) // may not be defined, if the component is a dynamic component, and no value was returned. In this case, inform user with an error
-                this.out = next;
+                    this.out = next;
                 else
                     throw {
                         msg: `No value was returned from \`compute\` on ${this.name}.`,
