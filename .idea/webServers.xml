@@ -2,8 +2,8 @@
 <project version="4">
   <component name="WebServers">
     <option name="servers">
-      <webServer id="ecc2fdf5-6440-40bb-88ed-279df0e0f4b8" name="Server" url="http://jschneiderprojects.com.au">
-        <fileTransfer rootFolder="/home/jcake" accessType="SFTP" host="jschneiderprojects.com.au" port="22" sshConfigId="665badc4-6f08-4d08-ba7d-5e5b0e2ac8fb" sshConfig="Server">
+      <webServer id="1cc07921-5927-4c1e-a6c6-384b82c39aeb" name="DO Server">
+        <fileTransfer accessType="SFTP" host="jschneiderprojects.com.au" port="22" sshConfigId="5df27ac4-5630-4683-b693-2bbcd81b5672" sshConfig="jcake@jschneiderprojects.com.au:22 password">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
           </advancedOptions>

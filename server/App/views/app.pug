@@ -9,7 +9,7 @@ block content
     if circuit
         span.hidden#circuitToken= circuit
 
-    script(src="/app/app.js", defer=true)
+    script(src="/app/app.js")
 
     section#body
         div#manipulation-bar.bar
@@ -84,7 +84,7 @@ block content
                         button#settings 
                     a(href="/view/" + circuit, target="_blank")
                         button#view 
-                    a(href="/wiki/%2F%2FLogicX%2Fusage%2FInterface.md#application", target="_blank")
+                    a(href="/wiki/logicx/usage/interface.md#application", target="_blank")
                         button#help 
 
         div#canvas-container

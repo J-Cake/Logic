@@ -2,15 +2,15 @@
     "errors": [
         {
             "location": {
-                "column": 41,
+                "column": 12,
                 "file": "build/app/src/Logic/StatefulFactory.js",
                 "length": 1,
-                "line": 41,
-                "lineText": "                            comp.outputs[];",
+                "line": 56,
+                "lineText": "            ;",
                 "namespace": ""
             },
             "notes": [],
-            "text": "Unexpected \"]\""
+            "text": "Expected identifier but found \";\""
         }
     ],
     "warnings": []

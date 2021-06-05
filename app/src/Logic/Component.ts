@@ -21,7 +21,7 @@ export default abstract class Component {
     #outs: boolean[];
     prevInput: [boolean[], boolean[]];
     outCache: { [terminal: string]: boolean };
-    updated: boolean;
+    #_updated: boolean;
     isRecursive: boolean;
 
     isBreakpoint: DebugMode | null;
@@ -50,10 +50,18 @@ export default abstract class Component {
 
         this.label = this.name = name;
 
-        this.updated = false;
+        this.#_updated = false;
         this.isRecursive = false;
         this.isBreakpoint = null;
         this.override = [];
+    }
+
+    get updated(): boolean {
+        return this.#_updated;
+    }
+
+    set updated(updated: boolean) {
+        this.#_updated = updated;
     }
 
     addOverride(value: boolean, index: number) {

@@ -26,10 +26,8 @@ export default function (apiComponent: ApiComponent) {
         componentBody: CircuitObj;
         componentMap!: ComponentMap;
 
-        // private readonly inputComponents!: PlaceholderComponent[];
-        // private readonly outputComponents!: PlaceholderComponent[];
-        // private readonly inputComponents!: GenComponent<'$input'>[];
-        // private readonly outputComponents!: GenComponent<'$output'>[];
+        #_updated: boolean = false;
+
         private readonly inputComponents!: (keyof ComponentMap)[];
         private readonly outputComponents!: (keyof ComponentMap)[];
 
@@ -56,16 +54,33 @@ export default function (apiComponent: ApiComponent) {
                             this.outputComponents.push(Number(i));
 
                         component[1][i][1].update = function (this: GenComponent) {
-                            this.out = this.computeOutputs(Object.keys(this.inputs).map(i => this.inputs[i][0].out[this.inputs[i][0].outputNames.indexOf(this.inputs[i][1])]));
+                            if (!this.updated) {
+                                this.updated = true;
 
-                            for (const i in this.outputs)
-                                for (const j of this.outputs[i])
-                                    j[0].update();
+                                this.out = this.computeOutputs(Object.keys(this.inputs).map(i => this.inputs[i][0].out[this.inputs[i][0].outputNames.indexOf(this.inputs[i][1])]));
+
+                                for (const i in this.outputs)
+                                    for (const j of this.outputs[i])
+                                        j[0].update();
+                            }
                         };
+                        
                     }
                     return this.componentMap = component[1];
                 }.bind(this)
             );
+        }
+
+        get updated(): boolean {
+            return this.#_updated;
+        }
+
+        set updated(updated: boolean) {
+            this.#_updated = updated;
+
+            if (!updated)
+            for (const i in this.componentMap)
+                this.componentMap[i][1].updated = false;
         }
 
         computeOutputs(inputs: boolean[]): boolean[] { // TODO: Evaluate stateful components

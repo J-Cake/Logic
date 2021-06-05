@@ -1,5 +1,4 @@
 @media screen and (prefers-color-scheme: light) {
-    /* Folio theme */
     :root {
         --primary:          #727c80;
         --danger:           #DB6869;
