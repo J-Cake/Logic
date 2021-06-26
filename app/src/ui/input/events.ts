@@ -42,52 +42,6 @@ export default function handleEvents(canvas: JQuery, sketch: p5) {
     bindKeys();
     bindButtons();
 
-    // $('button#save').on('click', () => saveDocument());
-    // $('button#close').on('click', () => window.location.href = '/dashboard#own');
-    //
-    // $("#show-labels").on('change', function () {
-    //     return manager.setState().pref.setState({
-    //         enableTooltips: $(this).prop("checked")
-    //     });
-    // });
-    // $("#refresh-ui").on('click', () => manager.broadcast("refresh-ui"));
-    //
-    // $('#in').on('click', () => manager.setState(prev => ({gridScale: Math.min(Math.max(prev.gridScale * 1.15, 1.5), 150)})));
-    // $('#out').on('click', () => manager.setState(prev => ({gridScale: Math.min(Math.max(prev.gridScale * 0.85, 1.5), 150)})));
-    // $('#in').on('click', () => manager.setState(prev => ({scale: Math.min(Math.max(prev.scale * 1.15, 1.5), 150)})));
-    // $('#out').on('click', () => manager.setState(prev => ({scale: Math.min(Math.max(prev.scale * 0.85, 1.5), 150)})));
-    //
-    // $('#reset').on('click', () => manager.setState(prev => ({scale: 1})));
-    //
-    // $("#remove-component").on('click', () => manager.setState().circuit.deleteSelected());
-    //
-    // $("#flip").on('click', function () {
-    //     const prev = manager.setState();
-    //     for (const i of prev.renderedComponents.filter(i => i.isSelected))
-    //         i.props.flip = !i.props.flip;
-    // });
-    //
-    // $("#rotate-left").on('click', function () {
-    //     const prev = manager.setState();
-    //     for (const i of prev.renderedComponents.filter(i => i.isSelected))
-    //         i.props.direction = ({
-    //             [0]: 3,
-    //             [1]: 0,
-    //             [2]: 1,
-    //             [3]: 2,
-    //         } as Record<0 | 1 | 2 | 3, 0 | 1 | 2 | 3>)[i.props.direction];
-    // });
-    // $("#rotate-right").on('click', function () {
-    //     const prev = manager.setState();
-    //     for (const i of prev.renderedComponents.filter(i => i.isSelected))
-    //         i.props.direction = ({
-    //             [0]: 1,
-    //             [1]: 2,
-    //             [2]: 3,
-    //             [3]: 0,
-    //         } as Record<0 | 1 | 2 | 3, 0 | 1 | 2 | 3>)[i.props.direction];
-    // });
-
     window.addEventListener("resize", function () {
         sketch.resizeCanvas(container.width() ?? window.innerWidth, container.height() ?? window.innerHeight);
     });

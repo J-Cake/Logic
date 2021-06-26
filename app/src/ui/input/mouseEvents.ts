@@ -3,6 +3,7 @@ import $ from 'jquery';
 
 import {manager, Tool} from '../../State';
 import {DebugMode} from '../../Enums';
+import RenderComponent from "../RenderComponent";
 
 export function clickHandler(sketch: p5) {
     const {dragStart, mouse, keys, tool, debug, renderedComponents: comps} = manager.setState();
@@ -43,7 +44,20 @@ export async function updateTooltips(e: JQuery.MouseMoveEvent) { // Call MouseDo
     const tooltips: boolean = manager.setState().pref.setState().enableTooltips;
 
     if (tooltips) {
-        const comps = manager.setState().renderedComponents.reverse().find(i => i.isWithinBounds(manager.setState()));
+        const mgr = manager.setState();
+        let comps = mgr.renderedComponents.reverse().find(i => i.isWithinBounds(manager.setState()));
+
+        type T = [boolean, number, number];
+        const terminal = mgr.renderedComponents.reduce((a: T | null, i, b) => i.getTouchingTerminal([mgr.mouse.x, mgr.mouse.y])?.concat(b) as T ?? a, null);
+        if (terminal) {
+            comps = mgr.renderedComponents[terminal[2]];
+            const name = terminal?.[0] ? comps?.component.outputNames[terminal?.[1]] : comps?.component.inputNames[terminal?.[1]];
+
+            console.log(name);
+
+            if (name)
+                $("span#terminal").text(name);
+        }
 
         if (comps) {
             $("span#component-label").text(comps.component.label);
@@ -58,6 +72,7 @@ export async function updateTooltips(e: JQuery.MouseMoveEvent) { // Call MouseDo
                 .css("top", e.pageY + "px");
         } else {
             $("span#component-label").text("");
+            $("span#terminal").text("");
             $("span#debug").text("");
             $("span#type").text("");
             $("span#pos-x").text("");

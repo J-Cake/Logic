@@ -104,11 +104,11 @@ export class WireHandle extends DragObject {
             sketch.rectMode(sketch.CORNER);
         }
 
-        sketch.ellipseMode(sketch.CORNER);
-        sketch.fill(tool === Tool.Wire ?
-            getColour(this.isSelected ? Colour.Danger : (this.isHover(mouse) ? Colour.Active : Colour.Cursor)) :
-            transparent(this.isSelected ? Colour.Danger : Colour.Cursor, 40));
-        sketch.ellipse(Math.floor(this.pos.x - gridSize / 4) + rOffset, Math.floor(this.pos.y - gridSize / 4) + rOffset, Math.floor(gridSize / 2) + 1 + rOffset, Math.floor(gridSize / 2) + 1 + rOffset);
+        // sketch.ellipseMode(sketch.CORNER);
+        // sketch.fill(tool === Tool.Wire ?
+        //     getColour(this.isSelected ? Colour.Danger : (this.isHover(mouse) ? Colour.Active : Colour.Cursor)) :
+        //     transparent(this.isSelected ? Colour.Danger : Colour.Cursor, 40));
+        // sketch.ellipse(Math.floor(this.pos.x - gridSize / 4) + rOffset, Math.floor(this.pos.y - gridSize / 4) + rOffset, Math.floor(gridSize / 2) + 1 + rOffset, Math.floor(gridSize / 2) + 1 + rOffset);
     }
 
     protected isHover(mousePos: { x: number; y: number }): boolean {

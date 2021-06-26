@@ -41,9 +41,9 @@ export const keyMap: Record<Action, string[]> = {
     [Action.OpenComponentMenu]: ['f9', '8'],
     [Action.OpenImportMenu]: ['f10', '9'],
 
-    [Action.Flip]: ['up', 'down'],
-    [Action.Rotate_Clockwise]: ['right'],
-    [Action.Rotate_Counterclockwise]: ['left'],
+    [Action.Flip]: ['up', 'down', '\''],
+    [Action.Rotate_Clockwise]: ['right', ']'],
+    [Action.Rotate_Counterclockwise]: ['left', '['],
 
     [Action.ViewDocument]: ['f12'],
     [Action.Help]: ['f1'],

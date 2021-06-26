@@ -19,7 +19,7 @@ export function remove(state: State) {
 
         if (hoverWire) {
             if (confirm("Delete wire and disconnect components?")) {
-                hoverWire[0].startComponent.component.dropInput(hoverWire[0].startComponent.component.inputNames[hoverWire[0].startIndex]);
+                hoverWire[0].endComponent.component.dropInput(hoverWire[0].endComponent.component.inputNames[hoverWire[0].endIndex]);
                 hoverWire[0].startComponent.wires.splice(hoverWire[0].startComponent.wires.indexOf(hoverWire[0]), 1);
             }
         }

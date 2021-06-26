@@ -201,12 +201,14 @@ export default abstract class Component {
     }
 
     dropInput(input: string) {
-        const [comp, terminal] = this.inputs[input];
-        const index = comp.outputs[terminal].findIndex(i => i[0] === this);
+        if (input in this.inputs) {
+            const [comp, terminal] = this.inputs[input];
+            const index = comp.outputs[terminal].findIndex(i => i[0] === this);
 
-        if (index > -1)
-            comp.outputs[terminal].splice(index, 1);
-        delete this.inputs[input];
+            if (index > -1)
+                comp.outputs[terminal].splice(index, 1);
+            delete this.inputs[input];
+        }
     }
 
     dropOutput(output: string, comp: Component) {
