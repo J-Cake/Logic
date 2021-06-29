@@ -39,23 +39,14 @@ export default class CircuitManager {
 
     deleteSelected() {
         for (const i of manager.setState().renderedComponents)
-            for (const j of i.wires)
-                for (const k of j.handles ?? [])
-                    if (k.isSelected) {
-                        k.onDelete();
-                        j.handles?.splice(j?.handles.indexOf(k), 1);
-                    }
+            if (i.isSelected)
+                i.component.dropAll();
 
-        const selected = manager.setState().renderedComponents.filter(i => i.isSelected);
-        for (const comp of selected) {
-            comp.component.dropAll();
-            comp.deleted = true;
-            comp.wires = [];
-        }
+        for (const i of manager.setState().renderedComponents)
+            if (i.isSelected) // @ts-ignore
+                i.deleted = delete i.component;
 
-        manager.setState(prev => ({
-            renderedComponents: prev.renderedComponents.filter(i => !i.isSelected)
-        }));
+        manager.setState(prev => ({renderedComponents: prev.renderedComponents.filter(i => i.component)}));
     }
 
     addComponent(component: GenComponent) {

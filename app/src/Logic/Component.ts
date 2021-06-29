@@ -193,13 +193,18 @@ export default abstract class Component {
 
     dropAll() {
         for (const a in this.inputs)
-            this.inputs[a][0].outputs[this.inputs[a][1]].splice(this.inputs[a][0].outputs[this.inputs[a][1]].findIndex(i => i[0] === this), 1);
+            this.dropInput(a);
 
         for (const a in this.outputs)
-            for (const b in this.outputs[a])
-                delete this.outputs[a][b][0].inputs[this.outputs[a][b][1]];
+            for (const i of this.outputs[a])
+                i[0].dropOutputRecursive(i[1], this);
     }
 
+    /**
+     * Disconnects two components, by dropping the *input*.
+     * > Disconnects the components on the output side as well.
+     * @param input The *input* terminal to disconnect.
+     */
     dropInput(input: string) {
         if (input in this.inputs) {
             const [comp, terminal] = this.inputs[input];
@@ -207,11 +212,34 @@ export default abstract class Component {
 
             if (index > -1)
                 comp.outputs[terminal].splice(index, 1);
-            delete this.inputs[input];
+            delete this.inputs[input]; // Don't worry. Delete only removes the key from the dictionary, not the actual value in memory.
         }
     }
 
+    /**
+     * Removes connection through outputs
+     * > Does not disconnect components through inputs.
+     * @param output The terminal on which to find the component to disconnect
+     * @param comp The component to disconnect from
+     */
     dropOutput(output: string, comp: Component) {
+        if (output in this.outputs)
+            delete this.outputs[output][this.outputs[output].findIndex(i => i[0] === comp)];
+            // delete this.outputs[this.outputs[output].findIndex(i => i[0] === comp)];
+    }
 
+    /**
+     * Same as Component::dropOutput, except removes inputs
+     * @param output
+     * @param comp
+     */
+    dropOutputRecursive(output: string, comp: Component) {
+        if (output in this.outputs) {
+            const componentIndex = this.outputs[output].findIndex(i => i[0] === comp);
+            const connection = this.outputs[output]?.[componentIndex]
+            connection[0].dropInput(connection[1]);
+
+            delete this.outputs[output][componentIndex];
+        }
     }
 }
