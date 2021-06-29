@@ -13,7 +13,7 @@ export function searchUsers(query: string): Promise<ApiResponse_Success<userSear
             headers: {
                 'auth-token': authToken
             }
-        }).then(res => res.json()).then(res => 'error' in res ? reject(res) : resolve(res));
+        }).then(res => res.json()).then(res => 'error' in res ? reject(res) : resolve(res)).catch(err => reject(err));
     });
 }
 
@@ -26,6 +26,6 @@ export function getPreferences(): Promise<ApiResponse_Success<DBPreferenceMap, A
             headers: {
                 'auth-token': authToken
             }
-        }).then(res => res.json()).then(res => 'error' in res ? reject(res) : resolve(res));
+        }).then(res => res.json()).then(res => 'error' in res ? reject(res) : resolve(res)).catch(err => reject(err));
     });
 }

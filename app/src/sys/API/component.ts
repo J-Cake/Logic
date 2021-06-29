@@ -12,7 +12,7 @@ export function getComponent(componentToken: string): Promise<ApiResponse_Succes
             headers: {
                 'auth-token': authToken
             }
-        }).then(res => res.json()).then(res => 'error' in res ? reject(res) : resolve(res));
+        }).then(res => res.json()).then(res => 'error' in res ? reject(res) : resolve(res)).catch(err => reject(err));
     });
 }
 
@@ -26,6 +26,6 @@ export function fetchScript(scriptUrl: string): Promise<ApiResponse_Success<stri
             headers: {
                 'auth-token': authToken
             }
-        }).then(res => res.json()).then(res => 'error' in res ? reject(res) : resolve(res));
+        }).then(res => res.json()).then(res => 'error' in res ? reject(res) : resolve(res)).catch(err => reject(err));
     });
 }

@@ -82,17 +82,23 @@ export default class CircuitManager {
     }
 
     private async loadCircuit(circuitId: string): Promise<{ [id: number]: [GenericComponent, GenComponent] }> {
-        const loaded: CircuitObj = (await getDocument(circuitId)).data as CircuitObj;
+        try {
+            const loaded: CircuitObj = (await getDocument(circuitId)).data as CircuitObj;
 
-        const [availSync, components] = await CircuitManager.parseCircuit(loaded);
+            const [availSync, components] = await CircuitManager.parseCircuit(loaded);
 
-        this.state.setState({
-            availableComponents: availSync,
-            components: Object.values(components).map(i => i[1]),
-            componentMap: components,
-            document: loaded
-        }).components.forEach(i => i.update());
+            this.state.setState({
+                availableComponents: availSync,
+                components: Object.values(components).map(i => i[1]),
+                componentMap: components,
+                document: loaded
+            }).components.forEach(i => i.update());
 
-        return components;
+            return components;
+        } catch (err) {
+            if (confirm('A network error has occurred while loading preferences. Please ensure you have a stable network connection. View help page for more info?'))
+                window.open('https://logicx.jschneiderprojects.com.au/wiki/logicx/help/network-issues.md');
+            throw err;
+        }
     }
 }

@@ -20,7 +20,7 @@ export function makeDocument(docName: string): Promise<ApiResponse_Success<strin
             headers: {
                 'auth-token': authToken
             }
-        }).then(res => res.json()).then(res => 'error' in res ? reject(res) : resolve(res));
+        }).then(res => res.json()).then(res => 'error' in res ? reject(res) : resolve(res)).catch(err => reject(err));
     });
 }
 
@@ -36,7 +36,7 @@ export function renameDocument(circuitToken: string, name: string): Promise<ApiR
             headers: {
                 'auth-token': authToken
             }
-        }).then(res => res.json()).then(res => 'error' in res ? reject(res) : resolve(res));
+        }).then(res => res.json()).then(res => 'error' in res ? reject(res) : resolve(res)).catch(err => reject(err));
     });
 }
 
@@ -51,7 +51,7 @@ export function leaveDocument(circuitToken: string): Promise<ApiResponse_Success
             headers: {
                 'auth-token': authToken
             }
-        }).then(res => res.json()).then(res => 'error' in res ? reject(res) : resolve(res));
+        }).then(res => res.json()).then(res => 'error' in res ? reject(res) : resolve(res)).catch(err => reject(err));
     });
 }
 
@@ -66,7 +66,7 @@ export function getDocument(circuitToken: string): Promise<ApiResponse_Success<C
             headers: {
                 'auth-token': authToken
             }
-        }).then(res => res.json()).then(res => 'error' in res ? reject(res) : resolve(res));
+        }).then(res => res.json()).then(res => 'error' in res ? reject(res) : resolve(res)).catch(err => reject(err));
     });
 }
 
@@ -84,7 +84,7 @@ export function saveDocument(circuitToken: string, document: CircuitObj): Promis
                 'Content-type': 'application/json'
             },
             body: JSON.stringify(document)
-        }).then(res => res.json()).then(res => 'error' in res ? reject(res) : resolve(res));
+        }).then(res => res.json()).then(res => 'error' in res ? reject(res) : resolve(res)).catch(err => reject(err));
     });
 }
 
@@ -100,7 +100,7 @@ export function addCollaborator(circuitToken: string, userToken: string): Promis
             headers: {
                 'auth-token': authToken
             }
-        }).then(res => res.json()).then(res => 'error' in res ? reject(res) : resolve(res));
+        }).then(res => res.json()).then(res => 'error' in res ? reject(res) : resolve(res)).catch(err => reject(err));
     });
 }
 
@@ -116,7 +116,7 @@ export function removeCollaborator(circuitToken: string, userToken: string): Pro
             headers: {
                 'auth-token': authToken
             }
-        }).then(res => res.json()).then(res => 'error' in res ? reject(res) : resolve(res));
+        }).then(res => res.json()).then(res => 'error' in res ? reject(res) : resolve(res)).catch(err => reject(err));
     });
 }
 
@@ -133,7 +133,7 @@ export function allowEdit(circuitToken: string, userToken: string, canEdit: bool
             headers: {
                 'auth-token': authToken
             }
-        }).then(res => res.json()).then(res => 'error' in res ? reject(res) : resolve(res));
+        }).then(res => res.json()).then(res => 'error' in res ? reject(res) : resolve(res)).catch(err => reject(err));
     });
 }
 
@@ -149,6 +149,6 @@ export function addComponent(circuitToken: string, componentToken: string): Prom
             headers: {
                 'auth-token': authToken
             }
-        }).then(res => res.json()).then(res => 'error' in res ? reject(res) : resolve(res));
+        }).then(res => res.json()).then(res => 'error' in res ? reject(res) : resolve(res)).catch(err => reject(err));
     });
 }
