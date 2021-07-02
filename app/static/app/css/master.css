@@ -236,7 +236,7 @@ span#breakpoint {
     grid-row: 3;
     grid-column-start: 1;
     grid-column-end: 4;
-    min-width: 100vw;
+    min-width: 100%;
     overflow-x: auto;
     height: 64px;
     align-items: center;

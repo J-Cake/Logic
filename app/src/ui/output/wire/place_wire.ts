@@ -1,6 +1,7 @@
 import Wire, {ApiWire} from './Wire';
-import {State} from '../../../State';
+import {manager, State} from '../../../State';
 import {WireHandle} from './WireHandle';
+import {ActionType, performAction} from "../../../sys/Action";
 
 export default function mkWire(state: State, wire: Partial<ApiWire>, clearWire: () => void) {
     const hoverComponent = state.renderedComponents.find(i => i.getTouchingTerminal([state.mouse.x, state.mouse.y])); // i.isWithinBounds(state)
@@ -18,13 +19,7 @@ export default function mkWire(state: State, wire: Partial<ApiWire>, clearWire: 
                     wire.startIndex = terminal[1];
                 }
 
-                const connect = function (wire: ApiWire) {
-                    wire.endComponent.component.addInput(
-                        wire.startComponent.component,
-                        wire.startComponent.component.outputNames[wire.startIndex],
-                        wire.endComponent.component.inputNames[wire.endIndex]);
-                    wire.startComponent.wires.push(new Wire(wire as ApiWire));
-                }
+                const connect = (wire: ApiWire) => performAction(ActionType.ConnectComponent)(wire);
 
                 if (wire.startComponent && wire.endComponent && typeof wire.startIndex === 'number' && typeof wire.endIndex === 'number') {
                     if (wire.endComponent.component.inputs[wire.endComponent.component.inputNames[wire.endIndex]]) {
@@ -55,16 +50,7 @@ export default function mkWire(state: State, wire: Partial<ApiWire>, clearWire: 
     } else {
         const wire = Wire.findWireByMouseCoordsByCollision([state.mouse.x, state.mouse.y]);
 
-        if (wire) {
-            const coords = state.board.coordsToGrid([state.mouse.x, state.mouse.y]);
-            wire[0].coords.splice(wire[1], 0, coords);
-
-            // [My little speech](./Wire.ts:62) about Pass-by-reference modification rather than value modification applies here too.
-            wire[0].handles?.push(new WireHandle(
-                state.board.gridToPix(coords, true),
-                _coords => (coords[0] = _coords[0],coords[1] = _coords[1]),
-                () => wire[0].coords.splice(wire[0].coords.indexOf(coords), 1)
-            ));
-        }
+        if (wire)
+            performAction(ActionType.AddWireNode)(wire);
     }
 }

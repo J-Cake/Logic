@@ -4,46 +4,17 @@ import {manager, Tool} from '../';
 import RenderComponent from '../ui/RenderComponent';
 import {Dialog, link} from './DialogManager';
 import getColourForComponent from '../ui/output/getColourForComponent';
+import {ActionType, performAction} from "../sys/Action";
 
 export default function buildPrompt() {
     link(Dialog.ComponentView, $("#add-component"), function (componentToken: string) {
         window.focus();
-        const {circuit: mgr, board, mouse} = manager.setState(),
-            {availableComponents} = mgr.state.setState(),
-            Component = availableComponents[componentToken];
-        if (Component) {
+        if (componentToken in manager.setState().circuit.state.setState().availableComponents) {
             window.focus();
             $("#move").prop("checked", true);
-            const component = new Component(mgr.getNextAvailComponentId(), {
-                direction: 1,
-                outputs: {},
-                position: board.coordsToGrid([mouse.x, mouse.y]),
-                label: '',
-                flip: false,
-                wires: {},
-                token: componentToken,
-            });
 
-            mgr.addComponent(component);
+            manager.setState().cursor.showGhostComponent(componentToken);
 
-            manager.setState(function (prev) {
-                const r = new RenderComponent(component, {
-                    direction: 0,
-                    isStateful: false,
-                    label: '',
-                    pos: prev.board.coordsToGrid([prev.mouse.x, prev.mouse.y]),
-                    flip: false,
-                    isMoving: true,
-                    colour: getColourForComponent(componentToken)
-                });
-
-                r.mousePos = r.pos = [prev.mouse.x, prev.mouse.y];
-
-                return ({
-                    tool: Tool.Move,
-                    renderedComponents: [...prev.renderedComponents, r]
-                });
-            });
         } else
             alert("The component wasn't found or is unusable");
     });

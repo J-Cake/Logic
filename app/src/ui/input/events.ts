@@ -9,6 +9,7 @@ import {clickHandler, updateTooltips} from './mouseEvents';
 import bindKeys from './keymap';
 import bindButtons from './buttons';
 import {initWires} from '../output/wire/InitWires';
+import {WireEditMode} from "../../Enums";
 
 export default function handleEvents(canvas: JQuery, sketch: p5) {
     const container = $('#canvas-container');
@@ -49,12 +50,16 @@ export default function handleEvents(canvas: JQuery, sketch: p5) {
     window.addEventListener('beforeunload', async function (e) {
         await new Promise(() => closeAll());
         e.returnValue = `There may be unsaved changes. Are you sure you wish to leave?`;
+        manager.broadcast('action');
     });
 
     canvas.on("click", () => clickHandler(sketch));
 
     canvas.on("mousedown", function () {
-        const {tool} = manager.setState();
+        const {tool} = manager.setState(prev => ({
+            dragStart: {x: sketch.mouseX + prev.board.translate[0], y: sketch.mouseY + prev.board.translate[1]}
+        }));
+
         if (tool === Tool.Move)
             manager.dispatch('mouse-grab', (prev) => ({
                 mouse: {
@@ -63,12 +68,16 @@ export default function handleEvents(canvas: JQuery, sketch: p5) {
                     pressed: true
                 }
             }));
-        manager.setState(prev => ({
-            dragStart: {x: sketch.mouseX + prev.board.translate[0], y: sketch.mouseY + prev.board.translate[1]}
-        }));
     });
 
-    canvas.on("mousemove", e => updateTooltips(e));
+    canvas.on("mousemove", function (e) {
+        updateTooltips(e);
+
+        const state = manager.setState();
+        if
+        (state.tool === Tool.Move && state.mouseDown)
+            manager.broadcast('move');
+    });
 
     canvas.on("mouseup", function () {
         const {tool} = manager.setState();

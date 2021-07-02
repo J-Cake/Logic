@@ -5,7 +5,6 @@ import Board from './sys/components/Board';
 import TooltipPane from './ui/output/TooltipPane';
 import DragObject from './sys/components/DragObject';
 import DropObject from './sys/components/DropObject';
-import {Animation} from "./ui/output/Animation";
 import Cursor from './ui/output/cursor';
 import CircuitManager from './Logic/io/CircuitManager';
 import RenderComponent from './ui/RenderComponent';
@@ -13,6 +12,8 @@ import DialogManager, {Dialogs} from './menus/DialogManager';
 import Debugger from './Logic/Debugger';
 import PreferenceManager from './PreferenceManager';
 import {defaultPreferences, Theme, WireEditMode} from './Enums';
+import HistoryManager from "./sys/historyManager";
+import {Action} from "./ui/input/Action";
 
 export enum Tool {
     Pointer,
@@ -24,6 +25,7 @@ export enum Tool {
 }
 
 export interface State {
+    actionStack: (() => void)[];
     board: Board,
     debug: Debugger,
     tooltipPane: TooltipPane,
@@ -46,7 +48,7 @@ export interface State {
     sidebarIsLeft: boolean,
     pan: [number, number],
     scale: number,
-    actionChain: Partial<State>[],
+    history: HistoryManager,
     dialogManager: StateManager<Dialogs>,
     documentIdentifier: string,
     wireEditMode: WireEditMode,
@@ -74,6 +76,7 @@ export interface State {
 }
 
 export const manager: StateManager<State> = new StateManager<State>({
+    actionStack: [],
     mouseDown: false,
     debug: new Debugger(),
     dragObjects: [],
@@ -81,12 +84,12 @@ export const manager: StateManager<State> = new StateManager<State>({
     mouse: {x: 0, y: 0, pressed: false},
     p_mouse: {x: 0, y: 0},
     dragStart: {x: 0, y: 0},
+    renderedComponents: [],
     theme: Theme.System,
     pan: [0, 0],
     scale: 1,
     ready: false,
     sidebarIsLeft: true,
-    actionChain: [],
     dialogManager: DialogManager,
     pref: new PreferenceManager(defaultPreferences),
     wireEditMode: WireEditMode.Move

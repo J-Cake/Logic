@@ -53,8 +53,6 @@ export async function updateTooltips(e: JQuery.MouseMoveEvent) { // Call MouseDo
             comps = mgr.renderedComponents[terminal[2]];
             const name = terminal?.[0] ? comps?.component.outputNames[terminal?.[1]] : comps?.component.inputNames[terminal?.[1]];
 
-            console.log(name);
-
             if (name)
                 $("span#terminal").text(name);
         }

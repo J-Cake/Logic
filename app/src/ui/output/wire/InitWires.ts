@@ -7,20 +7,19 @@ import {WireEditMode} from '../../../Enums';
 import mkWire from './place_wire';
 import Wire, {ApiWire} from './Wire';
 import {WireHandle} from './WireHandle';
+import {ActionType, performAction} from "../../../sys/Action";
 
 export function remove(state: State) {
     const handle = WireHandle.findByCoords([state.mouse.x, state.mouse.y]);
 
-    if (handle) {
-        handle[1].onDelete();
-        handle[0].handles?.splice(handle[0]?.handles.indexOf(handle[1]), 1);
-    } else {
+    if (handle)
+        performAction(ActionType.RemoveWireNode)(handle);
+    else {
         const hoverWire = Wire.findWireByMouseCoordsByCollision([state.mouse.x, state.mouse.y]);
 
         if (hoverWire) {
             if (confirm("Delete wire and disconnect components?")) {
-                hoverWire[0].endComponent.component.dropInput(hoverWire[0].endComponent.component.inputNames[hoverWire[0].endIndex]);
-                hoverWire[0].startComponent.wires.splice(hoverWire[0].startComponent.wires.indexOf(hoverWire[0]), 1);
+                performAction(ActionType.DisconnectComponent)(hoverWire);
             }
         }
     }

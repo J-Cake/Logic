@@ -40,7 +40,7 @@ new p5(function (sketch: p5) {
         const p5Canvas = sketch.createCanvas(container.width() ?? window.innerWidth, container.height() ?? window.innerHeight);
         p5Canvas.parent(container[0]);
 
-        const {pan, scale} = manager.setState();
+        const {pan} = manager.setState();
 
         sketch.translate(Math.floor(pan[0]) + 0.5, Math.floor(pan[1]) + 0.5);
         sketch.scale(1);
@@ -49,19 +49,17 @@ new p5(function (sketch: p5) {
 
         manager.broadcast('tick');
 
-        init(sketch, p5Canvas, documentId);
+        init(sketch, p5Canvas, documentId).then(() => manager.broadcast('ready'));
     }
 
     sketch.draw = async function () {
         $("#debug-container input").prop("disabled", true);
 
-        const {pan, scale, ready, pref} = manager.setState();
-        const gridScale = pref.setState().gridSize;
+        const {pan, ready} = manager.setState();
 
         sketch.background(getColour(Colour.Background, {duration: 30, type: Interpolation.linear}));
 
         if (ready) {
-            // sketch.translate(Math.floor(pan[0]), Math.floor(pan[1]));
             sketch.translate(Math.floor(pan[0]) + 0.5, Math.floor(pan[1]) + 0.5);
             sketch.scale(1);
 
@@ -87,11 +85,11 @@ new p5(function (sketch: p5) {
             board.render(sketch);
             board.update(sketch);
 
-            RenderObject.tick(sketch);
-            RenderObject.draw(sketch);
-
-            state.tooltipPane.update(sketch);
-            state.tooltipPane.render(sketch);
+            for(const i of state.renderedComponents)
+                if (i) {
+                    i.update(sketch);
+                    i.render(sketch);
+                }
 
             if (state.renderedComponents)
                 state.renderedComponents.forEach(i => i.component.updated = false);

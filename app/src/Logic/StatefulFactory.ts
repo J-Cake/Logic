@@ -26,7 +26,7 @@ export default function (apiComponent: ApiComponent) {
         componentBody: CircuitObj;
         componentMap!: ComponentMap;
 
-        #_updated: boolean = false;
+        private __updated: boolean = false;
 
         private readonly inputComponents!: (keyof ComponentMap)[];
         private readonly outputComponents!: (keyof ComponentMap)[];
@@ -72,11 +72,11 @@ export default function (apiComponent: ApiComponent) {
         }
 
         get updated(): boolean {
-            return this.#_updated;
+            return this.__updated;
         }
 
         set updated(updated: boolean) {
-            this.#_updated = updated;
+            this.__updated = updated;
 
             if (!updated)
             for (const i in this.componentMap)

@@ -15,6 +15,8 @@ export default class Board extends RenderObject {
 
     translate: [number, number];
 
+    loadTrigger: null | (() => null);
+
     constructor() {
         super(true);
 
@@ -31,6 +33,8 @@ export default class Board extends RenderObject {
 
         this.translate = [0, 0];
         this.boxPos = [0, 0];
+
+        this.loadTrigger = () => void manager.broadcast('board') ?? null;
     }
 
     coordsToGrid(mouse: [number, number]): [number, number] {
@@ -46,6 +50,14 @@ export default class Board extends RenderObject {
             Math.floor(mgr.pref.setState().gridSize * coords[0] + this.padding + offset + (centre ? mgr.pref.setState().gridSize * 0.5 : 0)),
             Math.floor(mgr.pref.setState().gridSize * coords[1] + this.padding + (centre ? mgr.pref.setState().gridSize * 0.5 : 0))
         ];
+    }
+
+    quantiseCoords(coords: [number, number]): [number, number] {
+        const scl = manager.setState().pref.setState().gridSize;
+        return [
+            Math.floor(coords[0] / scl) * scl + this.pos.x,
+            Math.floor(coords[1] / scl) * scl + this.pos.y
+        ]
     }
 
     resetPan() {
@@ -87,6 +99,8 @@ export default class Board extends RenderObject {
 
         this.boxPos = [Math.floor(this.pos.x + this.translate[0]), Math.floor(this.pos.y + this.translate[1])];
 
+        if (this.loadTrigger)
+            this.loadTrigger = this.loadTrigger();
     }
 
     reset(): void {

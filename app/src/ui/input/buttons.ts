@@ -6,7 +6,7 @@ export const buttons: Record<Action, JQuery[]> = {
     [Action.Enter]: [],
     [Action.Delete]: [$("#remove-component")],
     [Action.UpdateComponent]: [],
-    [Action.Close]: [$("button#close")],
+    [Action.Cancel]: [$("button#close")],
 
     [Action.PointerTool]: [$("#pointer")],
     [Action.SelectTool]: [$("#select")],

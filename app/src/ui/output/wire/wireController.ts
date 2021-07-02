@@ -17,8 +17,6 @@ export default function bindWireMode() {
 }
 
 export function setWireMode(mode: WireEditMode) {
-    console.log('setting wire mode', WireEditMode[mode]);
-
     manager.setState({
         wireEditMode: mode
     });

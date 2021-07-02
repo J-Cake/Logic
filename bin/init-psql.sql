@@ -57,7 +57,8 @@ create table if not exists user_preferences
     "colouriseComponents" boolean default true not null,
     theme int default 0 not null,
     "enableTooltips" boolean default true not null,
-    "enableTrackpadGestures" boolean default true not null
+    "enableTrackpadGestures" boolean default true not null,
+    "undoSize" int default 20 check ("undoSize" > 5 and "undoSize" < 150)
 );
 
 create unique index if not exists user_preferences_userId_uindex

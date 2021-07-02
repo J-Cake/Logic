@@ -5,7 +5,6 @@ import StatefulFactory from "../StatefulFactory";
 import DynamicFactory from "../DynamicFactory";
 import {CircuitObj} from "../../../../server/App/Document/Document";
 import {manager} from "../../State";
-import _ from "lodash";
 
 export type TruthTable = [boolean[], boolean[]][];
 export type Body = TruthTable | CircuitObj | string;

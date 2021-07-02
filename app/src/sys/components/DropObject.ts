@@ -33,7 +33,7 @@ export default abstract class DropObject extends RenderObject {
         this.draw(sketch);
     }
 
-    protected update(sketch: p5): void {
+    update(sketch: p5): void {
         this.tick(sketch);
     }
 

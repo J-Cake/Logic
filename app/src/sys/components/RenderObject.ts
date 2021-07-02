@@ -43,5 +43,5 @@ export default abstract class RenderObject {
 
     abstract render(sketch: p5): void;
 
-    protected abstract update(sketch: p5): void;
+    abstract update(sketch: p5): void;
 }

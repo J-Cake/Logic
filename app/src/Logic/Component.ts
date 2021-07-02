@@ -18,10 +18,10 @@ export default abstract class Component {
     readonly inputs: { [terminal: string]: [Component, string] };
     readonly outputs: { [terminal: string]: [Component, string][] }
 
-    #outs: boolean[];
+    private outs: boolean[];
     prevInput: [boolean[], boolean[]];
     outCache: { [terminal: string]: boolean };
-    #_updated: boolean;
+    private _updated: boolean;
     isRecursive: boolean;
 
     isBreakpoint: DebugMode | null;
@@ -41,7 +41,7 @@ export default abstract class Component {
         this.outputs = {};
 
         this.prevInput = new Array(2).fill(Array.from(this.inputNames.map(i => i in this.inputs ? (this.inputs[i][0].out[this.inputs[i][0].outputNames.indexOf(i)]) : false))) as [boolean[], boolean[]];
-        this.#outs = this.computeOutputs(this.prevInput[this.prevInput.length - 1]); // get the list of default values
+        this.outs = this.computeOutputs(this.prevInput[this.prevInput.length - 1]); // get the list of default values
 
         this.outCache = {};
 
@@ -50,18 +50,18 @@ export default abstract class Component {
 
         this.label = this.name = name;
 
-        this.#_updated = false;
+        this._updated = false;
         this.isRecursive = false;
         this.isBreakpoint = null;
         this.override = [];
     }
 
     get updated(): boolean {
-        return this.#_updated;
+        return this._updated;
     }
 
     set updated(updated: boolean) {
-        this.#_updated = updated;
+        this._updated = updated;
     }
 
     addOverride(value: boolean, index: number) {
@@ -70,10 +70,10 @@ export default abstract class Component {
     }
 
     get out() {
-        return _.merge(new Array(Math.max(this.override.length, this.#outs.length)).fill(0), this.override).map((i, a) => typeof i !== "boolean" ? this.#outs[a] : i);
+        return _.merge(new Array(Math.max(this.override.length, this.outs.length)).fill(0), this.override).map((i, a) => typeof i !== "boolean" ? this.outs[a] : i);
     }
     set out(value: boolean[]) {
-        this.#outs = value;
+        this.outs = value;
     }
 
     abstract computeOutputs(inputs: boolean[]): boolean[];
@@ -225,7 +225,6 @@ export default abstract class Component {
     dropOutput(output: string, comp: Component) {
         if (output in this.outputs)
             delete this.outputs[output][this.outputs[output].findIndex(i => i[0] === comp)];
-            // delete this.outputs[this.outputs[output].findIndex(i => i[0] === comp)];
     }
 
     /**

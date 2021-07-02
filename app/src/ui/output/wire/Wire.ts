@@ -14,7 +14,7 @@ export type ApiWire = {
     startIndex: number,
     endComponent: RenderComponent,
     endIndex: number,
-    handles?: WireHandle[]
+    handles: WireHandle[]
 };
 
 export function linesAreIntersecting(line: [[number, number], [number, number]], circle: [[number, number], number]): boolean {
@@ -46,7 +46,7 @@ export default class Wire extends RenderObject implements ApiWire {
     startIndex: number;
     endComponent: RenderComponent;
     endIndex: number;
-    handles?: WireHandle[] | undefined;
+    handles: WireHandle[];
     isActive: boolean;
 
     constructor(wire: ApiWire) {
@@ -63,11 +63,7 @@ export default class Wire extends RenderObject implements ApiWire {
         // If one of the coordinates is deleted from the list, then the wire handle potentially points to the wrong coordinate,
         // where `a` retains its value, even though the list has changed.
         // Instead, rely on pass-by-reference objects, and modify the reference to the object, such that changes are applied correctly.
-        this.handles = wire.coords.map(i => new WireHandle(
-            board.gridToPix(i, true),
-            coords => (i[0] = coords[0], i[1] = coords[1]),
-            () => wire.coords.splice(wire.coords.indexOf(i))
-        ));
+        this.handles = wire.coords.map(i => new WireHandle(this, i));
 
         this.isActive = false;
     }
@@ -136,7 +132,8 @@ export default class Wire extends RenderObject implements ApiWire {
 
             if (this.endComponent) {
                 const end = this.endComponent.inputDashesCoords[this.endIndex];
-                sketch.vertex(end[0], end[1]);
+                if (end)
+                    sketch.vertex(end[0], end[1]);
             }
 
             sketch.endShape();
@@ -172,7 +169,7 @@ export default class Wire extends RenderObject implements ApiWire {
             console.warn('Suspicious connection. The target or destination does not exist');
     }
 
-    protected update(sketch: p5): void {
+    update(sketch: p5): void {
 
     }
 }

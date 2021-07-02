@@ -9,6 +9,7 @@ import Colour from '../sys/util/Themes';
 import Wire from './output/wire/Wire';
 import {GenComponent} from '../Logic/io/ComponentFetcher';
 import getColourForComponent from './output/getColourForComponent';
+import {ActionType, performAction} from "../sys/Action";
 
 export interface RenderProps {
     pos: [number, number],
@@ -34,27 +35,22 @@ export default class RenderComponent extends RenderObject {
     isSelected: boolean;
     buff = 6;
 
-    mousePos: [number, number];
-
     inputDashesCoords: [number, number, number, number][];
     outputDashesCoords: [number, number, number, number][];
 
     inputDashesGrid: [number, number, number, number][];
     outputDashesGrid: [number, number, number, number][];
 
-    // wires: ApiWire[];
     wires: Wire[];
 
     constructor(component: Component, props: RenderProps) {
-        super();
+        super(true);
 
         this.component = component;
         this.props = props;
 
         this.pos = [0, 0];
         this.size = [0, 0];
-
-        this.mousePos = [0, 0];
 
         this.inputDashesCoords = [];
         this.outputDashesCoords = [];
@@ -69,30 +65,34 @@ export default class RenderComponent extends RenderObject {
             if (this.isWithinBounds(prev))
                 this.onClick();
         });
-        manager.on("select", prev => {
-            if (this.isWithinBounds(prev))
-                if (prev.keys.shift)
-                    this.isSelected = !this.isSelected;
-                else
-                    this.isSelected = true;
-            else if (!prev.keys.shift)
-                this.isSelected = false;
-        });
+
+        manager.on('move', state => this.move(state));
+        manager.on('board', state => this.pos = state.board.gridToPix(this.props.pos).map(i => i + this.buff) as [number, number]);
+
         manager.on('mouse-drop', () => {
-            this.props.isMoving = false;
-        });
-        manager.on('mouse-grab', prev => {
-            if (this.isWithinBounds(prev) || this.isSelected)
-                this.props.isMoving = true;
+            if (this.isSelected)
+                performAction(ActionType.MoveComponent)(this)
         });
         manager.on('label_click', prev => {
             if (this.isWithinBounds(prev))
-                return this.component.label = prompt("Change label") || this.component.label;
+                performAction(ActionType.ChangeLabel)(this, prompt("Change label") ?? this.component.label);
         });
         manager.on('debug_click', prev => {
             if (this.isWithinBounds(prev))
                 this.component.isBreakpoint = this.component.isBreakpoint !== null ? null : prev.debug.setState().debugMode;
         });
+
+    }
+
+    move(state: State) {
+        if (this.isSelected || this.isHovering([state.mouse.x, state.mouse.y])) {
+            const pref = state.pref.setState();
+            const pos = state.board.gridToPix(this.props.pos);
+            this.pos = [
+                (pos[0] + this.buff) - Math.floor((state.dragStart.x - state.mouse.x) / pref.gridSize) * pref.gridSize,
+                (pos[1] + this.buff) - Math.floor((state.dragStart.y - state.mouse.y) / pref.gridSize) * pref.gridSize
+            ];
+        }
     }
 
     isWithinBounds(prev: State): boolean {
@@ -126,7 +126,7 @@ export default class RenderComponent extends RenderObject {
 
     render(sketch: p5): void {
         const mgr = manager.setState();
-        const {gridSize: scl, colouriseComponents} = manager.setState().pref.setState();
+        const {gridSize: scl, colouriseComponents} = mgr.pref.setState();
         const {tool, mouse} = mgr;
 
         this.wires = this.wires.filter(i => !i.endComponent.deleted);
@@ -137,10 +137,10 @@ export default class RenderComponent extends RenderObject {
 
         if (this.component.isBreakpoint && this.component.halted) {
             const [inputNum, outputNum] = this.getConnections(false);
-            const pos = mgr.board.gridToPix(mgr.board.coordsToGrid(this.pos));
+            const breakpointIndicator_pos = mgr.board.gridToPix(mgr.board.coordsToGrid(this.pos));
             sketch.fill(transparent(Colour.Danger, 95));
             sketch.noStroke();
-            sketch.rect(pos[0], pos[1], Math.floor(Math.max(1, Math.min(inputNum, outputNum)) * scl), Math.floor(Math.max(inputNum, outputNum, 1) * scl));
+            sketch.rect(breakpointIndicator_pos[0], breakpointIndicator_pos[1], Math.floor(Math.max(1, Math.min(inputNum, outputNum)) * scl), Math.floor(Math.max(inputNum, outputNum, 1) * scl));
         }
 
         if (!this.isSelected)
@@ -212,29 +212,20 @@ export default class RenderComponent extends RenderObject {
         manager.broadcast('tick')
     }
 
-    protected update(sketch: p5): void {
+    update(sketch: p5): void {
         this.component.updated = false;
         const mgr = manager.setState();
         const scl = mgr.pref.setState().gridSize;
-        const {board, mouse, p_mouse} = mgr;
+        const {board} = mgr;
 
         this.buff = Math.floor(scl / 6);
 
         const [inputNum, outputNum] = this.getConnections(false);
 
-        const {padding, pos: boardPos} = board;
-
-        this.mousePos = [this.mousePos[0] + (mouse.x - p_mouse.x), this.mousePos[1] + (mouse.y - p_mouse.y)];
-
-        if (this.props.isMoving)
-            this.props.pos = board.coordsToGrid(this.mousePos);
-        else
-            this.mousePos = this.pos;
-
-        const pos: [number, number] = [Math.floor(this.props.pos[0] * scl + this.buff + boardPos.x), Math.floor(this.props.pos[1] * scl + padding + this.buff)];
         const size: [number, number] = [Math.floor(Math.max(1, Math.min(inputNum, outputNum)) * scl - 2 * this.buff), Math.floor(Math.max(inputNum, outputNum, 1) * scl - 2 * this.buff)];
 
-        this.pos = pos;
+        const pos = this.pos;
+
         this.size = this.props.direction % 2 === 0 ? size : [size[1], size[0]];
 
         this.inputDashesCoords = [];
@@ -255,68 +246,68 @@ export default class RenderComponent extends RenderObject {
         if (this.props.direction % 2 === 0) {
             loop(0, i => i < Math.max(outputNum, inputNum), i => i + 1, i => {
                 this.inputDashesCoords.push([
-                    Math.floor(this.pos[0] - this.buff),
-                    Math.floor(this.pos[1] - this.buff + scl * i + scl / 2),
-                    Math.floor(this.pos[0]),
-                    Math.floor(this.pos[1] - this.buff + scl * i + scl / 2)]);
+                    Math.floor(pos[0] - this.buff),
+                    Math.floor(pos[1] - this.buff + scl * i + scl / 2),
+                    Math.floor(pos[0]),
+                    Math.floor(pos[1] - this.buff + scl * i + scl / 2)]);
             });
             loop(0, o => o < Math.max(outputNum, inputNum), o => o + 1, o => {
                 this.outputDashesCoords.push([
-                    Math.floor(this.pos[0] + this.size[0]),
-                    Math.floor(this.pos[1] - this.buff + scl * o + scl / 2),
-                    Math.floor(this.pos[0] + this.size[0] + this.buff),
-                    Math.floor(this.pos[1] - this.buff + scl * o + scl / 2)]);
+                    Math.floor(pos[0] + this.size[0]),
+                    Math.floor(pos[1] - this.buff + scl * o + scl / 2),
+                    Math.floor(pos[0] + this.size[0] + this.buff),
+                    Math.floor(pos[1] - this.buff + scl * o + scl / 2)]);
 
             });
             loop(0, i => i < Math.max(outputNum, inputNum), i => i + 1, i => {
-                const grid = board.gridToPix(this.props.pos);
+                const grid = board.quantiseCoords(this.pos);
                 this.inputDashesGrid.push([
-                    Math.floor(this.pos[0]),
-                    Math.max(Math.floor(grid[1] + i * scl), this.pos[1]),
-                    Math.floor(this.pos[0]),
-                    Math.min(Math.floor(grid[1] + (i + 1) * scl), this.pos[1] + this.size[1])
+                    Math.floor(pos[0]),
+                    Math.max(Math.floor(grid[1] + i * scl), pos[1]),
+                    Math.floor(pos[0]),
+                    Math.min(Math.floor(grid[1] + (i + 1) * scl), pos[1] + this.size[1])
                 ]);
             });
             loop(0, o => o < Math.max(outputNum, inputNum), o => o + 1, o => {
-                const grid = board.gridToPix(this.props.pos);
+                const grid = board.quantiseCoords(this.pos);
                 this.outputDashesGrid.push([
-                    Math.floor(this.pos[0] + this.size[0]),
-                    Math.max(Math.floor(grid[1] + o * scl), this.pos[1]),
-                    Math.floor(this.pos[0] + this.size[0]),
-                    Math.min(Math.floor(grid[1] + (o + 1) * scl), this.pos[1] + this.size[1])
+                    Math.floor(pos[0] + this.size[0]),
+                    Math.max(Math.floor(grid[1] + o * scl), pos[1]),
+                    Math.floor(pos[0] + this.size[0]),
+                    Math.min(Math.floor(grid[1] + (o + 1) * scl), pos[1] + this.size[1])
                 ]);
             });
         } else {
             loop(0, o => o < Math.max(outputNum, inputNum), o => o + 1, o => {
                 this.inputDashesCoords.push([
-                    Math.floor(this.pos[0] - this.buff + scl * o + scl / 2),
-                    Math.floor(this.pos[1] - this.buff),
-                    Math.floor(this.pos[0] - this.buff + scl * o + scl / 2),
-                    Math.floor(this.pos[1])]);
+                    Math.floor(pos[0] - this.buff + scl * o + scl / 2),
+                    Math.floor(pos[1] - this.buff),
+                    Math.floor(pos[0] - this.buff + scl * o + scl / 2),
+                    Math.floor(pos[1])]);
             });
             loop(0, i => i < Math.max(inputNum, outputNum), i => i + 1, i => {
                 this.outputDashesCoords.push([
-                    Math.floor(this.pos[0] - this.buff + scl * i + scl / 2),
-                    Math.floor(this.pos[1] + this.size[1]),
-                    Math.floor(this.pos[0] - this.buff + scl * i + scl / 2),
-                    Math.floor(this.pos[1] + this.size[1] + this.buff)]);
+                    Math.floor(pos[0] - this.buff + scl * i + scl / 2),
+                    Math.floor(pos[1] + this.size[1]),
+                    Math.floor(pos[0] - this.buff + scl * i + scl / 2),
+                    Math.floor(pos[1] + this.size[1] + this.buff)]);
             });
             loop(0, i => i < Math.max(outputNum, inputNum), i => i + 1, i => {
-                const grid = board.gridToPix(this.props.pos);
+                const grid = board.quantiseCoords(this.pos);
                 this.inputDashesGrid.push([
-                    Math.max(Math.floor(grid[0] + i * scl), this.pos[0]),
-                    Math.floor(this.pos[1]),
-                    Math.min(Math.floor(grid[0] + (i + 1) * scl), this.pos[0] + this.size[0]),
-                    Math.floor(this.pos[1])
+                    Math.max(Math.floor(grid[0] + i * scl), pos[0]),
+                    Math.floor(pos[1]),
+                    Math.min(Math.floor(grid[0] + (i + 1) * scl), pos[0] + this.size[0]),
+                    Math.floor(pos[1])
                 ]);
             });
             loop(0, o => o < Math.max(outputNum, inputNum), o => o + 1, o => {
-                const grid = board.gridToPix(this.props.pos);
+                const grid = board.quantiseCoords(this.pos);
                 this.outputDashesGrid.push([
-                    Math.max(Math.floor(grid[0] + o * scl), this.pos[0]),
-                    Math.floor(this.pos[1] + this.size[1]),
-                    Math.min(Math.floor(grid[0] + (o + 1) * scl), this.pos[0] + this.size[0]),
-                    Math.floor(this.pos[1] + this.size[1])
+                    Math.max(Math.floor(grid[0] + o * scl), pos[0]),
+                    Math.floor(pos[1] + this.size[1]),
+                    Math.min(Math.floor(grid[0] + (o + 1) * scl), pos[0] + this.size[0]),
+                    Math.floor(pos[1] + this.size[1])
                 ]);
             });
         }
@@ -367,7 +358,8 @@ export async function renderComponents(circuitManager: CircuitManager): Promise<
                         startComponent: i,
                         startIndex: w.outputIndex,
                         endComponent: comps.find(i => (i.component as GenComponent).documentComponentKey === Number(w_key)) as never as RenderComponent,
-                        endIndex: w.inputIndex
+                        endIndex: w.inputIndex,
+                        handles: []
                     })));
 
             return i;

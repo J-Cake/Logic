@@ -5,12 +5,14 @@ import {Dialog, setVisible} from '../../menus/DialogManager';
 import {DebugMode, WireEditMode} from '../../Enums';
 import Debugger from '../../Logic/Debugger';
 import {setWireMode} from '../output/wire/wireController';
+import {ActionType, performAction} from "../../sys/Action";
+import {WireHandle} from "../output/wire/WireHandle";
 
 export enum Action {
     Enter,
     Delete,
     UpdateComponent,
-    Close,
+    Cancel,
 
     PointerTool,
     SelectTool,
@@ -62,7 +64,7 @@ export const actionMap: Record<Action, () => void> = {
     [Action.Enter]: () => manager.broadcast("enter"),
     [Action.Delete]: () => manager.setState().circuit.deleteSelected(),
     [Action.UpdateComponent]: () => manager.setState().renderedComponents.forEach(i => i.isSelected ? i.onClick() : null),
-    [Action.Close]: () => window.location.href = "/dashboard#own",
+    [Action.Cancel]: () => manager.setState().actionStack.pop()?.() ?? (window.location.href = "/dashboard#own"),
 
     [Action.PointerTool]: () => $("#pointer").prop('checked', true),
     [Action.SelectTool]: () => $("#select").prop('checked', true),
@@ -81,21 +83,25 @@ export const actionMap: Record<Action, () => void> = {
     [Action.DebugTool_DebugMode_Output]: () => Debugger.setDebugMode(DebugMode.Output),
     [Action.DebugTool_DebugMode_Update]: () => Debugger.setDebugMode(DebugMode.Update),
 
-    [Action.SelectAll]: () => manager.setState().renderedComponents.forEach(i => {
-        i.isSelected = true;
-        i.wires.forEach(i => i.handles?.forEach(i => i.isSelected = true));
-    }),
-    [Action.SelectNone]: () => manager.setState().renderedComponents.forEach(i => {
-        i.isSelected = false;
-        i.wires.forEach(i => i.handles?.forEach(i => i.isSelected = false));
-    }),
+    [Action.SelectAll]: function () {
+        for (const i of manager.setState().renderedComponents)
+            i.isSelected = true;
+        for (const i of WireHandle.handles)
+            i.isSelected = true;
+    },
+    [Action.SelectNone]: function () {
+        for (const i of manager.setState().renderedComponents)
+            i.isSelected = false;
+        for (const i of WireHandle.handles)
+            i.isSelected = false;
+    },
 
     [Action.Save]: () => save(),
     [Action.Cut]: () => void 0,
     [Action.Copy]: () => void 0,
     [Action.Paste]: () => void 0,
-    [Action.Undo]: () => void 0,
-    [Action.Redo]: () => void 0,
+    [Action.Undo]: () => manager.setState().history.undo(),
+    [Action.Redo]: () => manager.setState().history.redo(),
 
     [Action.Debugger_Step]: () => manager.setState().debug.stepAction(),
     [Action.Debugger_Resume]: () => manager.setState().debug.resumeAction(),
@@ -111,22 +117,22 @@ export const actionMap: Record<Action, () => void> = {
     [Action.Rotate_Clockwise]: function () {
         const prev = manager.setState();
         for (const i of prev.renderedComponents.filter(i => i.isSelected))
-            i.props.direction = ({
+            performAction(ActionType.RotateComponent)(i, ({
                 [0]: 3,
                 [1]: 0,
                 [2]: 1,
                 [3]: 2,
-            } as Record<0 | 1 | 2 | 3, 0 | 1 | 2 | 3>)[i.props.direction];
+            } as Record<0 | 1 | 2 | 3, 0 | 1 | 2 | 3>)[i.props.direction]);
     },
     [Action.Rotate_Counterclockwise]: function () {
         const prev = manager.setState();
         for (const i of prev.renderedComponents.filter(i => i.isSelected))
-            i.props.direction = ({
+            performAction(ActionType.RotateComponent)(i, ({
                 [0]: 1,
                 [1]: 2,
                 [2]: 3,
                 [3]: 0,
-            } as Record<0 | 1 | 2 | 3, 0 | 1 | 2 | 3>)[i.props.direction];
+            } as Record<0 | 1 | 2 | 3, 0 | 1 | 2 | 3>)[i.props.direction]);
     },
 
     [Action.ViewDocument]: () => void 0,

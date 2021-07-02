@@ -5,6 +5,7 @@ import fetchComponent, {ApiComponent, GenComponent, GenericComponent} from './Co
 import {manager} from '../../State';
 import {attempt} from '../../../util';
 import {getDocument} from "../../sys/API/circuit";
+import {ActionType, performAction} from "../../sys/Action";
 
 export interface CircuitManagerState {
     components: GenComponent[],
@@ -35,22 +36,16 @@ export default class CircuitManager {
         this.circuitId = circuitId;
 
         manager.broadcast('tick');
+
+        this.state.on('add-components', () => manager.broadcast('add-components'));
     }
 
     deleteSelected() {
-        for (const i of manager.setState().renderedComponents)
-            if (i.isSelected)
-                i.component.dropAll();
-
-        for (const i of manager.setState().renderedComponents)
-            if (i.isSelected) // @ts-ignore
-                i.deleted = delete i.component;
-
-        manager.setState(prev => ({renderedComponents: prev.renderedComponents.filter(i => i.component)}));
+        performAction(ActionType.RemoveComponents)(manager.setState().renderedComponents.filter(i => i.isSelected));
     }
 
     addComponent(component: GenComponent) {
-        this.state.setState(prev => ({
+        this.state.setState( prev => ({
             components: [...prev.components, component]
         }));
     }

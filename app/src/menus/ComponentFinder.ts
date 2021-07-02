@@ -12,5 +12,8 @@ export default function buildPrompt() {
             }
         }));
         await inform(`Component ${componentToken} was successfully imported`);
+
+        // We can't undo this action, because the server writes to the file without prompting.
+        // manager.setState().history.burst('import-document', false);
     });
 }

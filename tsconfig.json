@@ -1,10 +1,10 @@
 {
     "compilerOptions": {
+        "moduleResolution": "Node",
         "target": "esnext",
         "module": "ESNext",
-        "moduleResolution": "Node",
         "lib": [
-            "ES2020",
+            "esnext",
             "dom"
         ],
         "outDir": "./build",
@@ -21,6 +21,4 @@
         "build",
         "node_modules"
     ],
-    "include": ["app",
-        "server", "bin"]
 }

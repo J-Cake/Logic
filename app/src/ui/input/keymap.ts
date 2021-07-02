@@ -6,7 +6,7 @@ export const keyMap: Record<Action, string[]> = {
     [Action.Enter]: ['enter'],
     [Action.Delete]: ['del', 'backspace', '7'],
     [Action.UpdateComponent]: ['space'],
-    [Action.Close]: ['esc'],
+    [Action.Cancel]: ['esc'],
 
     [Action.PointerTool]: ['1', 'p'],
     [Action.SelectTool]: ['2', 'b'],

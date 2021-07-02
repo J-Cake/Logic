@@ -3,14 +3,14 @@
         {
             "location": {
                 "column": 12,
-                "file": "build/app/src/Logic/StatefulFactory.js",
+                "file": "build/app/src/sys/actions/AddComponent.js",
                 "length": 1,
-                "line": 56,
-                "lineText": "            ;",
+                "line": 16,
+                "lineText": "            }));",
                 "namespace": ""
             },
             "notes": [],
-            "text": "Expected identifier but found \";\""
+            "text": "Unexpected \"}\""
         }
     ],
     "warnings": []

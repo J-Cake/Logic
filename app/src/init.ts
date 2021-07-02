@@ -12,7 +12,8 @@ import mousetrap from "mousetrap";
 import buildComponentPrompt from "./menus/ComponentMenu";
 import buildFinderPrompt from "./menus/ComponentFinder";
 import getColourForComponent from "./ui/output/getColourForComponent";
-import dialogManager, {Dialog, invokeCallback} from "./menus/DialogManager";
+import {Dialog, invokeCallback} from "./menus/DialogManager";
+import HistoryManager from "./sys/historyManager";
 
 export default async function init(sketch: p5, p5Canvas: p5.Renderer, documentId: string) {
     const {canvas} = manager.setState({
@@ -38,6 +39,7 @@ export default async function init(sketch: p5, p5Canvas: p5.Renderer, documentId
             cursor: new Cursor(),
             documentIdentifier: documentId,
             circuit: new CircuitManager(documentId),
+            history: new HistoryManager(),
             keys: {
                 shift: false,
                 alt: false,
