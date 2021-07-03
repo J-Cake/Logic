@@ -44,14 +44,15 @@ export default class CircuitManager {
         performAction(ActionType.RemoveComponents)(manager.setState().renderedComponents.filter(i => i.isSelected));
     }
 
-    addComponent(component: GenComponent) {
-        this.state.setState( prev => ({
-            components: [...prev.components, component]
-        }));
-    }
+    // addComponent(component: GenComponent) {
+    //     this.state.setState( prev => ({
+    //         components: [...prev.components, component]
+    //     }));
+    // }
 
     getNextAvailComponentId(): number {
-        return Math.max(...this.state.setState().components.map(i => i.documentComponentKey));
+        const listOfIDs = this.state.setState().components.map(i => i.documentComponentKey);
+        return Math.max(Math.max(...listOfIDs) + 1, listOfIDs.length);
     }
 
     static async parseCircuit(loaded: CircuitObj): Promise<[avail: AvailSync, comps: ComponentMap]> {

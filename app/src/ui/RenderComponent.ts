@@ -26,7 +26,7 @@ export const getDist = (point: [number, number], mouse: [number, number]): numbe
 export const constrain = (n: number, min: number, max: number): number => Math.max(Math.min(n, max), min);
 
 export default class RenderComponent extends RenderObject {
-    component: Component;
+    component: GenComponent;
     props: RenderProps;
 
     pos: [number, number];
@@ -43,7 +43,7 @@ export default class RenderComponent extends RenderObject {
 
     wires: Wire[];
 
-    constructor(component: Component, props: RenderProps) {
+    constructor(component: GenComponent, props: RenderProps) {
         super(true);
 
         this.component = component;

@@ -52,7 +52,7 @@ export const compareArray: <T>(arr1: T[], arr2: T[]) => boolean = function <T>(a
 }
 
 export abstract class GenComponent<Token extends string = string> extends Component {
-    documentComponentKey: number;
+    readonly documentComponentKey: number;
     raw: ApiComponent<Token> | null;
     base: GenericComponent | null;
 
@@ -69,36 +69,6 @@ export abstract class GenComponent<Token extends string = string> extends Compon
 
         this.raw = props.raw ?? null;
         this.base = props.base ?? null;
-    }
-}
-
-export class PlaceholderComponent extends GenComponent {
-    output: boolean[] = [];
-
-    constructor(replacer: GenComponent) {
-        super({
-            documentComponentKey: replacer.documentComponentKey,
-            inputs: replacer.inputNames,
-            outputs: replacer.outputNames,
-            name: replacer.label
-        });
-        this.out = replacer.outputNames.map(i => false);
-        // @ts-ignore
-        this.inputs = replacer.inputs;
-        // @ts-ignore
-        this.outputs = replacer.outputs;
-        this.base = replacer.base;
-    }
-
-    getInputs(): boolean[] {
-        return this.output;
-    }
-
-    computeOutputs(inputs: boolean[]): boolean[] {
-        return this.output;
-    }
-
-    preUpdate(next: () => void): void {
     }
 }
 

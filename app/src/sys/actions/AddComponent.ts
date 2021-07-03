@@ -7,11 +7,15 @@ export default function AddComponent(component: RenderComponent): Action<ActionT
 
     return {
         type: ActionType.AddComponent,
-        performAction(): void {
+        performAction(state): void {
             index = manager.setState(prev => ({
                 tool: Tool.Move,
                 renderedComponents: [...prev.renderedComponents, component]
-            })).renderedComponents.length
+            })).renderedComponents.length;
+
+            state.circuit.state.setState(prev => ({
+                components: [...prev.components, component.component]
+            }))
         },
 
         undo(): void {

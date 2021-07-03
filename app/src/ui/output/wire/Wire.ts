@@ -58,22 +58,12 @@ export default class Wire extends RenderObject implements ApiWire {
         this.endComponent = wire.endComponent;
         this.endIndex = wire.endIndex;
 
-        const {board} = manager.setState();
-
         // If one of the coordinates is deleted from the list, then the wire handle potentially points to the wrong coordinate,
         // where `a` retains its value, even though the list has changed.
         // Instead, rely on pass-by-reference objects, and modify the reference to the object, such that changes are applied correctly.
         this.handles = wire.coords.map(i => new WireHandle(this, i));
 
         this.isActive = false;
-    }
-
-    static findWireByMouseCoordsByHandles(coords: [number, number]): Wire | null {
-        const wires: Wire[] = manager.setState().renderedComponents.map(i => i.wires).flat();
-        for (const wire of wires)
-            if (wire.coords.find(i => i[0] === coords[0] && i[1] === coords[1]))
-                return wire;
-        return null;
     }
 
     /**
