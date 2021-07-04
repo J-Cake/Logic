@@ -21,14 +21,15 @@ export default function ConnectComponent(wire: ApiWire): Action<ActionType.Conne
                 wire.endComponent.component.inputNames[wire.endIndex]);
             index = wire.startComponent.wires.push(displayWire) - 1;
         }, redo(): void {
-            wire.endComponent.component.addInput(
+            wireCopy.end.addInput(
                 wireCopy.start,
                 wireCopy.startTerminal,
                 wireCopy.endTerminal);
-            wireCopy.wires[index] = displayWire;
+            displayWire.doRender = true;
         }, undo(): void {
             wireCopy.end.dropInput(wireCopy.endTerminal);
-            delete wireCopy.wires[index];
+            displayWire.doRender = false // Yay workarounds
+            // Why tf does the `wire` object contain only `undefined`s? That's pretty whacky
         }
     };
 }

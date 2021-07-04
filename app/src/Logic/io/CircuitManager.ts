@@ -6,6 +6,7 @@ import {manager} from '../../State';
 import {attempt} from '../../../util';
 import {getDocument} from "../../sys/API/circuit";
 import {ActionType, performAction} from "../../sys/Action";
+import {WireHandle} from "../../ui/output/wire/WireHandle";
 
 export interface CircuitManagerState {
     components: GenComponent[],
@@ -42,13 +43,8 @@ export default class CircuitManager {
 
     deleteSelected() {
         performAction(ActionType.RemoveComponents)(manager.setState().renderedComponents.filter(i => i.isSelected));
+        performAction(ActionType.RemoveWireNode)(WireHandle.handles.filter(i => i.isSelected));
     }
-
-    // addComponent(component: GenComponent) {
-    //     this.state.setState( prev => ({
-    //         components: [...prev.components, component]
-    //     }));
-    // }
 
     getNextAvailComponentId(): number {
         const listOfIDs = this.state.setState().components.map(i => i.documentComponentKey);

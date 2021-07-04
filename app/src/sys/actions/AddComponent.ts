@@ -19,14 +19,30 @@ export default function AddComponent(component: RenderComponent): Action<ActionT
         },
 
         undo(): void {
-            console.log(manager.setState(prev => ({
-                renderedComponents: prev.renderedComponents.slice(0, -1) // we shouldn't run into a problem here, because of the way stacks work.... but idk
-            })).renderedComponents);
+            manager.setState(function (prev) {
+                const comps = prev.renderedComponents;
+                index = comps.indexOf(component);
+                delete comps[index];
+
+                return {
+                    renderedComponents: comps
+                };
+            });
         },
         redo(): void {
-            console.log(manager.setState(prev => ({
-                renderedComponents: [...prev.renderedComponents, component]
-            })).renderedComponents)
+            manager.setState(function (prev) {
+                const comps = prev.renderedComponents;
+                if (!comps[index])
+                    comps[index] = component;
+                else
+                    comps.push(component)
+
+                console.log(component);
+
+                return {
+                    renderedComponents: comps
+                };
+            });
         },
     };
 }

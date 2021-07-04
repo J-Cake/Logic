@@ -36,14 +36,15 @@ export default class Cursor extends RenderObject {
                         coords[1] >= bounds[1] &&
                         coords[1] <= bounds[3];
 
-                    const selected = _.partition(prev.renderedComponents, i => between(i.props.pos));
+                    const selected = _.partition(prev.renderedComponents, i => i && between(i?.props.pos));
 
                     for (const i of selected[0])
                         i.isSelected = !i.isSelected;
 
                     for (const i of selected[1])
-                        if (!prev.keys.shift)
-                            i.isSelected = false;
+                        if (i)
+                            if (!prev.keys.shift)
+                                i.isSelected = false;
 
                     for (const j of WireHandle.handles)
                         if (between(j.gridPos))

@@ -1,7 +1,6 @@
 import type p5 from 'p5';
 
 import RenderObject from '../sys/components/RenderObject';
-import Component from '../Logic/Component';
 import CircuitManager from '../Logic/io/CircuitManager';
 import {getColour, rgb, transparent} from '../sys/util/Colour';
 import {manager, State, Tool} from '../';
@@ -135,12 +134,13 @@ export default class RenderComponent extends RenderObject {
 
         const colour = colouriseComponents ? this.props.colour : getColour(Colour.Blank);
 
-        if (this.component.isBreakpoint && this.component.halted) {
-            const [inputNum, outputNum] = this.getConnections(false);
-            const breakpointIndicator_pos = mgr.board.gridToPix(mgr.board.coordsToGrid(this.pos));
-            sketch.fill(transparent(Colour.Danger, 95));
+        if (this.component.isBreakpoint !== null) {
+            const pos = mgr.board.quantiseCoords(this.pos);
+            const size = mgr.board.quantiseCoords(this.size);
+
+            sketch.fill(transparent(this.component.halted ? Colour.Primary : Colour.Blank, 50));
             sketch.noStroke();
-            sketch.rect(breakpointIndicator_pos[0], breakpointIndicator_pos[1], Math.floor(Math.max(1, Math.min(inputNum, outputNum)) * scl), Math.floor(Math.max(inputNum, outputNum, 1) * scl));
+            sketch.rect(pos[0] + 1, pos[1] + 1, size[0] + 2 * this.buff, size[1] + 2 * this.buff);
         }
 
         if (!this.isSelected)
@@ -194,22 +194,12 @@ export default class RenderComponent extends RenderObject {
             else
                 sketch.stroke(getColour(Colour.Blank));
         sketch.strokeWeight(1);
-
-        if (this.component.isBreakpoint !== null) {
-            sketch.fill(getColour(Colour.Blank));
-            sketch.ellipse(this.pos[0] + this.size[0] / 2, this.pos[1] + this.size[1] / 2, 13 + this.buff);
-            sketch.fill(getColour(Colour.Background));
-            sketch.noStroke();
-            sketch.textFont(manager.setState().iconFont);
-            sketch.textSize(13);
-            sketch.textAlign(sketch.CENTER, sketch.CENTER);
-            sketch.text('', this.pos[0], this.pos[1], this.size[0], this.size[1]);
-        }
     }
 
     onClick() {
+        console.log('clicked');
         this.component.activate(this);
-        manager.broadcast('tick')
+        manager.broadcast('tick');
     }
 
     update(sketch: p5): void {

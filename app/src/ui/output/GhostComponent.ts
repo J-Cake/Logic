@@ -36,6 +36,8 @@ export default class GhostComponent extends RenderObject {
     drop() {
         const state = manager.setState();
         const circuit = state.circuit.state.setState();
+        
+        manager.on('click', () => console.log('click'));
 
         const Component = circuit.availableComponents[this.token];
         const component = new Component(state.circuit.getNextAvailComponentId(), {

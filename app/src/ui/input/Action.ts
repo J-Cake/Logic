@@ -21,10 +21,8 @@ export enum Action {
     DebugTool,
     LabelTool,
 
-    WireTool_WireMode_Move,
     WireTool_WireMode_Place,
     WireTool_WireMode_Remove,
-    WireTool_WireMode_Select,
 
     DebugTool_DebugMode_Change,
     DebugTool_DebugMode_Input,
@@ -73,10 +71,8 @@ export const actionMap: Record<Action, () => void> = {
     [Action.DebugTool]: () => $("#debug").prop('checked', true),
     [Action.LabelTool]: () => $("#label").prop('checked', true),
 
-    [Action.WireTool_WireMode_Move]: () => setWireMode(WireEditMode.Move),
     [Action.WireTool_WireMode_Place]: () => setWireMode(WireEditMode.Place),
     [Action.WireTool_WireMode_Remove]: () => setWireMode(WireEditMode.Remove),
-    [Action.WireTool_WireMode_Select]: () => setWireMode(WireEditMode.Select),
 
     [Action.DebugTool_DebugMode_Change]: () => Debugger.setDebugMode(DebugMode.Change),
     [Action.DebugTool_DebugMode_Input]: () => Debugger.setDebugMode(DebugMode.Input),
@@ -85,15 +81,19 @@ export const actionMap: Record<Action, () => void> = {
 
     [Action.SelectAll]: function () {
         for (const i of manager.setState().renderedComponents)
-            i.isSelected = true;
+            if (i)
+                i.isSelected = true;
         for (const i of WireHandle.handles)
-            i.isSelected = true;
+            if (i)
+                i.isSelected = true;
     },
     [Action.SelectNone]: function () {
         for (const i of manager.setState().renderedComponents)
-            i.isSelected = false;
+            if (i)
+                i.isSelected = false;
         for (const i of WireHandle.handles)
-            i.isSelected = false;
+            if (i)
+                i.isSelected = false;
     },
 
     [Action.Save]: () => save(),

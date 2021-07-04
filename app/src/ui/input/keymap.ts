@@ -15,10 +15,8 @@ export const keyMap: Record<Action, string[]> = {
     [Action.DebugTool]: ['5', 'd'],
     [Action.LabelTool]: ['6', 'l'],
 
-    [Action.WireTool_WireMode_Move]: ['w 1', '4 1'],
     [Action.WireTool_WireMode_Place]: ['w 2', '4 2'],
     [Action.WireTool_WireMode_Remove]: ['w 3', '4 3'],
-    [Action.WireTool_WireMode_Select]: ['w 4', '4 4'],
 
     [Action.DebugTool_DebugMode_Change]: ['d 1', '5 1'],
     [Action.DebugTool_DebugMode_Input]: ['d 2', '5 2'],

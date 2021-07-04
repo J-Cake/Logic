@@ -4,7 +4,6 @@ import {manager} from '../../State';
 import {GenComponent, GenericComponent, wires} from './ComponentFetcher';
 import Component from '../Component';
 import RenderComponent from '../../ui/RenderComponent';
-import {attempt} from "../../../util";
 import {saveDocument} from "../../sys/API/circuit";
 
 export default async function save(): Promise<void> {
@@ -34,8 +33,6 @@ export async function prepareForSave(c_man: CircuitManager): Promise<CircuitObj>
         const id = (obj => obj ? obj[1] : -1)(Object.values(ids).find(i => i[0] === component.component));
         const wires: wires = {};
 
-        // console.log(component.component.name, component.wires);
-
         const findIdOfComponent = (component: Component) => (obj => obj ? obj[1] : -1)(Object.values(ids).find(i => i[0] === component));
         const findIdOfRenderComponent = (component: RenderComponent) => (obj => obj ? obj[1] : -1)(Object.values(ids).find(i => i[0] === component.component));
 
@@ -43,13 +40,13 @@ export async function prepareForSave(c_man: CircuitManager): Promise<CircuitObj>
             const id = findIdOfRenderComponent(wire.endComponent)
             if (wires[id])
                 wires[id].push({
-                    coords: wire.coords,
+                    coords: wire.coords.filter(i => i),
                     inputIndex: wire.endIndex,
                     outputIndex: wire.startIndex
                 });
             else
                 wires[id] = [{
-                    coords: wire.coords,
+                    coords: wire.coords.filter(i => i),
                     inputIndex: wire.endIndex,
                     outputIndex: wire.startIndex
                 }];

@@ -92,5 +92,5 @@ export const manager: StateManager<State> = new StateManager<State>({
     sidebarIsLeft: true,
     dialogManager: DialogManager,
     pref: new PreferenceManager(defaultPreferences),
-    wireEditMode: WireEditMode.Move
+    wireEditMode: WireEditMode.Place
 });

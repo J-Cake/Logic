@@ -10,7 +10,7 @@ export default class HistoryManager extends StateManager<{
 }> {
     maxHistorySize: number;
 
-    public static Timeout = 50; // Milliseconds;
+    public static Timeout = 200; // Milliseconds;
 
     constructor() {
         super({

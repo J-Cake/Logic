@@ -9,16 +9,15 @@ export function clickHandler(sketch: p5) {
     const {dragStart, mouse, keys, tool, debug, renderedComponents: comps} = manager.setState();
 
     if (Math.sqrt((dragStart.x - mouse.x) ** 2 + (dragStart.y - mouse.y) ** 2) < 10) {
-        if (tool === Tool.Debug) {
+        if (tool === Tool.Debug)
             manager.broadcast('debug_click');
-            new Promise(k => k(manager.broadcast('tick')));
-        } else if (!debug.isStopped()) {
+        else if (!debug.isStopped()) {
             if (tool === Tool.Pointer)
                 manager.dispatch("click", prev => ({
                     mouse: {
                         x: sketch.mouseX + prev.board.translate[0],
                         y: sketch.mouseY + prev.board.translate[1],
-                        pressed: true
+                        pressed: sketch.mouseIsPressed
                     }
                 }));
             else if (!keys.shift && tool === Tool.Select)
@@ -27,16 +26,17 @@ export function clickHandler(sketch: p5) {
                 manager.broadcast('wire_click');
             else if (tool === Tool.Label)
                 manager.broadcast('label_click');
-
             if (tool === Tool.Select)
                 manager.dispatch("select", prev => ({
                     mouse: {
                         x: sketch.mouseX + prev.board.translate[0],
                         y: sketch.mouseY + prev.board.translate[1],
-                        pressed: true
+                        pressed: sketch.mouseIsPressed
                     }
                 }));
         }
+
+        manager.broadcast('tick');
     }
 }
 
@@ -45,7 +45,7 @@ export async function updateTooltips(e: JQuery.MouseMoveEvent) { // Call MouseDo
 
     if (tooltips) {
         const mgr = manager.setState();
-        let comps = mgr.renderedComponents.reverse().find(i => i.isWithinBounds(manager.setState()));
+        let comps = mgr.renderedComponents.reverse().find(i => i?.isWithinBounds(manager.setState()));
 
         type T = [boolean, number, number];
         const terminal = mgr.renderedComponents.reduce((a: T | null, i, b) => i.getTouchingTerminal([mgr.mouse.x, mgr.mouse.y])?.concat(b) as T ?? a, null);

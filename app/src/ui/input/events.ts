@@ -9,10 +9,14 @@ import {clickHandler, updateTooltips} from './mouseEvents';
 import bindKeys from './keymap';
 import bindButtons from './buttons';
 import {initWires} from '../output/wire/InitWires';
-import {WireEditMode} from "../../Enums";
 
 export default function handleEvents(canvas: JQuery, sketch: p5) {
     const container = $('#canvas-container');
+
+    manager.on('ready', () => {
+        bindKeys();
+        bindButtons();
+    });
 
     $(document).on('keyup keydown mousedown mouseup mousemove mouseenter mouseleave mousewheel', () => sketch.loop());
 
@@ -39,9 +43,6 @@ export default function handleEvents(canvas: JQuery, sketch: p5) {
             tool: toolBtnId[(Object.keys(toolBtnId).find(i => i === this.id) as keyof typeof toolBtnId | undefined) ?? 'pointer']
         });
     });
-
-    bindKeys();
-    bindButtons();
 
     window.addEventListener("resize", function () {
         sketch.resizeCanvas(container.width() ?? window.innerWidth, container.height() ?? window.innerHeight);

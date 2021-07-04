@@ -2,7 +2,7 @@ import $ from 'jquery'
 import {Action, triggerAction} from './Action';
 import bindWireMode from '../output/wire/wireController';
 
-export const buttons: Record<Action, JQuery[]> = {
+export const buttons: () => Record<Action, JQuery[]> = () => ({
     [Action.Enter]: [],
     [Action.Delete]: [$("#remove-component")],
     [Action.UpdateComponent]: [],
@@ -15,10 +15,8 @@ export const buttons: Record<Action, JQuery[]> = {
     [Action.DebugTool]: [$("#debug")],
     [Action.LabelTool]: [$("#label")],
 
-    [Action.WireTool_WireMode_Move]: [],
     [Action.WireTool_WireMode_Place]: [],
     [Action.WireTool_WireMode_Remove]: [],
-    [Action.WireTool_WireMode_Select]: [],
 
     [Action.DebugTool_DebugMode_Change]: [],
     [Action.DebugTool_DebugMode_Input]: [],
@@ -52,10 +50,10 @@ export const buttons: Record<Action, JQuery[]> = {
     [Action.Pan_Down]: [],
     [Action.Pan_Left]: [],
     [Action.Pan_Right]: [],
-}
+});
 
 export default function bind() {
-    for (const [a, i] of Object.entries(buttons))
+    for (const [a, i] of Object.entries(buttons()))
         for (const j of i)
             j.on('click', () => triggerAction(Number(a) as Action));
 

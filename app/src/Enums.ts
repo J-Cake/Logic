@@ -1,10 +1,8 @@
 import _ from 'lodash';
 
 export enum WireEditMode {
-    Move = 0,
-    Place = 1,
-    Remove = 2,
-    Select = 3
+    Place = 0,
+    Remove = 1
 }
 
 export enum DebugMode {

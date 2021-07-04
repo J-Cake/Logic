@@ -49,6 +49,8 @@ export default class Wire extends RenderObject implements ApiWire {
     handles: WireHandle[];
     isActive: boolean;
 
+    doRender: boolean;
+
     constructor(wire: ApiWire) {
         super(true);
 
@@ -57,6 +59,8 @@ export default class Wire extends RenderObject implements ApiWire {
         this.startIndex = wire.startIndex;
         this.endComponent = wire.endComponent;
         this.endIndex = wire.endIndex;
+
+        this.doRender = true;
 
         // If one of the coordinates is deleted from the list, then the wire handle potentially points to the wrong coordinate,
         // where `a` retains its value, even though the list has changed.
@@ -100,63 +104,66 @@ export default class Wire extends RenderObject implements ApiWire {
     }
 
     clean(): void {
-        // throw new Error("Method not implemented.");
     }
 
     render(sketch: p5): void {
-        const isActive = this.startComponent.component.out[this.startIndex];
-        const {board, tool, wireEditMode, pref} = manager.setState();
-        const {gridSize} = pref.setState();
-        sketch.stroke(getColour(this.endComponent ? (isActive ? Colour.Active : Colour.Blank) : Colour.Danger));
-        sketch.strokeWeight(1);
-        sketch.noFill();
+        if (this.doRender) { // Whacky Hack
+            const isActive = this.startComponent.component.out[this.startIndex];
+            const {board, tool, wireEditMode, pref} = manager.setState();
+            const {gridSize} = pref.setState();
+            sketch.stroke(getColour(this.endComponent ? (isActive ? Colour.Active : Colour.Blank) : Colour.Danger));
+            sketch.strokeWeight(1);
+            sketch.noFill();
 
-        if (this.startComponent.outputDashesCoords[this.startIndex]) {
-            sketch.beginShape();
+            if (this.startComponent.outputDashesCoords[this.startIndex]) {
+                sketch.beginShape();
 
-            const start = this.startComponent.outputDashesCoords[this.startIndex];
-            sketch.vertex(start[2], start[3]);
+                const start = this.startComponent.outputDashesCoords[this.startIndex];
+                sketch.vertex(start[2], start[3]);
 
-            for (const point of this.coords)
-                sketch.vertex(...board.gridToPix(point, true));
+                for (const point of this.coords)
+                    if (point)
+                        sketch.vertex(...board.gridToPix(point, true));
 
-            if (this.endComponent) {
-                const end = this.endComponent.inputDashesCoords[this.endIndex];
-                if (end)
-                    sketch.vertex(end[0], end[1]);
-            }
-
-            sketch.endShape();
-
-            sketch.stroke(getColour(Colour.Danger));
-            if (tool === Tool.Wire && wireEditMode === WireEditMode.Place) {
-                const coordsList = [
-                    board.coordsToGrid(this.startComponent.outputDashesCoords[this.startIndex].slice(0, 2) as [number, number]),
-                    ...this.coords,
-                    board.coordsToGrid(this.endComponent.inputDashesCoords[this.endIndex].slice(-2) as [number, number])
-                ];
-
-                const mouse: [number, number] = [sketch.mouseX, sketch.mouseY];
-                while (coordsList.length > 1) {
-                    const current = coordsList.shift();
-                    const next = coordsList[0];
-
-                    if (current)
-                        if (linesAreIntersecting([
-                            board.gridToPix([current[0], current[1]]),
-                            board.gridToPix([next[0] + 1, next[1] + 1])
-                        ], [mouse, Math.floor(gridSize / 2) + 1]))
-                            sketch.line(...[...board.gridToPix(current, true), ...board.gridToPix(next, true)] as [number, number, number, number]);
+                if (this.endComponent) {
+                    const end = this.endComponent.inputDashesCoords[this.endIndex];
+                    if (end)
+                        sketch.vertex(end[0], end[1]);
                 }
-            }
 
-            if (this.handles)
-                for (const handle of this.handles) {
-                    handle.render(sketch);
-                    handle.update(sketch);
+                sketch.endShape();
+
+                sketch.stroke(getColour(Colour.Danger));
+                if (tool === Tool.Wire && wireEditMode === WireEditMode.Place) {
+                    const coordsList = [
+                        board.coordsToGrid(this.startComponent.outputDashesCoords[this.startIndex].slice(0, 2) as [number, number]),
+                        ...this.coords,
+                        board.coordsToGrid(this.endComponent.inputDashesCoords[this.endIndex].slice(-2) as [number, number])
+                    ];
+
+                    const mouse: [number, number] = [sketch.mouseX, sketch.mouseY];
+                    while (coordsList.length > 1) {
+                        const current = coordsList.shift();
+                        const next = coordsList[0];
+
+                        if (current)
+                            if (linesAreIntersecting([
+                                board.gridToPix([current[0], current[1]]),
+                                board.gridToPix([next[0] + 1, next[1] + 1])
+                            ], [mouse, Math.floor(gridSize / 2) + 1]))
+                                sketch.line(...[...board.gridToPix(current, true), ...board.gridToPix(next, true)] as [number, number, number, number]);
+                    }
                 }
-        } else
-            console.warn('Suspicious connection. The target or destination does not exist');
+
+                if (this.handles)
+                    for (const handle of this.handles)
+                        if (handle) {
+                            handle.render(sketch);
+                            handle.update(sketch);
+                        }
+            } else
+                console.warn('Suspicious connection. The target or destination does not exist');
+        }
     }
 
     update(sketch: p5): void {

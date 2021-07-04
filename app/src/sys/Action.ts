@@ -62,7 +62,7 @@ const actionMap: { readonly [K in ActionType]: Param<K> & Function } = {
 
     [ActionType.ChangeLabel]: ChangeLabel, // Done
     [ActionType.RotateComponent]: RotateComponent, // Done
-    [ActionType.FlipComponent]: FlipComponent // Done
+    [ActionType.FlipComponent]: FlipComponent //
 } as const;
 
 /**

@@ -10,10 +10,10 @@ import {WireHandle} from './WireHandle';
 import {ActionType, performAction} from "../../../sys/Action";
 
 export function remove(state: State) {
-    const handle = WireHandle.findByCoords([state.mouse.x, state.mouse.y]);
+    const handle = WireHandle.findByCoords(state.board.coordsToGrid([state.mouse.x, state.mouse.y]));
 
     if (handle)
-        performAction(ActionType.RemoveWireNode)(handle);
+        performAction(ActionType.RemoveWireNode)([handle]);
     else {
         const hoverWire = Wire.findWireByMouseCoordsByCollision([state.mouse.x, state.mouse.y]);
 
@@ -55,7 +55,6 @@ export function initWires() {
     });
 
     const actions: Record<WireEditMode, (state: State, wire: Partial<ApiWire>) => void> = {
-        [WireEditMode.Move]: () => void 0,
         [WireEditMode.Place]: (state, wire) => mkWire(state, wire, function () {
             wire.startComponent = undefined;
             wire.endComponent = undefined;
@@ -64,7 +63,6 @@ export function initWires() {
             wire.coords = [];
         }),
         [WireEditMode.Remove]: state => remove(state),
-        [WireEditMode.Select]: () => void 0
     };
 
     manager.on('wire_click', state => actions[state.wireEditMode](state, wire)); //
