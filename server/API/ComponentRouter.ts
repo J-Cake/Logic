@@ -8,7 +8,7 @@ import * as FS from '../util/files';
 import searchComponents, {paginatedSearchQuery} from '../App/Document/searchComponents';
 import authenticate from "./lib/authenticate";
 import respond, {Action, Status} from "./lib/Api";
-import {ApiComponent} from "../../app/src/Logic/io/ComponentFetcher";
+import {ApiComponent} from "../../app/document-editor/Logic/io/ComponentFetcher";
 
 const router: express.Router = express.Router();
 

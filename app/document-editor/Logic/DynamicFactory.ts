@@ -6,9 +6,10 @@ import {showModal} from "../Plugin/DialogManager";
 import {fetchData, pickFile, saveData} from "../Plugin/API";
 import {manager} from "../State";
 import RenderComponent from "../ui/RenderComponent";
-import {Action, ApiResponse_Success} from "../../../server/API/lib/Api";
 
-export default function (apiComponent: ApiComponent) {
+export default async function (apiComponent: ApiComponent) {
+    const source = await fetchScript(apiComponent.component as string);
+
     return class DynamicComponent extends GenComponent {
         plugin: Partial<Plugin>;
 
@@ -26,23 +27,22 @@ export default function (apiComponent: ApiComponent) {
 
             this.label = base.label;
 
-            (fetchScript(apiComponent.component as string) as Promise<ApiResponse_Success<string, Action.Script_Get>>)
-                .then((fn: ApiResponse_Success<string, Action.Script_Get>) => initPlugin(fn.data, apiComponent, {
-                    component: {
-                        onClick: (callback: (renderObj: sanitiser.SanitisedRenderer) => void) => this.plugin.onClick = callback,
-                        setComputeFn: (callback: (inputs: boolean[]) => boolean[]) => this.plugin.computeFn = callback,
-                        update: () => this.update(),
-                        component: sanitiser.sanitiseComponent(this)
-                    },
-                    dialog: {
-                        showModal,
-                        pickFile
-                    },
-                    storage: {
-                        saveData,
-                        fetchData
-                    }
-                }));
+            initPlugin(source, apiComponent, {
+                component: {
+                    onClick: (callback: (renderObj: sanitiser.SanitisedRenderer) => void) => this.plugin.onClick = callback,
+                    setComputeFn: (callback: (inputs: boolean[]) => boolean[]) => this.plugin.computeFn = callback,
+                    update: () => this.update(),
+                    component: sanitiser.sanitiseComponent(this)
+                },
+                dialog: {
+                    showModal,
+                    pickFile
+                },
+                storage: {
+                    saveData,
+                    fetchData
+                }
+            });
         }
 
         preUpdate(next: () => void): void {

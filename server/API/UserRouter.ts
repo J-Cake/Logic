@@ -3,11 +3,9 @@ import _ from "lodash";
 
 import * as actions from "../App/Auth/UserActions";
 import {attempt} from "../../app/util";
-import {defaultPreferences} from "../../app/src/Enums";
 import authenticate from "./lib/authenticate";
 import sql from "../util/sql";
 import respond, {Action, Status} from "./lib/Api";
-import {paginatedSearchQuery} from "../App/Document/searchComponents";
 import {DBPreferenceMap} from "../App/Document/getFile";
 
 const router: express.Router = express.Router();

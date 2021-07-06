@@ -14,7 +14,7 @@ import WikiRouter from "./WikiRouter";
 import ResourceRouter from "./ResourceRouter";
 import {verifyUser} from "./Auth/UserActions";
 import sql from "../util/sql";
-import {Theme} from "../../app/src/Enums";
+import {Theme} from "../../app/document-editor/Enums";
 
 export default async function (): Promise<express.Application> {
     const app: express.Application = express();

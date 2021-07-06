@@ -1,7 +1,7 @@
 import {manager} from "../State";
 import {ApiComponent, compareArray, GenComponent, GenericComponent, TruthTable} from "./io/ComponentFetcher";
 
-export default function (apiComponent: ApiComponent) {
+export default async function (apiComponent: ApiComponent) {
     return class StatelessComponent extends GenComponent {
         constructor(documentComponentKey: number, base: GenericComponent) {
             super({

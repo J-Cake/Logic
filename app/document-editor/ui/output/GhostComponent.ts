@@ -2,13 +2,12 @@ import type p5 from 'p5';
 
 import RenderObject from "../../sys/components/RenderObject";
 import {ApiComponent} from "../../Logic/io/ComponentFetcher";
-import {manager, Tool} from "../../State";
+import {manager} from "../../State";
 import RenderComponent from "../RenderComponent";
 import getColourForComponent from "./getColourForComponent";
 import {getColour, transparent} from "../../sys/util/Colour";
 import {Colour} from "../../Enums";
 import {ActionType, performAction} from "../../sys/Action";
-import Timeout = NodeJS.Timeout;
 
 export default class GhostComponent extends RenderObject {
 

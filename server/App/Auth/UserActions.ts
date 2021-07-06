@@ -3,7 +3,7 @@ import _ from 'lodash'
 
 import sql, {SQLInjectType} from '../../util/sql';
 import {DBPreferenceMap} from '../Document/getFile';
-import {defaultPreferences, PreferenceDescriptor, PreferenceType} from '../../../app/src/Enums';
+import {defaultPreferences, PreferenceDescriptor, PreferenceType} from '../../../app/document-editor/Enums';
 
 export async function verifyUser(userToken?: string): Promise<boolean> {
     const exists = await sql.sql_get<{ exists: boolean }>(`select exists(select from users where "userToken" = $1) as "exists"`, [userToken || ""]);

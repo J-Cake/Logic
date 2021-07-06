@@ -3,7 +3,7 @@ import path from 'path';
 import express from 'express';
 import bodyParser from 'body-parser';
 
-import getFile, {DBDocument, userTokenToId} from '../App/Document/getFile';
+import getFile, {userTokenToId} from '../App/Document/getFile';
 import {attempt, Pref, rootFn} from '../util/utils';
 import sql from '../util/sql';
 import Document, {CircuitObj} from '../App/Document/Document';
@@ -156,7 +156,7 @@ router.delete('/:circuit/collaborator', async function (req, res) {
     }));
 });
 
-router.put('/:circuit/add-component', async function (req, res) {
+router.put('/:circuit/component', async function (req, res) {
     res.json(await respond(Action.Document_Component_Add, async function (props, error): Promise<void> {
         props.res = res;
         const userToken: string = req.userToken || "";
@@ -173,8 +173,37 @@ router.put('/:circuit/add-component', async function (req, res) {
                         if (!file.info.components.includes(req.query.component)) {
                             file.info.components.push(req.query.component);
                             await file.writeContents(file.info);
+                            props.status = Status.Done;
                         } else
                             error(Status.Component_Exists, 'The component is already included');
+                    }
+            }))
+                error(Status.No_Change, 'An unknown error occurred.');
+        }))
+            error(Status.Insufficient_Access, 'You do not have access to this document');
+    }));
+});
+
+router.delete('/:circuit/component', async function (req, res) {
+    res.json(await respond(Action.Document_Component_Remove, async function (props, error): Promise<void> {
+        props.res = res;
+        const userToken: string = req.userToken || "";
+
+        if (await attempt(async function () {
+            const file = await getFile(userToken, req.params.circuit);
+            await file.fetchInfo();
+
+            if (await attempt(async function () {
+                if (req.query.component && typeof req.query.component === 'string')
+                    if (await sql.sql_get(`SELECT exists(select "componentId"
+                                                         from components
+                                                         where "componentToken" = $1)`, [req.query.component])) {
+                        if (file.info.components.includes(req.query.component)) {
+                            file.info.components.splice(file.info.components.indexOf(req.query.component), 1);
+                            await file.writeContents(file.info);
+                            props.status = Status.Done;
+                        } else
+                            error(Status.Component_Not_Member, 'The component is does not exist');
                     }
             }))
                 error(Status.No_Change, 'An unknown error occurred.');

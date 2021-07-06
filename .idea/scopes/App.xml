@@ -1,3 +1,3 @@
 <component name="DependencyValidationManager">
-  <scope name="App" pattern="file[LogicX]:app/src//*" />
+  <scope name="App" pattern="file[LogicX]:app/document-editor//*" />
 </component>

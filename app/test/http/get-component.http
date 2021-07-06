@@ -1,0 +1,5 @@
+GET http://api.localhost:2560/component/$input
+Accept: application/json
+Auth-Token: 281h2f6v3n28
+
+###

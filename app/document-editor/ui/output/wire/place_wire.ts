@@ -1,6 +1,5 @@
 import Wire, {ApiWire} from './Wire';
-import {manager, State} from '../../../State';
-import {WireHandle} from './WireHandle';
+import {State} from '../../../State';
 import {ActionType, performAction} from "../../../sys/Action";
 
 export default function mkWire(state: State, wire: Partial<ApiWire>, clearWire: () => void) {

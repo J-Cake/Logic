@@ -6,7 +6,7 @@ declare module 'parse-css-color' {
 
     type ret = {
         type: keyof Type,
-        values: import('./src/sys/util/Colour').rgb,
+        values: import('./document-editor/sys/util/Colour').rgb,
         alpha: number
     }
     function p(colour: string): ret;

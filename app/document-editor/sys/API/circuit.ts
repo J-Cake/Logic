@@ -41,6 +41,21 @@ export function renameDocument(circuitToken: string, name: string): Promise<ApiR
 }
 
 /**
+ * Delete a document
+ * @param circuitToken document identifier
+ */
+export function deleteDocument(circuitToken: string): Promise<ApiResponse_Success<void, Action.Document_Delete>> {
+    return new Promise((resolve, reject) => {
+        fetch(`${window.location.protocol}//api.${window.location.host}/document/${circuitToken}`, {
+            method: 'delete',
+            headers: {
+                'auth-token': authToken
+            }
+        }).then(res => res.json()).then(res => 'error' in res ? reject(res) : resolve(res)).catch(err => reject(err));
+    });
+}
+
+/**
  * Remove user from document
  * @param circuitToken document identifier
  */
@@ -144,8 +159,24 @@ export function allowEdit(circuitToken: string, userToken: string, canEdit: bool
  */
 export function addComponent(circuitToken: string, componentToken: string): Promise<ApiResponse_Success<void, Action.Document_Component_Add>> {
     return new Promise((resolve, reject) => {
-        fetch(`${window.location.protocol}//api.${window.location.host}/document/${circuitToken}/add-component?component=${componentToken}`, {
+        fetch(`${window.location.protocol}//api.${window.location.host}/document/${circuitToken}/component?component=${componentToken}`, {
             method: 'put',
+            headers: {
+                'auth-token': authToken
+            }
+        }).then(res => res.json()).then(res => 'error' in res ? reject(res) : resolve(res)).catch(err => reject(err));
+    });
+}
+
+/**
+ * Remove a component from the document
+ * @param circuitToken document identifier
+ * @param componentToken component identifier
+ */
+export function removeComponent(circuitToken: string, componentToken: string): Promise<ApiResponse_Success<void, Action.Document_Component_Add>> {
+    return new Promise((resolve, reject) => {
+        fetch(`${window.location.protocol}//api.${window.location.host}/document/${circuitToken}/component?component=${componentToken}`, {
+            method: 'delete',
             headers: {
                 'auth-token': authToken
             }

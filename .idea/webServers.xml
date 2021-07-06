@@ -3,7 +3,14 @@
   <component name="WebServers">
     <option name="servers">
       <webServer id="1cc07921-5927-4c1e-a6c6-384b82c39aeb" name="DO Server">
-        <fileTransfer accessType="SFTP" host="jschneiderprojects.com.au" port="22" sshConfigId="5df27ac4-5630-4683-b693-2bbcd81b5672" sshConfig="jcake@jschneiderprojects.com.au:22 password">
+        <fileTransfer accessType="SFTP" host="pi" port="22" sshConfigId="5df27ac4-5630-4683-b693-2bbcd81b5672" sshConfig="pi@pi:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+      <webServer id="a12d0a95-2e5a-4b85-9ed4-538d21be73cc" name="Pi" url="http://pi">
+        <fileTransfer rootFolder="/home/pi" accessType="SFTP" host="pi" port="22" sshConfigId="5df27ac4-5630-4683-b693-2bbcd81b5672" sshConfig="pi@pi:22 password">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
           </advancedOptions>

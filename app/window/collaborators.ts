@@ -1,7 +1,7 @@
 import $ from 'jquery';
 import mousetrap from 'mousetrap';
-import {searchUsers} from "../src/sys/API/user";
-import {addCollaborator, allowEdit, removeCollaborator} from "../src/sys/API/circuit";
+import {searchUsers} from "../document-editor/sys/API/user";
+import {addCollaborator, allowEdit, removeCollaborator} from "../document-editor/sys/API/circuit";
 import type {userSearch} from "../../server/API/UserRouter";
 
 mousetrap.bind('esc', () => window.close());

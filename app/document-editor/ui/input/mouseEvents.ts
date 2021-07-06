@@ -3,7 +3,6 @@ import $ from 'jquery';
 
 import {manager, Tool} from '../../State';
 import {DebugMode} from '../../Enums';
-import RenderComponent from "../RenderComponent";
 
 export function clickHandler(sketch: p5) {
     const {dragStart, mouse, keys, tool, debug, renderedComponents: comps} = manager.setState();

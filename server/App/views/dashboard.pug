@@ -55,7 +55,7 @@ block page
                                     .controls
                                         button(data-doc=doc.documentToken).collab 
                                         button.editName(data-doc=doc.documentToken) 
-                                        button(data-url=`/circuit/${doc.documentToken}`).deleteDoc 
+                                        button(data-doc=doc.documentToken).deleteDoc 
 
                         else
                             span You own no documents.

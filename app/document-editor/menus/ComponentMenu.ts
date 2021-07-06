@@ -1,10 +1,7 @@
 import $ from 'jquery';
 
-import {manager, Tool} from '../';
-import RenderComponent from '../ui/RenderComponent';
+import {manager} from '../';
 import {Dialog, link} from './DialogManager';
-import getColourForComponent from '../ui/output/getColourForComponent';
-import {ActionType, performAction} from "../sys/Action";
 
 export default function buildPrompt() {
     link(Dialog.ComponentView, $("#add-component"), function (componentToken: string) {

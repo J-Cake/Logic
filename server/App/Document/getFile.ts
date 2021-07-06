@@ -1,6 +1,6 @@
 import Document from './Document';
 import sql from '../../util/sql';
-import {Preferences} from '../../../app/src/Enums';
+import {Preferences} from '../../../app/document-editor/Enums';
 
 export type AccessTable = { documentId: number, userId: number, dateGranted: Date, canEdit: boolean };
 export type DBUser = { userId: number, email: string, password: string, joined: Date, identifier: string, userToken: string };

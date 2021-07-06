@@ -2,7 +2,6 @@ import _ from 'lodash';
 import RenderComponent from '../ui/RenderComponent';
 import {DebugMode} from '../Enums';
 import {manager} from '../State';
-import {ApiComponent} from "./io/ComponentFetcher";
 
 export const containsDuplicates = (list: string[]): boolean => new Set(list).size !== list.length;
 

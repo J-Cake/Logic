@@ -3,7 +3,7 @@ import fs from 'fs';
 import url from 'url'
 import build from 'esbuild';
 
-import {copy, find, dirs} from "./build_utils.js";
+import {copy, dirs, find} from "./build_utils.js";
 
 const devMode = !!process.argv.find(i => i.trim() === '--dev');
 
@@ -29,7 +29,7 @@ if (process.argv.includes('--clean'))
         .forEach(i => fs.rmdirSync(i, {recursive: true}));
 
 const components = {
-    app: () => buildComponent('src/index.js', 'app.js'),
+    documentEditor: () => buildComponent('document-editor/index.js', 'app.js'),
     find: () => buildComponent('window/find.js', 'find.js'),
     dashboard: () => buildComponent('window/dashboard.js', 'dashboard.js'),
     componentMenu: () => buildComponent('window/components.js', 'comps.js'),

@@ -4,7 +4,7 @@ import _ from 'lodash';
 
 import sql from '../../util/sql';
 import {DBDocument} from './getFile';
-import {ApiComponent, GenericComponent} from '../../../app/src/Logic/io/ComponentFetcher';
+import {ApiComponent, GenericComponent} from '../../../app/document-editor/Logic/io/ComponentFetcher';
 import {readFile} from '../../util/files';
 import {rootFn} from '../../util/utils';
 

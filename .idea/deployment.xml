@@ -10,6 +10,14 @@
           </mappings>
         </serverdata>
       </paths>
+      <paths name="Pi">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/pi/LogicX/lib" local="$PROJECT_DIR$/lib" web="/" />
+            <mapping deploy="/home/pi/LogicX" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
     </serverData>
   </component>
 </project>

@@ -13,7 +13,6 @@ import Debugger from './Logic/Debugger';
 import PreferenceManager from './PreferenceManager';
 import {defaultPreferences, Theme, WireEditMode} from './Enums';
 import HistoryManager from "./sys/historyManager";
-import {Action} from "./ui/input/Action";
 
 export enum Tool {
     Pointer,

@@ -4,11 +4,11 @@ import express from 'express';
 import {convertFromHTMLForm, getPreferencesForUser, isLoggedIn, verifyUser, writePreferences} from './Auth/UserActions';
 import sql from '../util/sql';
 
-import getFile, {DBDocument, DBPreferenceMap} from './Document/getFile';
+import getFile, {DBPreferenceMap} from './Document/getFile';
 import searchComponents from './Document/searchComponents';
 import {attempt} from '../util/utils';
 import docToComponent from './Document/Component';
-import {PreferenceDescriptor, PreferenceType} from '../../app/src/Enums';
+import {PreferenceDescriptor, PreferenceType} from '../../app/document-editor/Enums';
 import {devMode} from "../index";
 
 const router: express.Router = express.Router();

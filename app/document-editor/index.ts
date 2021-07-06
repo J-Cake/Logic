@@ -1,23 +1,12 @@
 import $ from 'jquery';
 import p5 from 'p5';
-import mousetrap from 'mousetrap';
 
-import {manager, Tool} from './State';
-import RenderObject from './sys/components/RenderObject';
-import Board from './sys/components/Board';
+import {manager} from './State';
 import {Interpolation} from './sys/util/interpolation';
 import {getColour} from './sys/util/Colour';
-import Cursor from './ui/output/cursor';
-import CircuitManager from './Logic/io/CircuitManager';
-import {renderComponents} from './ui/RenderComponent';
-import handleEvents from './ui/input/events';
-import TooltipPane from './ui/output/TooltipPane';
 import Colour from './sys/util/Themes';
-import buildComponentPrompt from './menus/ComponentMenu';
-import buildFinderPrompt from './menus/ComponentFinder';
 import renderAnimation from "./ui/output/Animation";
 import {loadingAnimation} from "./ui/output/animations/loadingAnimation";
-import getColourForComponent from "./ui/output/getColourForComponent";
 import init from "./init";
 
 declare global {

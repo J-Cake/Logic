@@ -2,15 +2,30 @@
     "errors": [
         {
             "location": {
-                "column": 12,
-                "file": "build/app/src/sys/actions/AddComponent.js",
-                "length": 1,
-                "line": 16,
-                "lineText": "            }));",
-                "namespace": ""
+                "column": 16,
+                "file": "build/app/document-editor/sys/API/circuit.js",
+                "length": 12,
+                "line": 162,
+                "lineText": "export function addComponent(circuitToken, componentToken) {",
+                "namespace": "",
+                "suggestion": ""
             },
-            "notes": [],
-            "text": "Unexpected \"}\""
+            "notes": [
+                {
+                    "location": {
+                        "column": 16,
+                        "file": "build/app/document-editor/sys/API/circuit.js",
+                        "length": 12,
+                        "line": 147,
+                        "lineText": "export function addComponent(circuitToken, componentToken) {",
+                        "namespace": "",
+                        "suggestion": ""
+                    },
+                    "text": "\"addComponent\" was originally exported here"
+                }
+            ],
+            "pluginName": "",
+            "text": "Multiple exports with the same name \"addComponent\""
         }
     ],
     "warnings": []

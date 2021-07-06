@@ -197,7 +197,6 @@ export default class RenderComponent extends RenderObject {
     }
 
     onClick() {
-        console.log('clicked');
         this.component.activate(this);
         manager.broadcast('tick');
     }

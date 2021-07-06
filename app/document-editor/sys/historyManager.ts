@@ -1,7 +1,7 @@
 import StateManager from './util/stateManager';
 import {manager} from '../State';
-import Timeout = NodeJS.Timeout;
 import {Action} from "./Action";
+import Timeout = NodeJS.Timeout;
 
 export default class HistoryManager extends StateManager<{
     history: Action[][];

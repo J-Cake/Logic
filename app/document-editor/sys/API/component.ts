@@ -20,12 +20,9 @@ export function getComponent(componentToken: string): Promise<ApiResponse_Succes
  * Fetches the script
  * @param scriptUrl the URL to the script.
  */
-export function fetchScript(scriptUrl: string): Promise<ApiResponse_Success<string, Action.Script_Get>> {
+export function fetchScript(scriptUrl: string): Promise<string> {
     return new Promise((resolve, reject) => {
-        fetch(scriptUrl, {
-            headers: {
-                'auth-token': authToken
-            }
-        }).then(res => res.json()).then(res => 'error' in res ? reject(res) : resolve(res)).catch(err => reject(err));
+        fetch(scriptUrl).then(res => res.text().then(script => resolve(script)))
+            .catch(err => reject(err))
     });
 }

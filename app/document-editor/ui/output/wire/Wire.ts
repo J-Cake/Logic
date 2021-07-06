@@ -111,7 +111,7 @@ export default class Wire extends RenderObject implements ApiWire {
             const isActive = this.startComponent.component.out[this.startIndex];
             const {board, tool, wireEditMode, pref} = manager.setState();
             const {gridSize} = pref.setState();
-            sketch.stroke(getColour(this.endComponent ? (isActive ? Colour.Active : Colour.Blank) : Colour.Danger));
+            sketch.stroke(getColour((this.handles.length > 0 && !this.handles.some(i => !i.isSelected)) ? Colour.Cursor : isActive ? Colour.Active : Colour.Blank));
             sketch.strokeWeight(1);
             sketch.noFill();
 

@@ -1,9 +1,7 @@
 import type p5 from 'p5';
-
-import DragObject from '../../../sys/components/DragObject';
-import {manager, State, Tool} from '../../../State';
-import {getColour, transparent} from '../../../sys/util/Colour';
-import {Colour, WireEditMode} from '../../../Enums';
+import {manager, State} from '../../../State';
+import {transparent} from '../../../sys/util/Colour';
+import {Colour} from '../../../Enums';
 import Wire from './Wire';
 import RenderObject from "../../../sys/components/RenderObject";
 import {ActionType, performAction} from "../../../sys/Action";

@@ -84,32 +84,34 @@ const statusDetails: Record<Status, [number, string]> = {
 /**
  * Here is a map of all the different actions status types. These indicate whether an action succeeded or what went wrong if it didn't.
  */
+
 type StatusMap<T extends Action> =
-    (T extends Action.Document_Create ? Status.Done | Status.Not_Authenticated | Status.Document_Exists :
-        T extends Action.Document_Rename ? Status.Done | Status.Not_Authenticated | Status.Document_Not_Exists | Status.Document_Exists :
-            T extends Action.Document_Delete ? Status.Done | Status.Not_Authenticated | Status.Insufficient_Access | Status.Document_Not_Exists :
-                T extends Action.Document_Read ? Status.No_Change | Status.Not_Authenticated | Status.Document_Not_Exists :
-                    T extends Action.Document_Write ? Status.Done | Status.Not_Authenticated | Status.Document_Not_Exists | Status.Insufficient_Access | Status.Bad_Data :
-                        T extends Action.Document_Collaborator_Add ? Status.Done | Status.No_Change | Status.Not_Authenticated | Status.Document_Not_Exists | Status.Insufficient_Access | Status.User_Not_Exists :
-                            T extends Action.Document_Collaborator_Remove ? Status.Done | Status.Not_Authenticated | Status.Document_Not_Exists | Status.Insufficient_Access | Status.User_Not_Member :
-                                T extends Action.Document_Collaborator_Leave ? Status.Done | Status.Not_Authenticated | Status.Document_Not_Exists | Status.User_Not_Member :
-                                    T extends Action.Document_Collaborator_CanEdit ? Status.Done | Status.Not_Authenticated | Status.Document_Not_Exists | Status.User_Not_Member :
-                                        T extends Action.Document_Component_Add ? Status.Done | Status.Not_Authenticated | Status.No_Change | Status.Document_Not_Exists | Status.Component_Not_Exists | Status.Component_Exists | Status.Insufficient_Access :
-                                            T extends Action.Document_Component_Remove ? Status.Done | Status.Not_Authenticated | Status.Document_Not_Exists | Status.Component_Not_Member | Status.Insufficient_Access :
-                                                T extends Action.User_SignIn ? Status.No_Change | Status.Email_Not_Exists | Status.Identifier_Not_Exists | Status.Password_Invalid :
-                                                    T extends Action.User_Register ? Status.Done | Status.Email_Exists | Status.Identifier_Exists | Status.Password_Invalid :
-                                                        T extends Action.User_Change_Email ? Status.Done | Status.Not_Authenticated | Status.Email_Exists :
-                                                            T extends Action.User_Change_Password ? Status.Done | Status.Not_Authenticated :
-                                                                T extends Action.User_Change_Identifier ? Status.Done | Status.Not_Authenticated | Status.Identifier_Exists :
-                                                                    T extends Action.User_Get_Preferences ? Status.No_Change | Status.Not_Authenticated :
-                                                                        T extends Action.User_Change_Preferences ? Status.Done | Status.Not_Authenticated :
-                                                                            T extends Action.Component_Make ? Status.Done | Status.Not_Authenticated | Status.Component_Exists | Status.Bad_Data :
-                                                                                T extends Action.Component_Delete ? Status.Done | Status.Not_Authenticated | Status.Component_Not_Exists :
-                                                                                    T extends Action.Component_Get ? Status.No_Change | Status.Component_Not_Exists | Status.Insufficient_Access :
-                                                                                        T extends Action.Component_Find ? Status.No_Change :
-                                                                                            T extends Action.App_SearchUsers ? Status.No_Change :
-                                                                                                T extends Action.Script_Get ? Status.No_Change | Status.Component_Not_Exists :
-                                                                                                    Status.No_Change)
+    (
+        T extends Action.Document_Create ? Status.Done | Status.Not_Authenticated | Status.Document_Exists :
+            T extends Action.Document_Rename ? Status.Done | Status.Not_Authenticated | Status.Document_Not_Exists | Status.Document_Exists :
+                T extends Action.Document_Delete ? Status.Done | Status.Not_Authenticated | Status.Insufficient_Access | Status.Document_Not_Exists :
+                    T extends Action.Document_Read ? Status.No_Change | Status.Not_Authenticated | Status.Document_Not_Exists :
+                        T extends Action.Document_Write ? Status.Done | Status.Not_Authenticated | Status.Document_Not_Exists | Status.Insufficient_Access | Status.Bad_Data :
+                            T extends Action.Document_Collaborator_Add ? Status.Done | Status.No_Change | Status.Not_Authenticated | Status.Document_Not_Exists | Status.Insufficient_Access | Status.User_Not_Exists :
+                                T extends Action.Document_Collaborator_Remove ? Status.Done | Status.Not_Authenticated | Status.Document_Not_Exists | Status.Insufficient_Access | Status.User_Not_Member :
+                                    T extends Action.Document_Collaborator_Leave ? Status.Done | Status.Not_Authenticated | Status.Document_Not_Exists | Status.User_Not_Member :
+                                        T extends Action.Document_Collaborator_CanEdit ? Status.Done | Status.Not_Authenticated | Status.Document_Not_Exists | Status.User_Not_Member :
+                                            T extends Action.Document_Component_Add ? Status.Done | Status.Not_Authenticated | Status.No_Change | Status.Document_Not_Exists | Status.Component_Not_Exists | Status.Component_Exists | Status.Insufficient_Access :
+                                                T extends Action.Document_Component_Remove ? Status.Done | Status.No_Change | Status.Not_Authenticated | Status.Document_Not_Exists | Status.Component_Not_Member | Status.Insufficient_Access :
+                                                    T extends Action.User_SignIn ? Status.No_Change | Status.Email_Not_Exists | Status.Identifier_Not_Exists | Status.Password_Invalid :
+                                                        T extends Action.User_Register ? Status.Done | Status.Email_Exists | Status.Identifier_Exists | Status.Password_Invalid :
+                                                            T extends Action.User_Change_Email ? Status.Done | Status.Not_Authenticated | Status.Email_Exists :
+                                                                T extends Action.User_Change_Password ? Status.Done | Status.Not_Authenticated :
+                                                                    T extends Action.User_Change_Identifier ? Status.Done | Status.Not_Authenticated | Status.Identifier_Exists :
+                                                                        T extends Action.User_Get_Preferences ? Status.No_Change | Status.Not_Authenticated :
+                                                                            T extends Action.User_Change_Preferences ? Status.Done | Status.Not_Authenticated :
+                                                                                T extends Action.Component_Make ? Status.Done | Status.Not_Authenticated | Status.Component_Exists | Status.Bad_Data :
+                                                                                    T extends Action.Component_Delete ? Status.Done | Status.Not_Authenticated | Status.Component_Not_Exists :
+                                                                                        T extends Action.Component_Get ? Status.No_Change | Status.Component_Not_Exists | Status.Insufficient_Access :
+                                                                                            T extends Action.Component_Find ? Status.No_Change :
+                                                                                                T extends Action.App_SearchUsers ? Status.No_Change :
+                                                                                                    T extends Action.Script_Get ? Status.No_Change | Status.Component_Not_Exists :
+                                                                                                        Status.No_Change)
     | Status.Undefined;
 
 export type ApiResponse<Data, A extends Action> = ApiResponse_Success<Data, A> | ApiResponse_Failure<Data, A>;
@@ -148,7 +150,7 @@ export default function respond<Data, A extends Action>(action: A, getResponse: 
             });
         }).then(function (response) {
             if (props.res)
-                props.res.status(statusDetails[response.status as Status][0]);
+                props.res.contentType('text/json').status(statusDetails[response.status as Status][0]);
             resolve({
                 ...response,
                 action: action,

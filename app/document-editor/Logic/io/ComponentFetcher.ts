@@ -84,9 +84,9 @@ export default async function fetchComponent(componentToken: string): Promise<ne
         }
 
     if (apiComponent.component.constructor.name === "Array") // it's a truth table
-        return StatelessFactory(apiComponent);
+        return await StatelessFactory(apiComponent);
     else if (typeof apiComponent.component === "object") // it's a stateful component
-        return StatefulFactory(apiComponent);
+        return await StatefulFactory(apiComponent);
     else // it's a dynamic component, the value is updated by a script located by the value of the string
-        return DynamicFactory(apiComponent);
+        return await DynamicFactory(apiComponent);
 }

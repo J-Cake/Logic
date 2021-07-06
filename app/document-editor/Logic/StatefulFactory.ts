@@ -20,7 +20,7 @@ export async function loadComponent(componentToken: string): Promise<{ [id: numb
     };
 }
 
-export default function (apiComponent: ApiComponent) {
+export default async function (apiComponent: ApiComponent) {
     return class StatefulComponent extends GenComponent {
 
         componentBody: CircuitObj;

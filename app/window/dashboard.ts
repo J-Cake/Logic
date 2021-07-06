@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import mousetrap from 'mousetrap';
-import {leaveDocument, makeDocument, renameDocument} from "../src/sys/API/circuit";
+import {deleteDocument, leaveDocument, makeDocument, renameDocument} from "../document-editor/sys/API/circuit";
 
 mousetrap.bind('esc', () => window.close());
 
@@ -29,7 +29,7 @@ $('.doc').each(function () {
 });
 $('.deleteDoc').each(function () {
     const i = $(this);
-    i.on('click', () => confirm("Are you sure you want to delete this document?") ? fetch(i.data('url'), {method: 'DELETE'}).then(i => window.location.reload()) : null);
+    i.on('click', () => confirm("Are you sure you want to delete this document?") && deleteDocument(i.data('doc')).then(() => window.location.reload()));
 });
 $('.collab').each(function () {
     const i = $(this);
