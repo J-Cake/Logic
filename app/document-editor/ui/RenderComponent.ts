@@ -232,22 +232,30 @@ export default class RenderComponent extends RenderObject {
         }
 
         const flip = this.props.flip;
+        const swap = (coords: [number, number, number, number], swap: boolean = true): [number, number, number, number] => swap ? coords : [
+            coords[2],
+            coords[3],
+            coords[0],
+            coords[1],
+        ]
 
         if (this.props.direction % 2 === 0) {
+            // Horizontal
             loop(0, i => i < Math.max(outputNum, inputNum), i => i + 1, i => {
                 this.inputDashesCoords.push([
                     Math.floor(pos[0] - this.buff),
                     Math.floor(pos[1] - this.buff + scl * i + scl / 2),
                     Math.floor(pos[0]),
-                    Math.floor(pos[1] - this.buff + scl * i + scl / 2)]);
+                    Math.floor(pos[1] - this.buff + scl * i + scl / 2),
+                ]);
             });
             loop(0, o => o < Math.max(outputNum, inputNum), o => o + 1, o => {
                 this.outputDashesCoords.push([
                     Math.floor(pos[0] + this.size[0]),
                     Math.floor(pos[1] - this.buff + scl * o + scl / 2),
                     Math.floor(pos[0] + this.size[0] + this.buff),
-                    Math.floor(pos[1] - this.buff + scl * o + scl / 2)]);
-
+                    Math.floor(pos[1] - this.buff + scl * o + scl / 2),
+                ]);
             });
             loop(0, i => i < Math.max(outputNum, inputNum), i => i + 1, i => {
                 const grid = board.quantiseCoords(this.pos);
@@ -255,7 +263,7 @@ export default class RenderComponent extends RenderObject {
                     Math.floor(pos[0]),
                     Math.max(Math.floor(grid[1] + i * scl), pos[1]),
                     Math.floor(pos[0]),
-                    Math.min(Math.floor(grid[1] + (i + 1) * scl), pos[1] + this.size[1])
+                    Math.min(Math.floor(grid[1] + (i + 1) * scl), pos[1] + this.size[1]),
                 ]);
             });
             loop(0, o => o < Math.max(outputNum, inputNum), o => o + 1, o => {
@@ -264,23 +272,26 @@ export default class RenderComponent extends RenderObject {
                     Math.floor(pos[0] + this.size[0]),
                     Math.max(Math.floor(grid[1] + o * scl), pos[1]),
                     Math.floor(pos[0] + this.size[0]),
-                    Math.min(Math.floor(grid[1] + (o + 1) * scl), pos[1] + this.size[1])
+                    Math.min(Math.floor(grid[1] + (o + 1) * scl), pos[1] + this.size[1]),
                 ]);
             });
         } else {
+            // Vertical
             loop(0, o => o < Math.max(outputNum, inputNum), o => o + 1, o => {
                 this.inputDashesCoords.push([
                     Math.floor(pos[0] - this.buff + scl * o + scl / 2),
                     Math.floor(pos[1] - this.buff),
                     Math.floor(pos[0] - this.buff + scl * o + scl / 2),
-                    Math.floor(pos[1])]);
+                    Math.floor(pos[1]),
+                ]);
             });
             loop(0, i => i < Math.max(inputNum, outputNum), i => i + 1, i => {
                 this.outputDashesCoords.push([
                     Math.floor(pos[0] - this.buff + scl * i + scl / 2),
                     Math.floor(pos[1] + this.size[1]),
                     Math.floor(pos[0] - this.buff + scl * i + scl / 2),
-                    Math.floor(pos[1] + this.size[1] + this.buff)]);
+                    Math.floor(pos[1] + this.size[1] + this.buff),
+                ]);
             });
             loop(0, i => i < Math.max(outputNum, inputNum), i => i + 1, i => {
                 const grid = board.quantiseCoords(this.pos);
@@ -288,7 +299,7 @@ export default class RenderComponent extends RenderObject {
                     Math.max(Math.floor(grid[0] + i * scl), pos[0]),
                     Math.floor(pos[1]),
                     Math.min(Math.floor(grid[0] + (i + 1) * scl), pos[0] + this.size[0]),
-                    Math.floor(pos[1])
+                    Math.floor(pos[1]),
                 ]);
             });
             loop(0, o => o < Math.max(outputNum, inputNum), o => o + 1, o => {
@@ -297,10 +308,15 @@ export default class RenderComponent extends RenderObject {
                     Math.max(Math.floor(grid[0] + o * scl), pos[0]),
                     Math.floor(pos[1] + this.size[1]),
                     Math.min(Math.floor(grid[0] + (o + 1) * scl), pos[0] + this.size[0]),
-                    Math.floor(pos[1] + this.size[1])
+                    Math.floor(pos[1] + this.size[1]),
                 ]);
             });
         }
+
+        this.inputDashesCoords = this.inputDashesCoords.map(i => swap(i, this.props.direction <= 1));
+        this.inputDashesGrid = this.inputDashesGrid.map(i => swap(i, this.props.direction <= 1));
+        this.outputDashesCoords = this.outputDashesCoords.map(i => swap(i, this.props.direction <= 1));
+        this.outputDashesGrid = this.outputDashesGrid.map(i => swap(i, this.props.direction <= 1));
 
         if (this.props.direction > 1) {
             const inputCoords = this.inputDashesCoords;
