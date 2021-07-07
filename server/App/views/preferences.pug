@@ -54,7 +54,7 @@ mixin Dropdown(identifier, value, descriptor)
         .el
             select(name=identifier)
                 each val, key in descriptor.details
-                    if value === key
+                    if Number(value) === Number(key)
                         option(data-key=key, selected)= val
                     else
                         option(data-key=key)= val

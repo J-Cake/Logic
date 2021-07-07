@@ -32,7 +32,7 @@ export default class RenderComponent extends RenderObject {
     size: [number, number];
 
     isSelected: boolean;
-    buff = 6;
+    buff = Math.floor(Math.sqrt(manager.setState().pref.setState().gridSize));
 
     inputDashesCoords: [number, number, number, number][];
     outputDashesCoords: [number, number, number, number][];
@@ -207,11 +207,12 @@ export default class RenderComponent extends RenderObject {
         const scl = mgr.pref.setState().gridSize;
         const {board} = mgr;
 
-        this.buff = Math.floor(scl / 6);
-
         const [inputNum, outputNum] = this.getConnections(false);
 
-        const size: [number, number] = [Math.floor(Math.max(1, Math.min(inputNum, outputNum)) * scl - 2 * this.buff), Math.floor(Math.max(inputNum, outputNum, 1) * scl - 2 * this.buff)];
+        const size: [number, number] = [
+            Math.max(1, Math.min(inputNum, outputNum)) * scl - 2 * this.buff,
+            Math.max(1, Math.max(inputNum, outputNum)) * scl - 2 * this.buff,
+        ];
 
         const pos = this.pos;
 
