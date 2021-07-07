@@ -1,17 +1,16 @@
+:root {
+    overflow: auto;
+}
+
 #container {
     display: block;
-    position: fixed;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    min-width: 650px;
 }
 
 .preference {
     display: flex;
     width: 100%;
     justify-content: space-between;
-    margin: 12px 3px;
+    /* padding: 12px 3px; */
 }
 
 .preference h2 {
@@ -43,23 +42,11 @@
 }
 
 button {
-    background: var(--panel);
-    min-width: 95px;
-    font-family: inherit;
-    color: var(--blank);
-    font-size: 9pt;
-}
-
-button#close {
     font-family: Remix;
     width: 24pt;
     height: 24pt;
-    position: fixed;
     font-size: 8pt;
-    right: 8px;
-    top: 8px;
-    min-width: auto;
-    background: var(--secondaryaccent);
+    min-width: initial;
     color: var(--background);
 }
 

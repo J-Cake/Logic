@@ -14,7 +14,7 @@
 
     font-family: 'Raleway', sans-serif;
 
-    overflow: hidden;
+    /*overflow: hidden;*/
 }
 
 :root, body {
@@ -52,12 +52,7 @@ button, #toolbar input, #toolbar .icon, #toolbar label {
 
 #components {
     max-width: 1000px;
-    /*background: var(--background);*/
     padding: 24px;
-    /*position: fixed;*/
-    /*left: 50%;*/
-    /*top: 50%;*/
-    /*transform: translate(-50%, -50%);*/
     overflow-y: auto;
     max-height: 650px;
 }

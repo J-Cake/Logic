@@ -46,6 +46,7 @@ mixin Text(identifier, value, descriptor)
             input(type="text", value=value, name=identifier)
 
 mixin Dropdown(identifier, value, descriptor)
+    - console.log(value)
     label.dropdown
         .info
             h2.label= descriptor.label
@@ -53,29 +54,72 @@ mixin Dropdown(identifier, value, descriptor)
         .el
             select(name=identifier)
                 each val, key in descriptor.details
-                    if val === value
+                    if value === key
                         option(data-key=key, selected)= val
                     else
                         option(data-key=key)= val
 
 block content
     link(rel="stylesheet", href="/app/css/preferences.css")
-    button#close 
-    script document.querySelector("#close").addEventListener("click", () => window.close());
-    form(action="/settings", method="post")#container
-        button(type="submit") Save
-        each i, a in preferences
-            .preference
-                case PreferenceDescriptor[a].type
-                    when Type.Toggle
-                        +Toggle(a, i, PreferenceDescriptor[a])
-                    when Type.Checkbox
-                        +Checkbox(a, i, PreferenceDescriptor[a])
-                    when Type.Slider
-                        +Slider(a, i, PreferenceDescriptor[a])
-                    when Type.Int
-                        +Int(a, i, PreferenceDescriptor[a])
-                    when Type.Text
-                        +Text(a, i, PreferenceDescriptor[a])
-                    when Type.Dropdown
-                        +Dropdown(a, i, PreferenceDescriptor[a])
+    script.
+        window.addEventListener('load', function () {
+            document.querySelector("#close").addEventListener("click", () => window.close());
+            document.querySelector("#save").addEventListener("click", () => document.querySelector("form#settings").submit());
+        })
+    style.
+        #save {
+            background: var(--active);
+            grid-area: save;
+        }
+
+        #close {
+            background: var(--secondaryaccent);
+            grid-area: close;
+        }
+
+        #save, #close {
+            margin: 12px;
+        }
+
+        #settings-container {
+            display: grid;
+            grid-template-columns: 48px auto 48px;
+            grid-template-rows: 48px auto;
+
+            padding: 24px;
+
+            grid-template-areas: "save settings close" "l settings r";
+        }
+
+        #settings {
+            max-width: 650px;
+            width: 100%;
+        }
+
+        .centre {
+            grid-area: settings;
+            display: flex;
+            justify-content: center;
+        }
+
+    section#settings-container
+        button(type="submit")#save 
+        button#close 
+
+        .centre
+            form(action="/settings", method="post")#settings
+                each i, a in preferences
+                    .preference
+                        case PreferenceDescriptor[a].type
+                            when Type.Toggle
+                                +Toggle(a, i, PreferenceDescriptor[a])
+                            when Type.Checkbox
+                                +Checkbox(a, i, PreferenceDescriptor[a])
+                            when Type.Slider
+                                +Slider(a, i, PreferenceDescriptor[a])
+                            when Type.Int
+                                +Int(a, i, PreferenceDescriptor[a])
+                            when Type.Text
+                                +Text(a, i, PreferenceDescriptor[a])
+                            when Type.Dropdown
+                                +Dropdown(a, i, PreferenceDescriptor[a])

@@ -1,8 +1,8 @@
 :root, * {
     padding: 0;
     margin: 0;
-    position: relative;
-    box-sizing: border-box !important;
+    /*position: relative;*/
+    /*box-sizing: border-box !important;*/
     outline: none;
 
     user-select: none;
@@ -14,7 +14,7 @@
 
 :root, body {
     background: var(--background);
-    min-height: 100vh;
+    /*min-height: 100vh;*/
 }
 
 .hidden {
