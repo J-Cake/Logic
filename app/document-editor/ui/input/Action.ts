@@ -118,20 +118,20 @@ export const actionMap: Record<Action, () => void> = {
         const prev = manager.setState();
         for (const i of prev.renderedComponents.filter(i => i.isSelected))
             performAction(ActionType.RotateComponent)(i, ({
-                [0]: 3,
-                [1]: 0,
-                [2]: 1,
-                [3]: 2,
+                [0]: 1,
+                [1]: 2,
+                [2]: 3,
+                [3]: 0,
             } as Record<0 | 1 | 2 | 3, 0 | 1 | 2 | 3>)[i.props.direction]);
     },
     [Action.Rotate_Counterclockwise]: function () {
         const prev = manager.setState();
         for (const i of prev.renderedComponents.filter(i => i.isSelected))
             performAction(ActionType.RotateComponent)(i, ({
-                [0]: 1,
-                [1]: 2,
-                [2]: 3,
-                [3]: 0,
+                [0]: 3,
+                [1]: 0,
+                [2]: 1,
+                [3]: 2,
             } as Record<0 | 1 | 2 | 3, 0 | 1 | 2 | 3>)[i.props.direction]);
     },
 
