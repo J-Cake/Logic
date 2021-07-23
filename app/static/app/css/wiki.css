@@ -240,7 +240,7 @@ article#content {
     font-family: Remix;
 }
 
-article img {
+article img, article video {
     margin: 8px auto;
     display: block;
     max-width: 800px;

@@ -14,8 +14,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="eva-icons" level="application" />
-    <orderEntry type="library" name="@types/ts-nameof" level="application" />
     <orderEntry type="library" name="ts-external-references" level="project" />
     <orderEntry type="module" module-name="lib" />
     <orderEntry type="module" module-name="lib" />
