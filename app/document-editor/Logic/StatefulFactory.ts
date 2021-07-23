@@ -5,6 +5,7 @@ import {ApiComponent, GenComponent, GenericComponent} from "./io/ComponentFetche
 import CircuitManager, {AvailSync, ComponentMap} from "./io/CircuitManager";
 import {CircuitObj} from "../../../server/App/Document/Document";
 import {getComponent} from "../sys/API/component";
+import Component from "./Component";
 
 export async function loadComponent(componentToken: string): Promise<{ [id: number]: [GenericComponent, GenComponent] }> {
     const component: ApiComponent = (await getComponent(componentToken)).data as ApiComponent;
@@ -54,17 +55,17 @@ export default async function (apiComponent: ApiComponent) {
                             this.outputComponents.push(Number(i));
 
                         component[1][i][1].update = function (this: GenComponent) {
-                            if (!this.updated) {
-                                this.updated = true;
+                            this.out = this.computeOutputs(Object.keys(this.inputs).map(i => this.inputs[i][0].out[this.inputs[i][0].outputNames.indexOf(this.inputs[i][1])]));
 
-                                this.out = this.computeOutputs(Object.keys(this.inputs).map(i => this.inputs[i][0].out[this.inputs[i][0].outputNames.indexOf(this.inputs[i][1])]));
+                            if (!this.updated) { // Stop the chain, so recursive components don't crash the app
+                                this.updated = true;
 
                                 for (const i in this.outputs)
                                     for (const j of this.outputs[i])
                                         j[0].update();
                             }
                         };
-                        
+
                     }
                     return this.componentMap = component[1];
                 }.bind(this)
@@ -79,8 +80,8 @@ export default async function (apiComponent: ApiComponent) {
             this.__updated = updated;
 
             if (!updated)
-            for (const i in this.componentMap)
-                this.componentMap[i][1].updated = false;
+                for (const i in this.componentMap)
+                    this.componentMap[i][1].updated = false;
         }
 
         computeOutputs(inputs: boolean[]): boolean[] { // TODO: Evaluate stateful components
@@ -93,10 +94,7 @@ export default async function (apiComponent: ApiComponent) {
             for (const i of this.inputComponents)
                 this.componentMap[i][1].update();
 
-            return this.outputComponents.map(i => {
-                const comp = this.componentMap[i][1].inputs['o'];
-                return comp[0].out[comp[0].outputNames.indexOf(comp[1])];
-            });
+            return this.outputComponents.map(i => this.componentMap[i][1].out[0]);
         }
 
         preUpdate(next: () => void): void {

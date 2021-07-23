@@ -1,0 +1,96 @@
+lockfileVersion: 5.3
+
+specifiers:
+  '@types/jquery': ^3.3.36
+  '@types/lodash': ^4.14.168
+  '@types/mousetrap': ^1.6.3
+  '@types/p5': ^0.9.0
+  '@types/wicg-native-file-system': latest
+  jquery: ^3.5.0
+  lodash: ^4.17.21
+  mousetrap: ^1.6.5
+  p5: ^1.0.0
+  parse-css-color: ^0.1.2
+  typescript: ^3.9.6
+
+dependencies:
+  jquery: 3.6.0
+  lodash: 4.17.21
+  mousetrap: 1.6.5
+  p5: 1.4.0
+  parse-css-color: 0.1.2
+  typescript: 3.9.10
+
+devDependencies:
+  '@types/jquery': 3.5.5
+  '@types/lodash': 4.14.170
+  '@types/mousetrap': 1.6.8
+  '@types/p5': 0.9.1
+  '@types/wicg-native-file-system': 2020.6.0
+
+packages:
+
+  /@types/jquery/3.5.5:
+    resolution: {integrity: sha512-6RXU9Xzpc6vxNrS6FPPapN1SxSHgQ336WC6Jj/N8q30OiaBZ00l1GBgeP7usjVZPivSkGUfL1z/WW6TX989M+w==}
+    dependencies:
+      '@types/sizzle': 2.3.3
+    dev: true
+
+  /@types/lodash/4.14.170:
+    resolution: {integrity: sha512-bpcvu/MKHHeYX+qeEN8GE7DIravODWdACVA1ctevD8CN24RhPZIKMn9ntfAsrvLfSX3cR5RrBKAbYm9bGs0A+Q==}
+    dev: true
+
+  /@types/mousetrap/1.6.8:
+    resolution: {integrity: sha512-zTqjvgCUT5EoXqbqmd8iJMb4NJqyV/V7pK7AIKq7qcaAsJIpGlTVJS1HQM6YkdHCdnkNSbhcQI7MXYxFfE3iCA==}
+    dev: true
+
+  /@types/p5/0.9.1:
+    resolution: {integrity: sha512-4glOKdqdBiRWDFZwi/MjHudPV2U4t2L4fTTSacGapfFxyNXzZcAshAjqmrJkCIZcFlhRBEAL7AM95xRDMfrIwg==}
+    dev: true
+
+  /@types/sizzle/2.3.3:
+    resolution: {integrity: sha512-JYM8x9EGF163bEyhdJBpR2QX1R5naCJHC8ucJylJ3w9/CVBaskdQ8WqBf8MmQrd1kRvp/a4TS8HJ+bxzR7ZJYQ==}
+    dev: true
+
+  /@types/wicg-native-file-system/2020.6.0:
+    resolution: {integrity: sha512-M7n6jvHfUzUXDtf6UGpL6rVIddV7UzEYrvwZPORApeHvDGQnZJ79fXorLlDj8xJKyUemnEBohRd8yx09k9NBUw==}
+    deprecated: '@types/wicg-file-system-access is the correct name of this package'
+    dev: true
+
+  /color-name/1.1.4:
+    resolution: {integrity: sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==}
+    dev: false
+
+  /hex-rgb/4.3.0:
+    resolution: {integrity: sha512-Ox1pJVrDCyGHMG9CFg1tmrRUMRPRsAWYc/PinY0XzJU4K7y7vjNoLKIQ7BR5UJMCxNN8EM1MNDmHWA/B3aZUuw==}
+    engines: {node: '>=6'}
+    dev: false
+
+  /jquery/3.6.0:
+    resolution: {integrity: sha512-JVzAR/AjBvVt2BmYhxRCSYysDsPcssdmTFnzyLEts9qNwmjmu4JTAMYubEfwVOSwpQ1I1sKKFcxhZCI2buerfw==}
+    dev: false
+
+  /lodash/4.17.21:
+    resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
+    dev: false
+
+  /mousetrap/1.6.5:
+    resolution: {integrity: sha512-QNo4kEepaIBwiT8CDhP98umTetp+JNfQYBWvC1pc6/OAibuXtRcxZ58Qz8skvEHYvURne/7R8T5VoOI7rDsEUA==}
+    dev: false
+
+  /p5/1.4.0:
+    resolution: {integrity: sha512-U888W2ChcIzPhRhnv4FkNhaa4f5BDIWZfLhzvx9ZrQ5KtkZr/+o1UPIicV3yWTRy0HEG23NviHyDR3kgjaJ9wA==}
+    dev: false
+
+  /parse-css-color/0.1.2:
+    resolution: {integrity: sha512-z7v/tf0edGsnlm9VONQtH+u/YVrdUqZXrSBzqM13scef8Abl2VyZfYsZaJoyb/AyY4SIxtoJChSQ4MURHfY3Sg==}
+    dependencies:
+      color-name: 1.1.4
+      hex-rgb: 4.3.0
+    dev: false
+
+  /typescript/3.9.10:
+    resolution: {integrity: sha512-w6fIxVE/H1PkLKcCPsFqKE7Kv7QUwhU8qQY2MueZXWx5cPZdwFupLgKK3vntcK98BtNHZtAF4LA/yl2a7k8R6Q==}
+    engines: {node: '>=4.2.0'}
+    hasBin: true
+    dev: false

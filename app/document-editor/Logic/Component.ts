@@ -30,11 +30,10 @@ export default abstract class Component {
     protected override: (null | boolean)[] = [];
 
     protected constructor(inputs: string[], outputs: string[], name: string) {
-        if (containsDuplicates(inputs) || containsDuplicates(outputs))
-            throw 'The label lists must only contain unique entries.';
-
-        this.inputNames = inputs;
-        this.outputNames = outputs;
+        let inputCounter: number = 0
+        let outputCounter: number = 0
+        this.inputNames = inputs.reduce((a, i) => [...a, i ? (a.includes(i) ? i + '+' : i) : String(inputCounter++)], [] as string[]);
+        this.outputNames = outputs.reduce((a, i) => [...a, i ? (a.includes(i) ? i + '+' : i) : String(outputCounter++)], [] as string[]);
 
         this.inputs = {};
         this.outputs = {};
