@@ -1,6 +1,6 @@
 {
         "name": "LogicX",
-        "version": "0.1-alpha-8",
+        "version": "0.1-beta-1",
         "description": "",
         "type": "module",
         "main": "build/server/index.js",
